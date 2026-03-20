@@ -1,0 +1,670 @@
+﻿@{
+    ViewBag.Title = "Hồ sơ cá nhân";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    :root {
+        --sky-blue: #0EA5E9;
+        --deep-slate: #1e293b;
+        --slate: #334155;
+        --slate-light: #cbd5e1;
+        --slate-200: #e2e8f0;
+        --white: #ffffff;
+        --spacing-2: 0.5rem;
+        --spacing-3: 0.75rem;
+        --spacing-4: 1rem;
+        --spacing-6: 1.5rem;
+        --spacing-8: 2rem;
+        --spacing-12: 3rem;
+    }
+
+    .profile-container {
+        background: #f1f5f9;
+        min-height: 100vh;
+    }
+
+    .profile-header {
+        position: relative;
+        height: 300px;
+        background: url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1920&q=80') center/cover;
+    }
+
+    .profile-header-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(30, 41, 59, 0.8), transparent);
+    }
+
+    .profile-avatar-container {
+        position: absolute;
+        bottom: -60px;
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+    }
+
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 4px solid var(--white);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        object-fit: cover;
+    }
+
+    .profile-info {
+        padding-top: 80px;
+        text-align: center;
+        background: #f1f5f9;
+        padding-bottom: var(--spacing-8);
+    }
+
+    .profile-name {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--deep-slate);
+        margin-bottom: var(--spacing-2);
+    }
+
+    .profile-bio {
+        font-size: 1rem;
+        color: var(--slate);
+        margin-bottom: var(--spacing-4);
+        font-style: italic;
+    }
+
+    .profile-stats {
+        display: flex;
+        justify-content: center;
+        gap: var(--spacing-6);
+        margin-bottom: var(--spacing-8);
+    }
+
+    .stat-item {
+        background: var(--white);
+        padding: var(--spacing-3) var(--spacing-6);
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        text-align: center;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--sky-blue);
+    }
+
+    .stat-label {
+        font-size: 0.85rem;
+        color: var(--slate);
+    }
+
+    .profile-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: var(--spacing-8);
+    }
+
+    .profile-tabs {
+        display: flex;
+        justify-content: center;
+        border-bottom: 2px solid var(--slate-200);
+        margin-bottom: var(--spacing-8);
+    }
+
+    .tab-btn {
+        padding: var(--spacing-4) var(--spacing-6);
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--slate);
+        background: transparent;
+        border: none;
+        border-bottom: 4px solid transparent;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .tab-btn.active,
+    .tab-btn:hover {
+        color: var(--sky-blue);
+        border-bottom-color: var(--sky-blue);
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    @@keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .journeys-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: var(--spacing-6);
+    }
+
+    .journey-card {
+        background: var(--white);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+    }
+
+    .journey-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .journey-card-img {
+        height: 180px;
+        background-size: cover;
+        background-position: center;
+    }
+
+    .journey-card-content {
+        padding: var(--spacing-4);
+    }
+
+    .journey-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--deep-slate);
+        margin-bottom: var(--spacing-2);
+    }
+
+    .journey-meta {
+        font-size: 0.9rem;
+        color: var(--slate);
+    }
+
+    /* EDIT MODE STYLES */
+    .edit-mode-actions {
+        display: none;
+        text-align: center;
+        margin-bottom: var(--spacing-8);
+        gap: var(--spacing-4);
+    }
+
+    .edit-mode-actions.active {
+        display: flex;
+        justify-content: center;
+    }
+
+    .btn-edit, .btn-save, .btn-cancel {
+        padding: var(--spacing-3) var(--spacing-6);
+        font-size: 0.95rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-edit {
+        background: var(--sky-blue);
+        color: var(--white);
+    }
+
+    .btn-edit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(14, 165, 233, 0.3);
+    }
+
+    .btn-save {
+        background: #10b981;
+        color: var(--white);
+    }
+
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-cancel {
+        background: #ef4444;
+        color: var(--white);
+    }
+
+    .btn-cancel:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
+    }
+
+    .profile-form {
+        background: var(--white);
+        border-radius: 16px;
+        padding: var(--spacing-8);
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: var(--spacing-6);
+        margin-bottom: var(--spacing-6);
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        color: var(--deep-slate);
+        margin-bottom: var(--spacing-2);
+        font-size: 0.95rem;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        padding: var(--spacing-3) var(--spacing-4);
+        border: 2px solid var(--slate-200);
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        background: var(--white);
+        color: var(--deep-slate);
+    }
+
+    .form-group input:disabled,
+    .form-group textarea:disabled {
+        background: #f8fafc;
+        color: var(--slate);
+        cursor: not-allowed;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: var(--sky-blue);
+        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .stats-section {
+        background: var(--white);
+        border-radius: 16px;
+        padding: var(--spacing-8);
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        margin-bottom: var(--spacing-8);
+    }
+
+    .stats-section h3 {
+        color: var(--deep-slate);
+        font-weight: 700;
+        margin-bottom: var(--spacing-6);
+    }
+
+    .read-only-text {
+        padding: var(--spacing-3) var(--spacing-4);
+        border-radius: 10px;
+        background: #f8fafc;
+        color: var(--slate);
+        font-size: 0.95rem;
+    }
+
+    .btn-outline-edit {
+        background: transparent;
+        border: 2px solid var(--slate-200);
+        color: var(--slate);
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-edit:hover {
+        background: var(--sky-blue);
+        color: var(--white);
+        border-color: var(--sky-blue);
+    }
+</style>
+
+<div class="profile-container">
+    <div class="profile-header">
+        <div class="profile-header-overlay"></div>
+        <div class="profile-avatar-container">
+            <label for="avatarUpload" style="cursor: pointer; position: relative; display: inline-block;">
+                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&h=120&fit=crop" alt="Avatar" class="profile-avatar" id="profileAvatar" />
+                <div id="avatarEditOverlay" style="display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.5); border-radius: 50%; color: white; justify-content: center; align-items: center; bottom: 4px; border: 4px solid transparent;">
+                    <i class="bi bi-camera" style="font-size: 1.5rem;"></i>
+                </div>
+            </label>
+            <input type="file" id="avatarUpload" accept="image/*" style="display: none;" onchange="previewAvatar(event)">
+            <br />
+            <button id="btnChangeAvatar" style="display:none; margin-top: 10px;" class="btn-edit" onclick="document.getElementById('avatarUpload').click()">Đổi ảnh đại diện</button>
+        </div>
+    </div>
+
+    <div class="profile-info">
+        <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: var(--spacing-2);">
+            <h1 class="profile-name" id="displayName" style="margin-bottom: 0;">Tên Người Dùng</h1>
+            <button class="btn-outline-edit" onclick="switchTab('settings'); enableEditMode();" title="Chỉnh sửa hồ sơ">
+                <i class="bi bi-pencil"></i>
+            </button>
+        </div>
+        <p class="profile-bio" id="displayBio">"Traveler • Food Lover • Explorer"</p>
+        <div class="profile-stats">
+            <div class="stat-item">
+                <div class="stat-value">12</div>
+                <div class="stat-label">Hành trình</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">45</div>
+                <div class="stat-label">Địa điểm đã lưu</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">2023</div>
+                <div class="stat-label">Tham gia</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-content">
+        <div class="profile-tabs">
+            <button class="tab-btn active" onclick="switchTab('journeys')">Hành trình của tôi</button>
+            <button class="tab-btn" onclick="switchTab('saved')">Địa điểm đã lưu</button>
+            <button class="tab-btn" onclick="switchTab('settings')">Cài đặt tài khoản</button>
+        </div>
+
+        <div id="journeys" class="tab-content active">
+            <div class="journeys-grid">
+                <!-- Sample Journey Card -->
+                <div class="journey-card">
+                    <div class="journey-card-img" style="background-image: url('https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=300&h=180&fit=crop')"></div>
+                    <div class="journey-card-content">
+                        <h3 class="journey-title">Đà Lạt 3 ngày chữa lành</h3>
+                        <p class="journey-meta">3 ngày | 5 địa điểm</p>
+                    </div>
+                </div>
+                <!-- Add more journey cards here -->
+            </div>
+        </div>
+
+        <div id="saved" class="tab-content">
+            <p>Nội dung các địa điểm đã lưu...</p>
+        </div>
+
+        <div id="settings" class="tab-content">
+            <div class="edit-mode-actions" id="editModeActions">
+                <button class="btn-save" onclick="saveProfile()">
+                    <i class="bi bi-check-circle me-2"></i>Lưu thay đổi
+                </button>
+                <button class="btn-cancel" onclick="cancelEdit()">
+                    <i class="bi bi-x-circle me-2"></i>Hủy
+                </button>
+            </div>
+
+            <div class="profile-form">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-8);">
+                    <h2 style="color: var(--deep-slate); font-weight: 700; margin: 0;">Thông tin cá nhân</h2>
+                    <button class="btn-edit" id="editBtn" onclick="enableEditMode()">
+                        <i class="bi bi-pencil me-2"></i>Chỉnh sửa
+                    </button>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="fullName">Họ và tên</label>
+                        <input type="text" id="fullName" disabled value="Tên Người Dùng" />
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" disabled value="user@example.com" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="phone">Số điện thoại</label>
+                        <input type="tel" id="phone" disabled value="(+84) 123 456 789" />
+                    </div>
+                    <div class="form-group">
+                        <label for="birthDate">Ngày sinh</label>
+                        <input type="date" id="birthDate" disabled value="1995-03-15" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label for="bio">Tiểu sử</label>
+                        <textarea id="bio" disabled>"Traveler • Food Lover • Explorer"</textarea>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="city">Thành phố</label>
+                        <input type="text" id="city" disabled value="Hà Nội" />
+                    </div>
+                    <div class="form-group">
+                        <label for="country">Quốc gia</label>
+                        <input type="text" id="country" disabled value="Việt Nam" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-section" style="margin-top: var(--spacing-8);">
+                <h3 style="color: var(--deep-slate); font-weight: 700; margin-bottom: var(--spacing-6);">Đổi mật khẩu</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="oldPassword">Mật khẩu hiện tại</label>
+                        <input type="password" id="oldPassword" placeholder="Nhập mật khẩu hiện tại" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="newPassword">Mật khẩu mới</label>
+                        <input type="password" id="newPassword" placeholder="Nhập mật khẩu mới" />
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Xác nhận mật khẩu mới</label>
+                        <input type="password" id="confirmPassword" placeholder="Nhập lại mật khẩu mới" />
+                    </div>
+                </div>
+                <div style="text-align: right; margin-top: var(--spacing-4);">
+                    <button class="btn-save" onclick="changePassword()">
+                        <i class="bi bi-shield-lock me-2"></i>Cập nhật mật khẩu
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Store original values for cancel functionality
+    let originalValues = {};
+    let isEditMode = false;
+
+    function switchTab(tabId) {
+        // Hide all tab contents
+        document.querySelectorAll('.tab-content').forEach(tab => {
+            tab.classList.remove('active');
+        });
+
+        // Deactivate all tab buttons
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        // Show the selected tab content
+        document.getElementById(tabId).classList.add('active');
+
+        // Activate the selected tab button
+        event.currentTarget.classList.add('active');
+    }
+
+    let originalAvatarSrc = '';
+
+    // Simulate toast if not defined globally
+    if (typeof showToast !== 'function') {
+        window.showToast = function(title, message, type) {
+            alert(title + ": " + message);
+        };
+    }
+
+    function previewAvatar(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('profileAvatar').src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function enableEditMode() {
+        isEditMode = true;
+
+        // Store original values
+        originalValues = {
+            fullName: document.getElementById('fullName').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value,
+            birthDate: document.getElementById('birthDate').value,
+            bio: document.getElementById('bio').value,
+            city: document.getElementById('city').value,
+            country: document.getElementById('country').value
+        };
+        originalAvatarSrc = document.getElementById('profileAvatar').src;
+
+        // Enable all inputs
+        document.querySelectorAll('.profile-form input, .profile-form textarea').forEach(input => {
+            input.disabled = false;
+        });
+
+        // Show edit mode actions
+        document.getElementById('editModeActions').classList.add('active');
+        document.getElementById('editBtn').style.display = 'none';
+
+        // Show avatar edit options
+        document.getElementById('avatarEditOverlay').style.display = 'flex';
+        document.getElementById('btnChangeAvatar').style.display = 'inline-block';
+
+        // Show toast
+        showToast('Chế độ chỉnh sửa', 'Bạn đã bật chế độ chỉnh sửa. Hãy thay đổi thông tin của bạn.', 'info');
+    }
+
+    function saveProfile() {
+        const fullName = document.getElementById('fullName').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const birthDate = document.getElementById('birthDate').value.trim();
+        const bio = document.getElementById('bio').value.trim();
+        const city = document.getElementById('city').value.trim();
+        const country = document.getElementById('country').value.trim();
+
+        // Validation
+        if (!fullName || !email || !phone) {
+            showToast('Lỗi', 'Vui lòng điền đầy đủ các trường bắt buộc: Họ tên, Email, Số điện thoại.', 'error');
+            return;
+        }
+
+        // Basic email validation
+        var at = String.fromCharCode(64);
+        const emailRegex = new RegExp('^[^\\s' + at + ']+' + at + '[^\\s' + at + ']+\\.[^\\s' + at + ']+$');
+        if (!emailRegex.test(email)) {
+            showToast('Lỗi', 'Vui lòng nhập email hợp lệ.', 'error');
+            return;
+        }
+
+        // Disable all inputs
+        document.querySelectorAll('.profile-form input, .profile-form textarea').forEach(input => {
+            input.disabled = true;
+        });
+
+        // Hide edit mode actions
+        document.getElementById('editModeActions').classList.remove('active');
+        document.getElementById('editBtn').style.display = 'block';
+
+        // Hide avatar edit options
+        document.getElementById('avatarEditOverlay').style.display = 'none';
+        document.getElementById('btnChangeAvatar').style.display = 'none';
+
+        // Update display name
+        document.getElementById('displayName').textContent = fullName;
+        document.getElementById('displayBio').textContent = bio || originalValues.bio;
+
+        // Show success toast
+        showToast('Thành công', 'Thông tin cá nhân của bạn đã được lưu.', 'success');
+
+        isEditMode = false;
+    }
+
+    function cancelEdit() {
+        // Restore original values
+        document.getElementById('fullName').value = originalValues.fullName;
+        document.getElementById('email').value = originalValues.email;
+        document.getElementById('phone').value = originalValues.phone;
+        document.getElementById('birthDate').value = originalValues.birthDate;
+        document.getElementById('bio').value = originalValues.bio;
+        document.getElementById('city').value = originalValues.city;
+        document.getElementById('country').value = originalValues.country;
+
+        // Disable all inputs
+        document.querySelectorAll('.profile-form input, .profile-form textarea').forEach(input => {
+            input.disabled = true;
+        });
+
+        // Revert avatar
+        document.getElementById('profileAvatar').src = originalAvatarSrc;
+
+        // Hide edit mode actions
+        document.getElementById('editModeActions').classList.remove('active');
+        document.getElementById('editBtn').style.display = 'block';
+
+        // Hide avatar edit options
+        document.getElementById('avatarEditOverlay').style.display = 'none';
+        document.getElementById('btnChangeAvatar').style.display = 'none';
+
+        // Show cancel toast
+        showToast('Đã hủy', 'Các thay đổi của bạn đã được hủy.', 'info');
+
+        isEditMode = false;
+    }
+
+    function changePassword() {
+        const oldPass = document.getElementById('oldPassword').value;
+        const newPass = document.getElementById('newPassword').value;
+        const confirmPass = document.getElementById('confirmPassword').value;
+
+        if (!oldPass || !newPass || !confirmPass) {
+            showToast('Lỗi', 'Vui lòng điền đầy đủ thông tin mật khẩu.', 'error');
+            return;
+        }
+
+        if (newPass !== confirmPass) {
+            showToast('Lỗi', 'Mật khẩu mới và xác nhận mật khẩu không khớp.', 'error');
+            return;
+        }
+
+        // Simulate successful password change
+        showToast('Thành công', 'Mật khẩu của bạn đã được cập nhật.', 'success');
+
+        // Clear inputs
+        document.getElementById('oldPassword').value = '';
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmPassword').value = '';
+    }
+</script>

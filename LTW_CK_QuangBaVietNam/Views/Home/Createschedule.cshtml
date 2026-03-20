@@ -1,0 +1,2475 @@
+@{
+    ViewBag.Title = "Createschedule";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    :root {
+        --deep-slate: #1e293b;
+        --slate: #334155;
+        --sky-blue: #0EA5E9;
+        --sky-light: #38BDF8;
+        --slate-light: #cbd5e1;
+        --slate-200: #e2e8f0;
+        --amber: #f59e0b;
+        --rose: #f43f5e;
+        --white: #ffffff;
+        --spacing-2: 0.5rem;
+        --spacing-3: 0.75rem;
+        --spacing-4: 1rem;
+        --spacing-6: 1.5rem;
+        --spacing-8: 2rem;
+        --spacing-12: 3rem;
+    }
+
+    /* ========== JOURNEY INITIALIZATION SCREEN ========== */
+    .journey-init-container {
+        position: relative;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, rgba(248, 250, 252, 0.95), rgba(226, 232, 240, 0.6)), url('https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1920&q=80') center/cover;
+        background-attachment: fixed;
+        padding: var(--spacing-8);
+    }
+
+        .journey-init-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 20% 80%, rgba(14, 165, 233, 0.08), transparent 70%);
+            pointer-events: none;
+        }
+
+    .journey-init-form {
+        position: relative;
+        z-index: 2;
+        background: var(--white);
+        border-radius: 24px;
+        box-shadow: 0 20px 60px rgba(30, 41, 59, 0.12);
+        padding: var(--spacing-12);
+        max-width: 600px;
+        width: 100%;
+        border: 1px solid rgba(14, 165, 233, 0.1);
+        animation: slideInUp 0.6s ease-out;
+    }
+
+    @@keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .journey-init-header {
+        text-align: center;
+        margin-bottom: var(--spacing-12);
+    }
+
+        .journey-init-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--deep-slate);
+            margin-bottom: var(--spacing-4);
+            line-height: 1.2;
+        }
+
+        .journey-init-header p {
+            font-size: 1rem;
+            color: var(--slate);
+            margin: 0;
+            font-weight: 500;
+        }
+
+    .form-group-custom {
+        margin-bottom: var(--spacing-8);
+    }
+
+        .form-group-custom label {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--deep-slate);
+            margin-bottom: var(--spacing-3);
+        }
+
+        .form-group-custom input,
+        .form-group-custom select {
+            width: 100%;
+            padding: var(--spacing-4) var(--spacing-6);
+            font-size: 1rem;
+            border: 2px solid var(--slate-200);
+            border-radius: 12px;
+            background: #f8fafc;
+            color: var(--deep-slate);
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+            .form-group-custom input:focus,
+            .form-group-custom select:focus {
+                outline: none;
+                border-color: var(--sky-blue);
+                background: var(--white);
+                box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+            }
+
+    .date-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-6);
+    }
+
+        .date-group .form-group-custom {
+            margin-bottom: 0;
+        }
+
+        .date-group label {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--deep-slate);
+            margin-bottom: var(--spacing-3);
+        }
+
+    /* Suggestions */
+    .suggestions-box {
+        background: linear-gradient(135deg, rgba(14, 165, 233, 0.05), rgba(248, 250, 252, 0.8));
+        border: 1px solid rgba(14, 165, 233, 0.15);
+        border-radius: 12px;
+        padding: var(--spacing-6);
+        margin-bottom: var(--spacing-8);
+    }
+
+    .suggestions-label {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--sky-blue);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: var(--spacing-3);
+    }
+
+    .suggestion-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--spacing-3);
+    }
+
+    .suggestion-chip {
+        background: var(--white);
+        border: 1px solid var(--sky-light);
+        border-radius: 20px;
+        padding: var(--spacing-2) var(--spacing-6);
+        font-size: 0.9rem;
+        color: var(--sky-blue);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+
+        .suggestion-chip:hover {
+            background: var(--sky-light);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.25);
+        }
+
+    /* Privacy Mode */
+    .privacy-selector {
+        display: flex;
+        gap: var(--spacing-4);
+    }
+
+    .privacy-option {
+        flex: 1;
+        position: relative;
+    }
+
+        .privacy-option input[type="radio"] {
+            display: none;
+        }
+
+        .privacy-option label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-4);
+            border: 2px solid var(--slate-200);
+            border-radius: 12px;
+            background: #f8fafc;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 0;
+        }
+
+        .privacy-option input[type="radio"]:checked + label {
+            background: var(--sky-light);
+            border-color: var(--sky-blue);
+            color: var(--white);
+        }
+
+        .privacy-option i {
+            margin-right: var(--spacing-3);
+            font-size: 1.2rem;
+        }
+
+    /* Buttons */
+    .btn-create-journey {
+        width: 100%;
+        padding: var(--spacing-4) var(--spacing-8);
+        font-size: 1rem;
+        font-weight: 600;
+        background: linear-gradient(135deg, var(--sky-blue), var(--sky-light));
+        color: var(--white);
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-bottom: var(--spacing-4);
+    }
+
+        .btn-create-journey:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(14, 165, 233, 0.4);
+        }
+
+        .btn-create-journey:active {
+            transform: translateY(0);
+        }
+
+    .btn-cancel {
+        width: 100%;
+        padding: var(--spacing-4) var(--spacing-8);
+        font-size: 1rem;
+        font-weight: 600;
+        background: transparent;
+        color: var(--slate);
+        border: 2px solid var(--slate-200);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+        .btn-cancel:hover {
+            border-color: var(--sky-blue);
+            color: var(--sky-blue);
+        }
+
+    /* ========== JOURNEY CONTROL TOOLBAR ========== */
+    .journey-control-toolbar {
+        position: relative;
+        z-index: 10;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(14, 165, 233, 0.1);
+        box-shadow: 0 4px 24px rgba(30, 41, 59, 0.08);
+        padding: var(--spacing-4) var(--spacing-6);
+        margin-bottom: var(--spacing-6);
+        border-radius: 0 0 16px 16px;
+        transition: all 0.3s ease;
+    }
+
+    .toolbar-container {
+        max-width: 1800px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--spacing-4);
+    }
+
+    .toolbar-left,
+    .toolbar-right {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-3);
+    }
+
+    .toolbar-btn {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        padding: var(--spacing-3) var(--spacing-6);
+        background: var(--white);
+        border: 1px solid var(--slate-200);
+        border-radius: 10px;
+        color: var(--deep-slate);
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        position: relative;
+    }
+
+        .toolbar-btn:hover:not(:disabled) {
+            border-color: var(--sky-blue);
+            background: rgba(14, 165, 233, 0.05);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.15);
+        }
+
+        .toolbar-btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .toolbar-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #f8fafc;
+        }
+
+        .toolbar-btn.primary {
+            background: linear-gradient(135deg, var(--sky-blue), var(--sky-light));
+            color: var(--white);
+            border-color: var(--sky-blue);
+        }
+
+            .toolbar-btn.primary:hover:not(:disabled) {
+                box-shadow: 0 6px 20px rgba(14, 165, 233, 0.3);
+            }
+
+        .toolbar-btn.success {
+            background: linear-gradient(135deg, #10b981, #34d399);
+            color: var(--white);
+            border-color: #10b981;
+        }
+
+            .toolbar-btn.success:hover:not(:disabled) {
+                box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+            }
+
+        .toolbar-btn i {
+            font-size: 1rem;
+        }
+
+        /* Tooltip */
+        .toolbar-btn[data-tooltip]:disabled::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--deep-slate);
+            color: var(--white);
+            padding: var(--spacing-2) var(--spacing-4);
+            border-radius: 6px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toolbar-btn[data-tooltip]:disabled:hover::after {
+            opacity: 1;
+        }
+
+        .toolbar-btn[data-tooltip]:disabled::before {
+            content: '';
+            position: absolute;
+            bottom: calc(100% + 2px);
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: var(--deep-slate);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .toolbar-btn[data-tooltip]:disabled:hover::before {
+            opacity: 1;
+        }
+
+    /* Dropdown */
+    .toolbar-dropdown {
+        position: relative;
+    }
+
+    .dropdown-menu {
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        background: rgba(30, 41, 59, 0.95);
+        border: 1px solid var(--slate-200);
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(30, 41, 59, 0.15);
+        min-width: 200px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+        z-index: 9999;
+    }
+
+        .dropdown-menu.active,
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-3);
+        padding: var(--spacing-3) var(--spacing-4);
+        color: var(--slate-light);
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+        background: transparent;
+        width: 100%;
+        text-align: left;
+    }
+
+        .dropdown-item:first-child {
+            border-radius: 12px 12px 0 0;
+        }
+
+        .dropdown-item:last-child {
+            border-radius: 0 0 12px 12px;
+        }
+
+        .dropdown-item:hover:not(:disabled) {
+            background: rgba(14, 165, 233, 0.08);
+            color: var(--sky-blue);
+        }
+
+        .dropdown-item:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .dropdown-item i {
+            font-size: 1.1rem;
+            width: 20px;
+        }
+
+    /* Toast Notification */
+    .toast-container {
+        position: fixed;
+        top: 80px;
+        right: var(--spacing-6);
+        z-index: 10000;
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-3);
+    }
+
+    .toast {
+        background: var(--white);
+        border-radius: 12px;
+        padding: var(--spacing-4) var(--spacing-6);
+        box-shadow: 0 8px 32px rgba(30, 41, 59, 0.2);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-3);
+        min-width: 300px;
+        animation: slideInRight 0.3s ease-out;
+        border-left: 4px solid var(--sky-blue);
+    }
+
+        .toast.success {
+            border-left-color: #10b981;
+        }
+
+        .toast.error {
+            border-left-color: #ef4444;
+        }
+
+        .toast.warning {
+            border-left-color: var(--amber);
+        }
+
+    .toast-icon {
+        font-size: 1.5rem;
+    }
+
+    .toast.success .toast-icon {
+        color: #10b981;
+    }
+
+    .toast.error .toast-icon {
+        color: #ef4444;
+    }
+
+    .toast.warning .toast-icon {
+        color: var(--amber);
+    }
+
+    .toast-content {
+        flex: 1;
+    }
+
+    .toast-title {
+        font-weight: 700;
+        color: var(--deep-slate);
+        margin-bottom: 2px;
+        font-size: 0.95rem;
+    }
+
+    .toast-message {
+        color: var(--slate);
+        font-size: 0.85rem;
+    }
+
+    .toast-close {
+        background: transparent;
+        border: none;
+        color: var(--slate);
+        cursor: pointer;
+        font-size: 1.3rem;
+        padding: 0;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.2s ease;
+    }
+
+        .toast-close:hover {
+            background: var(--slate-200);
+            color: var(--deep-slate);
+        }
+
+    @@keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    /* Preview Mode */
+    .preview-mode {
+        background: var(--white);
+        border-radius: 16px;
+        padding: var(--spacing-8);
+        box-shadow: 0 4px 24px rgba(30, 41, 59, 0.08);
+        animation: fadeIn 0.4s ease-out;
+    }
+
+    .preview-header {
+        text-align: center;
+        margin-bottom: var(--spacing-8);
+        padding-bottom: var(--spacing-6);
+        border-bottom: 2px solid var(--slate-200);
+    }
+
+    .preview-title {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--deep-slate);
+        margin-bottom: var(--spacing-3);
+    }
+
+    .preview-subtitle {
+        font-size: 1.1rem;
+        color: var(--slate);
+        font-weight: 500;
+    }
+
+    .preview-day {
+        margin-bottom: var(--spacing-8);
+    }
+
+    .preview-day-header {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--deep-slate);
+        margin-bottom: var(--spacing-4);
+        padding-left: var(--spacing-4);
+        border-left: 4px solid var(--sky-blue);
+    }
+
+    .preview-locations {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-4);
+        margin-left: var(--spacing-6);
+    }
+
+    /* Saved State Indicator */
+    .save-indicator {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        color: var(--slate);
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+        .save-indicator.saved {
+            color: #10b981;
+        }
+
+        .save-indicator i {
+            font-size: 0.9rem;
+        }
+
+    /* ========== JOURNEY EDITOR SCREEN ========== */
+    .journey-editor-container {
+        display: none;
+        min-height: 100vh;
+        background: #f8fafc;
+    }
+
+    .journey-editor-header {
+        background: var(--white);
+        border-bottom: 1px solid var(--slate-200);
+        padding: var(--spacing-6);
+        box-shadow: 0 2px 12px rgba(30, 41, 59, 0.06);
+        position: relative;
+        z-index: 5;
+    }
+
+        .journey-editor-header h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--deep-slate);
+            margin: 0 0 var(--spacing-3) 0;
+        }
+
+    .journey-info {
+        font-size: 0.95rem;
+        color: var(--slate);
+        margin: 0;
+    }
+
+    .editor-content {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0;
+        padding: 0;
+        width: 100%;
+        margin: 0;
+        min-height: calc(100vh - 200px);
+    }
+
+    /* Left Timeline */
+    .timeline-section {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-6);
+        padding: var(--spacing-8);
+        background: #f8fafc;
+        border-right: 1px solid var(--slate-200);
+        overflow-y: auto;
+    }
+
+    .timeline-header {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--deep-slate);
+        margin-bottom: var(--spacing-4);
+    }
+
+    .day-card {
+        background: var(--white);
+        border-radius: 16px;
+        padding: var(--spacing-6);
+        box-shadow: 0 4px 16px rgba(30, 41, 59, 0.08);
+        border-left: 4px solid var(--sky-blue);
+        animation: fadeIn 0.4s ease-out;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .day-card.mood-chill {
+        border-left-color: #10b981;
+        background: linear-gradient(135deg, var(--white), rgba(16, 185, 129, 0.03));
+        margin-bottom: var(--spacing-6);
+    }
+
+    .day-card.mood-adventure {
+        border-left-color: #f59e0b;
+        background: linear-gradient(135deg, var(--white), rgba(245, 158, 11, 0.03));
+    }
+
+    .day-card.mood-foodie {
+        border-left-color: #ef4444;
+        background: linear-gradient(135deg, var(--white), rgba(239, 68, 68, 0.03));
+    }
+
+    .day-card.mood-healing {
+        border-left-color: #a855f7;
+        background: linear-gradient(135deg, var(--white), rgba(168, 85, 247, 0.03));
+    }
+
+    .day-card.mood-culture {
+        border-left-color: #06b6d4;
+        background: linear-gradient(135deg, var(--white), rgba(6, 182, 212, 0.03));
+    }
+
+    .day-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--spacing-4);
+        padding-bottom: var(--spacing-4);
+        border-bottom: 1px solid var(--slate-200);
+    }
+
+    .day-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--deep-slate);
+    }
+
+    .day-actions {
+        display: flex;
+        gap: var(--spacing-3);
+    }
+
+        .day-actions button {
+            background: transparent;
+            border: none;
+            color: var(--slate);
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+            .day-actions button:hover {
+                color: var(--sky-blue);
+                transform: scale(1.15);
+            }
+
+    .day-content {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-4);
+    }
+
+    /* Location Mini Card */
+    .location-item {
+        background: linear-gradient(135deg, rgba(248, 250, 252, 0.6), var(--white));
+        border-radius: 12px;
+        padding: var(--spacing-4);
+        border: 1px solid rgba(14, 165, 233, 0.1);
+        display: flex;
+        gap: var(--spacing-3);
+        transition: all 0.3s ease;
+    }
+
+        .location-item:hover {
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.15);
+            transform: translateX(4px);
+        }
+
+    .location-thumb {
+        width: 80px;
+        height: 80px;
+        border-radius: 10px;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+        .location-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .location-details {
+        flex: 1;
+    }
+
+    .location-name {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--deep-slate);
+        margin-bottom: var(--spacing-2);
+    }
+
+    .location-rating {
+        font-size: 0.85rem;
+        color: var(--amber);
+        margin-bottom: var(--spacing-2);
+    }
+
+    .location-tags {
+        display: flex;
+        gap: var(--spacing-2);
+        flex-wrap: wrap;
+    }
+
+    .location-tag {
+        font-size: 0.75rem;
+        background: rgba(14, 165, 233, 0.1);
+        color: var(--sky-blue);
+        padding: 2px 8px;
+        border-radius: 6px;
+        font-weight: 600;
+    }
+
+    /* Note Item */
+    .note-item {
+        background: linear-gradient(135deg, #fef3c7, rgba(254, 243, 199, 0.7));
+        border-radius: 10px;
+        padding: var(--spacing-4);
+        border-left: 3px solid var(--amber);
+        font-size: 0.95rem;
+        color: var(--deep-slate);
+        font-style: italic;
+        position: relative;
+    }
+
+        .note-item::before {
+            content: '✎';
+            position: absolute;
+            top: var(--spacing-2);
+            right: var(--spacing-4);
+            font-size: 1.2rem;
+            color: rgba(245, 158, 11, 0.3);
+        }
+
+    /* Add Button */
+    .add-item-btn {
+        background: rgba(14, 165, 233, 0.1);
+        border: 2px dashed var(--sky-light);
+        border-radius: 12px;
+        padding: var(--spacing-4);
+        color: var(--sky-blue);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        margin-top: var(--spacing-4);
+    }
+
+        .add-item-btn:hover {
+            background: rgba(14, 165, 233, 0.15);
+            border-color: var(--sky-blue);
+        }
+
+    /* Right Discovery Section */
+    .discovery-section {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-6);
+        padding: var(--spacing-8);
+        overflow-y: auto;
+    }
+
+    .discovery-header {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--deep-slate);
+    }
+
+    /* Location Cards Grid */
+    .location-cards-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: var(--spacing-8);
+    }
+
+    .location-card {
+        background: var(--white);
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 4px 16px rgba(30, 41, 59, 0.08);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: 1px solid rgba(14, 165, 233, 0.05);
+    }
+
+        .location-card:hover {
+            box-shadow: 0 8px 24px rgba(14, 165, 233, 0.15);
+            transform: translateY(-4px);
+        }
+
+    .location-card-image {
+        width: 100%;
+        height: 280px;
+        overflow: hidden;
+        position: relative;
+    }
+
+        .location-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+    .location-card:hover .location-card-image img {
+        transform: scale(1.05);
+    }
+
+    .location-card-content {
+        padding: var(--spacing-8);
+    }
+
+    .location-card-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--deep-slate);
+        margin-bottom: var(--spacing-3);
+    }
+
+    .location-card-rating {
+        color: var(--amber);
+        font-weight: 600;
+        margin-bottom: var(--spacing-4);
+        font-size: 0.95rem;
+    }
+
+    .location-card-desc {
+        font-size: 0.9rem;
+        color: var(--slate);
+        margin-bottom: var(--spacing-4);
+        line-height: 1.5;
+    }
+
+    .location-card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .location-card-tags {
+        display: flex;
+        gap: var(--spacing-2);
+    }
+
+    .location-card-tag {
+        font-size: 0.8rem;
+        background: rgba(14, 165, 233, 0.1);
+        color: var(--sky-blue);
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-weight: 600;
+    }
+
+    .btn-add-to-itinerary {
+        padding: var(--spacing-3) var(--spacing-6);
+        background: linear-gradient(135deg, var(--sky-blue), var(--sky-light));
+        color: var(--white);
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+        white-space: nowrap;
+    }
+
+        .btn-add-to-itinerary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(14, 165, 233, 0.3);
+        }
+
+    /* Smart Suggestions */
+    .smart-suggestions {
+        background: linear-gradient(135deg, rgba(14, 165, 233, 0.05), rgba(248, 250, 252, 0.8));
+        border-radius: 14px;
+        padding: var(--spacing-6);
+        border: 1px solid rgba(14, 165, 233, 0.1);
+        margin-bottom: var(--spacing-6);
+    }
+
+    .suggestions-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--sky-blue);
+        margin-bottom: var(--spacing-4);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+    }
+
+        .suggestions-title i {
+            font-size: 1.2rem;
+        }
+
+    .suggestion-item {
+        padding: var(--spacing-4);
+        background: var(--white);
+        border-radius: 10px;
+        margin-bottom: var(--spacing-3);
+        border-left: 3px solid var(--sky-light);
+        font-size: 0.95rem;
+        color: var(--deep-slate);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+        .suggestion-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 2px 8px rgba(14, 165, 233, 0.1);
+        }
+
+    /* Modal Overlay */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(30, 41, 59, 0.7);
+        backdrop-filter: blur(8px);
+        z-index: 9999;
+        animation: fadeInOverlay 0.3s ease-out;
+    }
+
+        .modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+    @@keyframes fadeInOverlay {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    /* Modal Container */
+    .modal-container {
+        background: var(--white);
+        border-radius: 20px;
+        padding: var(--spacing-8);
+        max-width: 500px;
+        width: 90%;
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
+        animation: slideInModal 0.4s ease-out;
+        position: relative;
+    }
+
+    @@keyframes slideInModal {
+        from {
+            opacity: 0;
+            transform: translateY(40px) scale(0.9);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--spacing-6);
+    }
+
+    .modal-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--deep-slate);
+    }
+
+    .modal-close {
+        background: transparent;
+        border: none;
+        font-size: 1.8rem;
+        color: var(--slate);
+        cursor: pointer;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+    }
+
+        .modal-close:hover {
+            background: var(--slate-200);
+            color: var(--deep-slate);
+        }
+
+    .modal-body {
+        margin-bottom: var(--spacing-6);
+    }
+
+    .modal-footer {
+        display: flex;
+        gap: var(--spacing-3);
+        justify-content: flex-end;
+    }
+
+    .btn-modal {
+        padding: var(--spacing-3) var(--spacing-8);
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: none;
+        font-size: 0.95rem;
+    }
+
+        .btn-modal.primary {
+            background: linear-gradient(135deg, var(--sky-blue), var(--sky-light));
+            color: var(--white);
+        }
+
+            .btn-modal.primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(14, 165, 233, 0.3);
+            }
+
+        .btn-modal.secondary {
+            background: var(--slate-200);
+            color: var(--slate);
+        }
+
+            .btn-modal.secondary:hover {
+                background: var(--slate);
+                color: var(--white);
+            }
+
+    /* Day Selection Grid */
+    .day-selection-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--spacing-3);
+        margin-top: var(--spacing-4);
+    }
+
+    .day-option {
+        padding: var(--spacing-6) var(--spacing-4);
+        border: 2px solid var(--slate-200);
+        border-radius: 12px;
+        background: #f8fafc;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        font-weight: 600;
+        color: var(--slate);
+    }
+
+        .day-option:hover {
+            border-color: var(--sky-blue);
+            background: rgba(14, 165, 233, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .day-option.selected {
+            border-color: var(--sky-blue);
+            background: var(--sky-light);
+            color: var(--white);
+        }
+
+    /* Note Input */
+    .note-input {
+        width: 100%;
+        min-height: 120px;
+        padding: var(--spacing-4);
+        border: 2px solid var(--slate-200);
+        border-radius: 12px;
+        font-size: 1rem;
+        font-family: inherit;
+        resize: vertical;
+        transition: all 0.3s ease;
+    }
+
+        .note-input:focus {
+            outline: none;
+            border-color: var(--sky-blue);
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+        }
+
+    /* Flying Animation */
+    @@keyframes flyToTimeline {
+        0% {
+            opacity: 1;
+            transform: translate(0, 0) scale(1);
+        }
+
+        50% {
+            opacity: 0.8;
+            transform: translate(-200px, -100px) scale(0.8);
+        }
+
+        100% {
+            opacity: 0;
+            transform: translate(-400px, -200px) scale(0.3);
+        }
+    }
+
+    .location-card.flying {
+        animation: flyToTimeline 0.6s ease-out;
+        pointer-events: none;
+        position: relative;
+        z-index: 10000;
+    }
+
+    /* Location Item Actions */
+    .location-item {
+        position: relative;
+    }
+
+    .location-item-remove {
+        position: absolute;
+        top: var(--spacing-2);
+        right: var(--spacing-2);
+        background: rgba(239, 68, 68, 0.9);
+        border: none;
+        color: var(--white);
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+    }
+
+    .location-item:hover .location-item-remove {
+        opacity: 1;
+    }
+
+    .location-item-remove:hover {
+        background: #dc2626;
+        transform: scale(1.1);
+    }
+
+    /* Note Item Actions */
+    .note-item {
+        position: relative;
+    }
+
+    .note-item-remove {
+        position: absolute;
+        top: var(--spacing-2);
+        right: var(--spacing-2);
+        background: rgba(245, 158, 11, 0.9);
+        border: none;
+        color: var(--white);
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: all 0.3s ease;
+        font-size: 0.8rem;
+    }
+
+    .note-item:hover .note-item-remove {
+        opacity: 1;
+    }
+
+    .note-item-remove:hover {
+        background: #d97706;
+        transform: scale(1.1);
+    }
+
+    /* Empty State */
+    .empty-day-state {
+        text-align: center;
+        padding: var(--spacing-8) var(--spacing-4);
+        color: var(--slate);
+        font-size: 0.95rem;
+    }
+
+        .empty-day-state i {
+            font-size: 3rem;
+            color: var(--slate-200);
+            margin-bottom: var(--spacing-4);
+            display: block;
+        }
+
+    /* Responsive */
+    @@media (max-width: 1200px) {
+        .editor-content {
+            grid-template-columns: 1fr;
+        }
+
+        .timeline-section {
+            border-right: none;
+            border-bottom: 1px solid var(--slate-200);
+        }
+
+        .mood-buttons {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .day-selection-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .journey-init-form {
+            padding: var(--spacing-8);
+        }
+
+        .journey-init-header h1 {
+            font-size: 2rem;
+        }
+
+        .date-group {
+            grid-template-columns: 1fr;
+        }
+
+        .mood-buttons {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .editor-content {
+            grid-template-columns: 1fr;
+        }
+
+        .timeline-section,
+        .discovery-section {
+            padding: var(--spacing-4);
+        }
+
+        .day-card {
+            padding: var(--spacing-4);
+        }
+
+        .day-selection-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .modal-container {
+            padding: var(--spacing-6);
+        }
+    }
+</style>
+
+<!-- Day Selection Modal -->
+<div class="modal-overlay" id="daySelectionModal">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3 class="modal-title">Chọn ngày thêm địa điểm</h3>
+            <button class="modal-close" onclick="closeDayModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <p style="color: var(--slate); margin-bottom: var(--spacing-4);">
+                Chọn ngày bạn muốn thêm <strong id="selectedLocationName"></strong>
+            </p>
+            <div class="day-selection-grid" id="daySelectionGrid">
+                <!-- Day options will be generated here -->
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-modal secondary" onclick="closeDayModal()">Hủy</button>
+            <button class="btn-modal primary" onclick="confirmAddLocation()">Xác nhận</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Note Modal -->
+<div class="modal-overlay" id="addNoteModal">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3 class="modal-title">Thêm ghi chú</h3>
+            <button class="modal-close" onclick="closeNoteModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <label style="display: block; margin-bottom: var(--spacing-3); font-weight: 600; color: var(--deep-slate);">
+                Ghi chú của bạn
+            </label>
+            <textarea class="note-input"
+                      id="noteTextarea"
+                      placeholder="VD: Quán cà phê này có view cực chill, nên đi lúc 6h sáng..."></textarea>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-modal secondary" onclick="closeNoteModal()">Hủy</button>
+            <button class="btn-modal primary" onclick="confirmAddNote()">Thêm ghi chú</button>
+        </div>
+    </div>
+</div>
+
+<!-- JOURNEY INITIALIZATION SCREEN -->
+<div class="journey-init-container" id="initScreen">
+    <div class="journey-init-form">
+        <div class="journey-init-header">
+            <h1>Bắt đầu hành trình</h1>
+            <p>Tạo lịch trình du lịch của riêng bạn - viết lên kỷ niệm của chính mình</p>
+        </div>
+
+        <form id="journeyInitForm" onsubmit="startJourneyEditor(event)">
+            <!-- Journey Name -->
+            <div class="form-group-custom">
+                <label for="journeyName">Tên hành trình</label>
+                <input type="text"
+                       id="journeyName"
+                       name="journeyName"
+                       placeholder="VD: Đà Lạt 3 ngày chữa lành"
+                       required
+                       oninput="updateSuggestions()" />
+            </div>
+
+            <!-- Suggestions -->
+            <div class="suggestions-box" id="suggestionsBox" style="display: none;">
+                <div class="suggestions-label">💡 Gợi ý tên</div>
+                <div class="suggestion-chips" id="suggestionChips"></div>
+            </div>
+
+            <!-- Date Range -->
+            <div class="form-group-custom">
+                <label>Ngày bắt đầu - Kết thúc</label>
+                <div class="date-group">
+                    <div class="form-group-custom">
+                        <label for="startDate" style="margin-bottom: var(--spacing-2); font-size: 0.85rem;">Từ ngày</label>
+                        <input type="date"
+                               id="startDate"
+                               name="startDate"
+                               required />
+                    </div>
+                    <div class="form-group-custom">
+                        <label for="endDate" style="margin-bottom: var(--spacing-2); font-size: 0.85rem;">Đến ngày</label>
+                        <input type="date"
+                               id="endDate"
+                               name="endDate"
+                               required />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Privacy Mode -->
+            <div class="form-group-custom">
+                <label>Chế độ hành trình</label>
+                <div class="privacy-selector">
+                    <div class="privacy-option">
+                        <input type="radio" id="private" name="privacy" value="private" checked />
+                        <label for="private">
+                            <i class="bi bi-lock-fill"></i>
+                            <span>Riêng tư</span>
+                        </label>
+                    </div>
+                    <div class="privacy-option">
+                        <input type="radio" id="public" name="privacy" value="public" />
+                        <label for="public">
+                            <i class="bi bi-globe"></i>
+                            <span>Công khai</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <button type="submit" class="btn-create-journey">
+                <i class="bi bi-play-fill" style="margin-right: 8px;"></i>Bắt đầu lập kế hoạch
+            </button>
+            <button type="button" class="btn-cancel" onclick="window.history.back()">
+                <i class="bi bi-arrow-left" style="margin-right: 8px;"></i>Quay lại
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- JOURNEY EDITOR SCREEN -->
+<div class="journey-editor-container" id="editorScreen">
+    <!-- Header -->
+    <div class="journey-editor-header">
+        <h2 id="editorTitle">Hành trình của tôi</h2>
+        <p class="journey-info" id="journeyInfo">01 Jan - 05 Jan | Riêng tư</p>
+    </div>
+
+    <!-- Journey Control Toolbar -->
+    <div class="journey-control-toolbar">
+        <div class="toolbar-container">
+            <div class="toolbar-left">
+                <button type="button" class="toolbar-btn" onclick="addNewDay()">
+                    <i class="bi bi-plus-circle"></i>
+                    <span>Thêm ngày</span>
+                </button>
+                <button type="button" class="toolbar-btn success" id="btnSaveJourney" onclick="saveJourney()">
+                    <i class="bi bi-check-circle"></i>
+                    <span>Lưu lịch trình</span>
+                </button>
+                <div class="save-indicator" id="saveIndicator">
+                    <i class="bi bi-clock-history"></i>
+                    <span>Chưa lưu</span>
+                </div>
+            </div>
+            <div class="toolbar-right">
+                <button type="button" class="toolbar-btn primary" id="btnPreview" onclick="togglePreview()" data-tooltip="Thêm ít nhất 1 địa điểm để xem trước" disabled>
+                    <i class="bi bi-eye"></i>
+                    <span>Preview</span>
+                </button>
+                <button type="button" class="toolbar-btn" id="btnBackToEdit" onclick="backToEdit()" style="display: none;">
+                    <i class="bi bi-pencil"></i>
+                    <span>Chỉnh sửa</span>
+                </button>
+                <div class="toolbar-dropdown">
+                    <button type="button" class="toolbar-btn" onclick="toggleShareDropdown()">
+                        <i class="bi bi-share"></i>
+                        <span>Chia sẻ</span>
+                        <i class="bi bi-chevron-down" style="margin-left: 4px; font-size: 0.8rem;"></i>
+                    </button>
+                    <div class="dropdown-menu" id="shareDropdown">
+                        <button type="button" class="dropdown-item" onclick="shareJourney('link')">
+                            <i class="bi bi-link-45deg"></i>
+                            <span>Sao chép link</span>
+                        </button>
+                        <button type="button" class="dropdown-item" onclick="shareJourney('facebook')">
+                            <i class="bi bi-facebook"></i>
+                            <span>Facebook</span>
+                        </button>
+                        <button type="button" class="dropdown-item" onclick="exportJourney('pdf')">
+                            <i class="bi bi-file-pdf"></i>
+                            <span>Xuất PDF</span>
+                        </button>
+                        <button type="button" class="dropdown-item" onclick="exportJourney('image')">
+                            <i class="bi bi-image"></i>
+                            <span>Lưu ảnh</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="editor-content" id="mainContent">
+        <!-- Preview Mode Container -->
+        <div class="preview-mode" id="previewMode" style="display: none;">
+            <!-- Preview content will be generated here -->
+        </div>
+
+        <!-- Editor Mode Container -->
+        <div id="editorMode">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-8);">
+                <!-- Left: Timeline -->
+                <div class="timeline-section">
+                    <div class="timeline-header">Lịch trình hành trình</div>
+
+                    <!-- Days Container -->
+                    <div id="daysContainer">
+                        <!-- Day cards will be generated here -->
+                    </div>
+                </div>
+
+                <!-- Right: Discovery Section -->
+                <div class="discovery-section">
+                    <div class="discovery-header">Khám phá và thêm địa điểm</div>
+
+                    <!-- Smart Suggestions -->
+                    <div class="smart-suggestions" id="smartSuggestionsBox" style="display: none;">
+                        <div class="suggestions-title">
+                            <i class="bi bi-lightbulb-fill"></i>
+                            Gợi ý cho bạn
+                        </div>
+                        <div id="suggestionsContainer">
+                            <!-- Suggestions will be generated here -->
+                        </div>
+                    </div>
+
+                    <!-- Location Cards -->
+                    <div class="location-cards-container" id="locationsContainer">
+                        <!-- Location cards will be generated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Sample location data
+    const sampleLocations = [
+        {
+            id: 1,
+            name: 'Phú Quốc - Thiên đường biển đảo',
+            image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&h=300&fit=crop',
+            rating: 4.8,
+            description: 'Đảo ngọc với bãi biển trắng và nước biển trong xanh',
+            tags: ['Hot', 'Biển', 'Nổi bật']
+        },
+        {
+            id: 2,
+            name: 'Hội An - Phố cổ tìm lại quá khứ',
+            image: 'https://images.unsplash.com/photo-1583422409516-2895a77efded?w=500&h=300&fit=crop',
+            rating: 4.9,
+            description: 'Phố cổ với kiến trúc Á Đông độc đáo, là di sản thế giới UNESCO',
+            tags: ['Văn hoá', 'Du lịch']
+        },
+        {
+            id: 3,
+            name: 'Đà Lạt - Thành phố ngàn hoa',
+            image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=500&h=300&fit=crop',
+            rating: 4.7,
+            description: 'Thành phố du lịch nổi tiếng với khí hậu mát mẻ quanh năm',
+            tags: ['Nổi bật', 'Chữa lành']
+        },
+        {
+            id: 4,
+            name: 'Sapa - Núi rừng huyền bí',
+            image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&h=300&fit=crop',
+            rating: 4.6,
+            description: 'Vùng cao nguyên với ruộng bậc thang và văn hoá dân tộc độc đáo',
+            tags: ['Mới', 'Trekking']
+        },
+        {
+            id: 5,
+            name: 'Hạ Long - Vịnh kỳ vĩ thế giới',
+            image: 'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=500&h=300&fit=crop',
+            rating: 4.8,
+            description: 'Di sản thế giới UNESCO với những hòn đảo xanh ngợp sóng',
+            tags: ['Du lịch', 'Nổi bật']
+        }
+    ];
+
+    const suggestionNames = [
+        'Weekend in Hội An',
+        'Đà Lạt healing trip',
+        'Phú Quốc summer escape',
+        'Sapa adventure 2024',
+        'Hạ Long bay discovery'
+    ];
+
+    // Global state
+    let pendingLocation = null;
+    let selectedDayForLocation = null;
+    let currentDayForNote = null;
+    let isPreviewMode = false;
+    let isSaved = false;
+    let lastScrollPosition = 0;
+
+    // Initialize
+    function initJourney() {
+        renderLocationCards();
+    }
+
+    // Render Location Cards
+    function renderLocationCards() {
+        const container = document.getElementById('locationsContainer');
+        if (!container) return;
+        container.innerHTML = sampleLocations.map(location => `
+            <div class="location-card" data-location-id="${location.id}">
+                <div class="location-card-image">
+                    <img src="${location.image}" alt="${location.name}" />
+                </div>
+                <div class="location-card-content">
+                    <div class="location-card-title">${location.name}</div>
+                    <div class="location-card-rating">
+                        <i class="bi bi-star-fill"></i> ${location.rating} / 5.0
+                    </div>
+                    <div class="location-card-desc">${location.description}</div>
+                    <div class="location-card-footer">
+                        <div class="location-card-tags">
+                            ${location.tags.map(tag => `<span class="location-card-tag">${tag}</span>`).join('')}
+                        </div>
+                        <button type="button" class="btn-add-to-itinerary" onclick="addToItinerary(${location.id})">
+                            <i class="bi bi-plus-lg"></i> Thêm
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Update Suggestions
+    function updateSuggestions() {
+        const journeyNameEl = document.getElementById('journeyName');
+        if (!(journeyNameEl instanceof HTMLInputElement)) return;
+        const input = journeyNameEl.value.trim();
+        const box = document.getElementById('suggestionsBox');
+        if (!box) return;
+
+        if (input.length > 0) {
+            box.style.display = 'block';
+            const chips = document.getElementById('suggestionChips');
+            if (chips) chips.innerHTML = suggestionNames.map(name => `
+                <div class="suggestion-chip" onclick="setSuggestion('${name}')">
+                    ${name}
+                </div>
+            `).join('');
+        } else {
+            box.style.display = 'none';
+        }
+    }
+
+    // Set Suggestion
+    function setSuggestion(name) {
+        const el = document.getElementById('journeyName');
+        if (el instanceof HTMLInputElement) {
+            el.value = name;
+        }
+    }
+
+    // Start Journey Editor
+    function startJourneyEditor(e) {
+        e.preventDefault();
+
+        const journeyNameEl = document.getElementById('journeyName');
+        const startDateEl = document.getElementById('startDate');
+        const endDateEl = document.getElementById('endDate');
+        const privacyEl = document.querySelector('input[name="privacy"]:checked');
+
+        if (!(journeyNameEl instanceof HTMLInputElement)) return;
+        if (!(startDateEl instanceof HTMLInputElement)) return;
+        if (!(endDateEl instanceof HTMLInputElement)) return;
+        if (!(privacyEl instanceof HTMLInputElement)) return;
+
+        const journeyName = journeyNameEl.value;
+        const startDate = startDateEl.value;
+        const endDate = endDateEl.value;
+        const privacy = privacyEl.value;
+
+        // Format dates
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const dateRange = start.toLocaleDateString('vi-VN') + ' - ' + end.toLocaleDateString('vi-VN');
+
+        // Calculate days
+        const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+
+        // Update editor header
+        const editorTitle = document.getElementById('editorTitle');
+        const journeyInfo = document.getElementById('journeyInfo');
+        if (editorTitle && journeyInfo) {
+            editorTitle.textContent = journeyName;
+            journeyInfo.textContent = `${dateRange} | ${privacy === 'private' ? 'Riêng tư' : 'Công khai'}`;
+        }
+
+        // Generate day cards
+        generateDayCards(days);
+
+        // Switch screens
+        const initScreen = document.getElementById('initScreen');
+        const editorScreen = document.getElementById('editorScreen');
+        if (initScreen && editorScreen) {
+            initScreen.style.display = 'none';
+            editorScreen.style.display = 'block';
+        }
+
+        // Store journey data
+        window_journeyData = {
+            name: journeyName,
+            startDate: startDate,
+            endDate: endDate,
+            privacy: privacy,
+            days: days,
+            locations: [],
+            dayData: {}
+        };
+
+        // Initialize day data
+        for (let i = 1; i <= days; i++) {
+            window_journeyData.dayData[i] = {
+                locations: [],
+                notes: []
+            };
+        }
+    }
+
+    // Generate Day Cards
+    function generateDayCards(count) {
+        const container = document.getElementById('daysContainer');
+        if (!container) return;
+        let html = '';
+
+        for (let i = 1; i <= count; i++) {
+            html += `
+                <div class="day-card mood-chill" id="day-${i}">
+                    <div class="day-header">
+                        <div>
+                            <div class="day-title">Day ${i}</div>
+                        </div>
+                        <div class="day-actions">
+                            <button type="button" title="Thêm ghi chú" onclick="openNoteModal(${i})">
+                                <i class="bi bi-plus-circle"></i>
+                            </button>
+                            <button type="button" title="Xóa ngày" onclick="removeDay(${i})">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="day-content" id="day-content-${i}">
+                        <div class="empty-day-state">
+                            <i class="bi bi-calendar-plus"></i>
+                            Chưa có địa điểm nào. Thêm từ danh sách bên phải!
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        container.innerHTML = html;
+    }
+
+    // ========== ADD LOCATION FLOW ==========
+
+    // Step 1: Open Day Selection Modal
+    function addToItinerary(locationId) {
+        const location = sampleLocations.find(l => l.id === locationId);
+        if (!location) return;
+
+        pendingLocation = location;
+        selectedDayForLocation = null;
+
+        // Update modal title
+        const locationNameEl = document.getElementById('selectedLocationName');
+        if (locationNameEl) locationNameEl.textContent = location.name;
+
+        // Generate day options
+        const grid = document.getElementById('daySelectionGrid');
+        if (!grid) return;
+        let html = '';
+        for (let i = 1; i <= (window_journeyData?.days || 0); i++) {
+            html += `
+                <div class="day-option" onclick="selectDay(${i})">
+                    <i class="bi bi-calendar3"></i><br>
+                    Day ${i}
+                </div>
+            `;
+        }
+        grid.innerHTML = html;
+
+        // Show modal
+        document.getElementById('daySelectionModal').classList.add('active');
+
+        // Trigger flying animation
+        const card = document.querySelector(`[data-location-id="${locationId}"]`);
+        if (card) {
+            card.classList.add('flying');
+            setTimeout(() => card.classList.remove('flying'), 600);
+        }
+    }
+
+    // Step 2: Select Day
+    function selectDay(dayNum) {
+        selectedDayForLocation = dayNum;
+
+        // Update UI
+        document.querySelectorAll('.day-option').forEach(opt => opt.classList.remove('selected'));
+        const target = event?.target;
+        if (target instanceof Element) {
+            const dayOpt = target.closest('.day-option');
+            if (dayOpt instanceof Element) dayOpt.classList.add('selected');
+        }
+    }
+
+    // Step 3: Confirm Add Location
+    function confirmAddLocation() {
+        if (!selectedDayForLocation || !pendingLocation) {
+            alert('Vui lòng chọn ngày');
+            return;
+        }
+
+        addLocationToDay(selectedDayForLocation, pendingLocation);
+        closeDayModal();
+    }
+
+    // Close Day Modal
+    function closeDayModal() {
+        document.getElementById('daySelectionModal').classList.remove('active');
+        pendingLocation = null;
+        selectedDayForLocation = null;
+    }
+
+    // Add Location to Day
+    function addLocationToDay(dayNum, location) {
+        const dayContent = document.getElementById(`day-content-${dayNum}`);
+        if (!dayContent) return;
+
+        // Remove empty state
+        const emptyState = dayContent.querySelector('.empty-day-state');
+        if (emptyState) {
+            emptyState.remove();
+        }
+
+        const locationId = `location-${dayNum}-${Date.now()}`;
+        const locationHtml = `
+            <div class="location-item" id="${locationId}">
+                <button type="button" class="location-item-remove" onclick="removeLocation('${locationId}', ${dayNum})">
+                    <i class="bi bi-x"></i>
+                </button>
+                <div class="location-thumb">
+                    <img src="${location.image}" alt="${location.name}" />
+                </div>
+                <div class="location-details">
+                    <div class="location-name">${location.name}</div>
+                    <div class="location-rating">
+                        <i class="bi bi-star-fill"></i> ${location.rating} / 5.0
+                    </div>
+                    <div class="location-tags">
+                        ${location.tags.map(tag => `<span class="location-tag">${tag}</span>`).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        dayContent.insertAdjacentHTML('beforeend', locationHtml);
+
+        // Track location
+        if (window_journeyData) {
+            if (!window_journeyData.locations.includes(location.id)) {
+                window_journeyData.locations.push(location.id);
+            }
+            window_journeyData.dayData[dayNum].locations.push(location);
+        }
+
+        // Show smart suggestions
+        showSmartSuggestions();
+
+        // Mark as unsaved
+        markUnsaved();
+
+        // Update preview button state
+        updatePreviewButton();
+    }
+
+    // Remove Location
+    function removeLocation(locationId, dayNum) {
+        if (confirm('Xóa địa điểm này khỏi lịch trình?')) {
+            const element = document.getElementById(locationId);
+            element.style.animation = 'fadeOut 0.3s ease-out';
+            setTimeout(() => {
+                element.remove();
+                checkEmptyDay(dayNum);
+            }, 300);
+        }
+    }
+
+    // ========== ADD NOTE FLOW ==========
+
+    // Open Note Modal
+    function openNoteModal(dayNum) {
+        currentDayForNote = dayNum;
+        const textarea = document.getElementById('noteTextarea');
+        if (textarea instanceof HTMLTextAreaElement) {
+            textarea.value = '';
+        }
+        const modal = document.getElementById('addNoteModal');
+        if (modal) modal.classList.add('active');
+    }
+
+    // Close Note Modal
+    function closeNoteModal() {
+        document.getElementById('addNoteModal').classList.remove('active');
+        currentDayForNote = null;
+    }
+
+    // Confirm Add Note
+    function confirmAddNote() {
+        const textarea = document.getElementById('noteTextarea');
+        if (!(textarea instanceof HTMLTextAreaElement)) return;
+        const noteText = textarea.value.trim();
+        if (!noteText) {
+            alert('Vui lòng nhập nội dung ghi chú');
+            return;
+        }
+
+        if (!currentDayForNote) return;
+
+        addNoteToDay(currentDayForNote, noteText);
+        closeNoteModal();
+    }
+
+    // Add Note to Day
+    function addNoteToDay(dayNum, noteText) {
+        const dayContent = document.getElementById(`day-content-${dayNum}`);
+
+        // Remove empty state
+        const emptyState = dayContent.querySelector('.empty-day-state');
+        if (emptyState) {
+            emptyState.remove();
+        }
+
+        const noteId = `note-${dayNum}-${Date.now()}`;
+        const noteHtml = `
+            <div class="note-item" id="${noteId}">
+                <button type="button" class="note-item-remove" onclick="removeNote('${noteId}', ${dayNum})">
+                    <i class="bi bi-x"></i>
+                </button>
+                ${noteText}
+            </div>
+        `;
+
+        dayContent.insertAdjacentHTML('beforeend', noteHtml);
+
+        // Track note
+        if (window_journeyData) {
+            window_journeyData.dayData[dayNum].notes.push(noteText);
+        }
+
+        // Mark as unsaved
+        markUnsaved();
+    }
+
+    // Remove Note
+    function removeNote(noteId, dayNum) {
+        if (confirm('Xóa ghi chú này?')) {
+            const element = document.getElementById(noteId);
+            element.style.animation = 'fadeOut 0.3s ease-out';
+            setTimeout(() => {
+                element.remove();
+                checkEmptyDay(dayNum);
+            }, 300);
+        }
+    }
+
+    // ========== OTHER FUNCTIONS ==========
+
+    // Remove Day
+    function removeDay(dayNum) {
+        if (confirm(`Xóa Day ${dayNum} khỏi lịch trình?`)) {
+            const dayCard = document.getElementById(`day-${dayNum}`);
+            dayCard.style.animation = 'fadeOut 0.3s ease-out';
+            setTimeout(() => dayCard.remove(), 300);
+        }
+    }
+
+    // Check if day is empty and show empty state
+    function checkEmptyDay(dayNum) {
+        const dayContent = document.getElementById(`day-content-${dayNum}`);
+        const items = dayContent.querySelectorAll('.location-item, .note-item');
+
+        if (items.length === 0) {
+            dayContent.innerHTML = `
+                <div class="empty-day-state">
+                    <i class="bi bi-calendar-plus"></i>
+                    Chưa có địa điểm nào. Thêm từ danh sách bên phải!
+                </div>
+            `;
+        }
+    }
+
+    // Select Mood
+    function selectMood(mood) {
+        document.querySelectorAll('.mood-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.closest('.mood-btn').classList.add('active');
+
+        // Update day card mood
+        const moodClass = `mood-${mood}`;
+        document.querySelectorAll('.day-card').forEach(card => {
+            card.classList.remove('mood-chill', 'mood-adventure', 'mood-foodie', 'mood-healing', 'mood-culture');
+            card.classList.add(moodClass);
+        });
+    }
+
+    // Show Smart Suggestions
+    function showSmartSuggestions() {
+        const box = document.getElementById('smartSuggestionsBox');
+        const container = document.getElementById('suggestionsContainer');
+
+        // Simple smart suggestions
+        const suggestions = [
+            'Nếu bạn thích Hội An, hãy thêm Biển An Bàng',
+            'Các du khách thường thêm Làng rau Trà Quế khi đã chọn Hội An',
+            'Điểm ăn uống nổi tiếng gần đây: Tú Tiên Restaurant',
+            'Thời tiết tốt nhất vào buổi sáng - hãy lên kế hoạch sôi động'
+        ];
+
+        if (window_journeyData && window_journeyData.locations.length > 0) {
+            container.innerHTML = suggestions.map(text => `
+                <div class="suggestion-item">
+                    <i class="bi bi-check-circle"></i> ${text}
+                </div>
+            `).join('');
+            box.style.display = 'block';
+        }
+    }
+
+    // Add fadeOut animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @@keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+        }
+    `;
+    document.head.appendChild(style);
+
+    // ========== TOOLBAR FUNCTIONS ==========
+
+    // Add New Day
+    function addNewDay() {
+        if (!window_journeyData) return;
+
+        const newDayNum = window_journeyData.days + 1;
+        window_journeyData.days = newDayNum;
+        window_journeyData.dayData[newDayNum] = {
+            locations: [],
+            notes: []
+        };
+
+        const container = document.getElementById('daysContainer');
+        if (!container) return;
+        const dayHtml = `
+            <div class="day-card mood-chill" id="day-${newDayNum}" style="animation: slideInUp 0.4s ease-out;">
+                <div class="day-header">
+                    <div>
+                        <div class="day-title">Day ${newDayNum}</div>
+                    </div>
+                    <div class="day-actions">
+                        <button type="button" title="Thêm ghi chú" onclick="openNoteModal(${newDayNum})">
+                            <i class="bi bi-plus-circle"></i>
+                        </button>
+                        <button type="button" title="Xóa ngày" onclick="removeDay(${newDayNum})">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="day-content" id="day-content-${newDayNum}">
+                    <div class="empty-day-state">
+                        <i class="bi bi-calendar-plus"></i>
+                        Chưa có địa điểm nào. Thêm từ danh sách bên phải!
+                    </div>
+                </div>
+            </div>
+        `;
+
+        container.insertAdjacentHTML('beforeend', dayHtml);
+
+        // Scroll to new day
+        setTimeout(() => {
+            const newDayElement = document.getElementById(`day-${newDayNum}`);
+            if (newDayElement) {
+                newDayElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }, 100);
+
+        // Mark as unsaved
+        markUnsaved();
+
+        showToast('success', 'Đã thêm ngày mới', `Day ${newDayNum} đã được thêm vào lịch trình`);
+    }
+
+    // Save Journey
+    function saveJourney() {
+        if (!window_journeyData) return;
+
+        // Simulate save (in real app, would send to server)
+        const saveBtn = document.getElementById('btnSaveJourney');
+        if (!(saveBtn instanceof HTMLButtonElement)) return;
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<i class="bi bi-hourglass-split"></i><span>Đang lưu...</span>';
+
+        setTimeout(() => {
+            isSaved = true;
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '<i class="bi bi-check-circle"></i><span>Lưu lịch trình</span>';
+
+            // Update save indicator
+            const indicator = document.getElementById('saveIndicator');
+            if (indicator) {
+                indicator.classList.add('saved');
+                indicator.innerHTML = '<i class="bi bi-check-circle-fill"></i><span>Đã lưu</span>';
+            }
+
+            showToast('success', 'Lưu thành công', 'Lịch trình của bạn đã được lưu');
+
+            console.log('Saved journey data:', window_journeyData);
+        }, 1000);
+    }
+
+    // Mark as Unsaved
+    function markUnsaved() {
+        isSaved = false;
+        const indicator = document.getElementById('saveIndicator');
+        if (indicator) {
+            indicator.classList.remove('saved');
+            indicator.innerHTML = '<i class="bi bi-clock-history"></i><span>Chưa lưu</span>';
+        }
+    }
+
+    // Toggle Preview
+    function togglePreview() {
+        if (!window_journeyData) return;
+
+        // Save scroll position
+        lastScrollPosition = window.scrollY;
+
+        isPreviewMode = true;
+
+        // Generate preview content
+        generatePreview();
+
+        // Toggle visibility with fade
+        const editorMode = document.getElementById('editorMode');
+        const previewMode = document.getElementById('previewMode');
+        const btnPreview = document.getElementById('btnPreview');
+        const btnBackToEdit = document.getElementById('btnBackToEdit');
+
+        if (!editorMode || !previewMode || !btnPreview || !btnBackToEdit) return;
+
+        editorMode.style.animation = 'fadeOut 0.3s ease-out';
+        setTimeout(() => {
+            editorMode.style.display = 'none';
+            previewMode.style.display = 'block';
+            previewMode.style.animation = 'fadeIn 0.4s ease-out';
+
+            btnPreview.style.display = 'none';
+            btnBackToEdit.style.display = 'flex';
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 300);
+    }
+
+    // Back to Edit
+    function backToEdit() {
+        isPreviewMode = false;
+
+        const editorMode = document.getElementById('editorMode');
+        const previewMode = document.getElementById('previewMode');
+        const btnPreview = document.getElementById('btnPreview');
+        const btnBackToEdit = document.getElementById('btnBackToEdit');
+
+        if (!editorMode || !previewMode || !btnPreview || !btnBackToEdit) return;
+
+        previewMode.style.animation = 'fadeOut 0.3s ease-out';
+        setTimeout(() => {
+            previewMode.style.display = 'none';
+            editorMode.style.display = 'block';
+            editorMode.style.animation = 'fadeIn 0.4s ease-out';
+
+            btnPreview.style.display = 'flex';
+            btnBackToEdit.style.display = 'none';
+
+            // Restore scroll position
+            setTimeout(() => {
+                window.scrollTo({ top: lastScrollPosition, behavior: 'smooth' });
+            }, 100);
+        }, 300);
+    }
+
+    // Generate Preview
+    function generatePreview() {
+        const previewContainer = document.getElementById('previewMode');
+        if (!previewContainer || !window_journeyData) return;
+        let html = `
+            <div class="preview-header">
+                <div class="preview-title">${window_journeyData.name}</div>
+                <div class="preview-subtitle">
+                    ${new Date(window_journeyData.startDate).toLocaleDateString('vi-VN')} -
+                    ${new Date(window_journeyData.endDate).toLocaleDateString('vi-VN')} |
+                    ${window_journeyData.privacy === 'private' ? 'Riêng tư' : 'Công khai'}
+                </div>
+            </div>
+        `;
+
+        for (let i = 1; i <= window_journeyData.days; i++) {
+            const dayData = window_journeyData.dayData[i];
+            if (!dayData) continue;
+
+            html += `<div class="preview-day">`;
+            html += `<div class="preview-day-header">Day ${i}</div>`;
+
+            if (dayData.locations && dayData.locations.length > 0) {
+                html += `<div class="preview-locations">`;
+                dayData.locations.forEach(location => {
+                    html += `
+                        <div class="location-item">
+                            <div class="location-thumb">
+                                <img src="${location.image}" alt="${location.name}" />
+                            </div>
+                            <div class="location-details">
+                                <div class="location-name">${location.name}</div>
+                                <div class="location-rating">
+                                    <i class="bi bi-star-fill"></i> ${location.rating} / 5.0
+                                </div>
+                                <div class="location-tags">
+                                    ${location.tags.map(tag => `<span class="location-tag">${tag}</span>`).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            }
+
+            if (dayData.notes && dayData.notes.length > 0) {
+                dayData.notes.forEach(note => {
+                    html += `<div class="note-item" style="margin-left: var(--spacing-6); margin-top: var(--spacing-4);">${note}</div>`;
+                });
+            }
+
+            if ((!dayData.locations || dayData.locations.length === 0) && (!dayData.notes || dayData.notes.length === 0)) {
+                html += `<div style="margin-left: var(--spacing-6); color: var(--slate); font-style: italic;">Chưa có kế hoạch cho ngày này</div>`;
+            }
+
+            html += `</div>`;
+        }
+
+        previewContainer.innerHTML = html;
+    }
+
+    // Toggle Share Dropdown
+    function toggleShareDropdown() {
+        const dropdown = document.getElementById('shareDropdown');
+        dropdown.classList.toggle('active');
+        dropdown.classList.toggle('show');
+    }
+
+    // Share Journey
+    function shareJourney(platform) {
+        if (!window_journeyData) return;
+
+        const journeyUrl = window.location.href + '?id=' + Date.now();
+
+        if (platform === 'link') {
+            navigator.clipboard.writeText(journeyUrl).then(() => {
+                showToast('success', 'Đã sao chép', 'Link hành trình đã được sao chép vào clipboard');
+            }).catch(() => {
+                showToast('error', 'Lỗi', 'Không thể sao chép link');
+            });
+        } else if (platform === 'facebook') {
+            const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(journeyUrl)}`;
+            window.open(fbUrl, '_blank', 'width=600,height=400');
+        }
+
+        toggleShareDropdown();
+    }
+
+    // Export Journey
+    function exportJourney(format) {
+        if (!window_journeyData) return;
+
+        if (format === 'pdf') {
+            showToast('warning', 'Chức năng đang phát triển', 'Tính năng xuất PDF sẽ sớm được cập nhật');
+        } else if (format === 'image') {
+            showToast('warning', 'Chức năng đang phát triển', 'Tính năng lưu ảnh sẽ sớm được cập nhật');
+        }
+
+        toggleShareDropdown();
+    }
+
+    // Show Toast
+    function showToast(type, title, message) {
+        const container = document.getElementById('toastContainer');
+        const toastId = 'toast-' + Date.now();
+
+        const icons = {
+            success: 'bi-check-circle-fill',
+            error: 'bi-x-circle-fill',
+            warning: 'bi-exclamation-triangle-fill',
+            info: 'bi-info-circle-fill'
+        };
+
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.id = toastId;
+        toast.innerHTML = `
+            <i class="bi ${icons[type]} toast-icon"></i>
+            <div class="toast-content">
+                <div class="toast-title">${title}</div>
+                <div class="toast-message">${message}</div>
+            </div>
+            <button type="button" class="toast-close" onclick="closeToast('${toastId}')">
+                <i class="bi bi-x"></i>
+            </button>
+        `;
+
+        container.appendChild(toast);
+
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            closeToast(toastId);
+        }, 5000);
+    }
+
+    // Close Toast
+    function closeToast(toastId) {
+        const toast = document.getElementById(toastId);
+        if (toast) {
+            toast.style.animation = 'slideOutRight 0.3s ease-out';
+            setTimeout(() => toast.remove(), 300);
+        }
+    }
+
+    // Update Preview Button State
+    function updatePreviewButton() {
+        const btnPreview = document.getElementById('btnPreview');
+        if (!window_journeyData) return;
+
+        let hasLocations = false;
+        for (let i = 1; i <= window_journeyData.days; i++) {
+            const dayData = window_journeyData.dayData[i];
+            if (dayData && dayData.locations && dayData.locations.length > 0) {
+                hasLocations = true;
+                break;
+            }
+        }
+
+        if (hasLocations) {
+            btnPreview.disabled = false;
+            btnPreview.removeAttribute('data-tooltip');
+        } else {
+            btnPreview.disabled = true;
+            btnPreview.setAttribute('data-tooltip', 'Thêm ít nhất 1 địa điểm để xem trước');
+        }
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('shareDropdown');
+        if (dropdown && !e.target.closest('.toolbar-dropdown')) {
+            dropdown.classList.remove('active');
+        }
+    });
+
+    // Add slideOutRight animation
+    const slideOutStyle = document.createElement('style');
+    slideOutStyle.textContent = `
+        @@keyframes slideOutRight {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+    `;
+    document.head.appendChild(slideOutStyle);
+
+    // Initialize on page load
+    window.addEventListener('load', initJourney);
+
+    // Close modals on overlay click
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('modal-overlay')) {
+            closeDayModal();
+            closeNoteModal();
+        }
+    });
+</script>

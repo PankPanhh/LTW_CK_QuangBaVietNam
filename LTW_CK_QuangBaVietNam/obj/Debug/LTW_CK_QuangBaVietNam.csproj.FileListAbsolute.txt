@@ -1,0 +1,60 @@
+E:\LuuDuLieuSinhVien\NguyenPhuongAnh\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\LTW_CK_QuangBaVietNam.dll.config
+E:\LuuDuLieuSinhVien\NguyenPhuongAnh\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\LTW_CK_QuangBaVietNam.dll
+E:\LuuDuLieuSinhVien\NguyenPhuongAnh\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\LTW_CK_QuangBaVietNam.pdb
+E:\LuuDuLieuSinhVien\NguyenPhuongAnh\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\Antlr3.Runtime.dll
+E:\LuuDuLieuSinhVien\NguyenPhuongAnh\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\EntityFramework.dll
+E:\LuuDuLieuSinhVien\NguyenPhuongAnh\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\Microsoft.Web.Infrastructure.dll
+E:\LuuDuLieuSinhVien\NguyenPhuongAnh\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\Microsoft.Web.Mvc.FixedDisplayModes.dll
+E:\LuuDuLieuSinhVien\NguyenPhuongAnh\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\Newtonsoft.Json.dll
+E:\LuuDuLieuSinhVien\NguyenPhuongAnh\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.Mvc.dll
+E:\LuuDuLieuSinhVien\NguyenPhuongAnh\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.Optimization.dll
+E:\LuuDuLieuSinhVien\NguyenPhuongAnh\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.Providers.dll
+E:\LuuDuLieuSinhVien\NguyenPhuongAnh\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.Razor.dll
+E:\LuuDuLieuSinhVien\NguyenPhuongAnh\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.WebPages.Deployment.dll
+E:\LuuDuLieuSinhVien\NguyenPhuongAnh\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.WebPages.dll
+E:\LuuDuLieuSinhVien\NguyenPhuongAnh\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.WebPages.Razor.dll
+E:\LuuDuLieuSinhVien\NguyenPhuongAnh\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\WebGrease.dll
+E:\LuuDuLieuSinhVien\NguyenPhuongAnh\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\EntityFramework.xml
+E:\LuuDuLieuSinhVien\NguyenPhuongAnh\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\Newtonsoft.Json.xml
+E:\LuuDuLieuSinhVien\NguyenPhuongAnh\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.Mvc.xml
+E:\LuuDuLieuSinhVien\NguyenPhuongAnh\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.Razor.xml
+E:\LuuDuLieuSinhVien\NguyenPhuongAnh\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.WebPages.xml
+E:\LuuDuLieuSinhVien\NguyenPhuongAnh\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.WebPages.Deployment.xml
+E:\LuuDuLieuSinhVien\NguyenPhuongAnh\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.WebPages.Razor.xml
+E:\LuuDuLieuSinhVien\NguyenPhuongAnh\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\obj\Debug\LTW_CK_QuangBaVietNam.csprojResolveAssemblyReference.cache
+E:\LuuDuLieuSinhVien\NguyenPhuongAnh\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\obj\Debug\LTW_CK_QuangBaVietNam.dll
+E:\LuuDuLieuSinhVien\NguyenPhuongAnh\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\obj\Debug\LTW_CK_QuangBaVietNam.pdb
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\obj\Debug\LTW_CK_QuangBaVietNam.csproj.AssemblyReference.cache
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\obj\Debug\LTW_CK_QuangBaVietNam.csproj.CoreCompileInputs.cache
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\obj\Debug\LTW_CK_QuangBaVietNam.dll
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\obj\Debug\LTW_CK_QuangBaVietNam.pdb
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\LTW_CK_QuangBaVietNam.dll.config
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\LTW_CK_QuangBaVietNam.dll
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\LTW_CK_QuangBaVietNam.pdb
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\Antlr3.Runtime.dll
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\EntityFramework.dll
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\Microsoft.Web.Infrastructure.dll
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\Microsoft.Web.Mvc.FixedDisplayModes.dll
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\Newtonsoft.Json.dll
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Net.Http.Formatting.dll
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.Http.dll
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.Http.WebHost.dll
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.Mvc.dll
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.Optimization.dll
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.Providers.dll
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.Razor.dll
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.WebPages.Deployment.dll
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.WebPages.dll
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.WebPages.Razor.dll
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\WebGrease.dll
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\EntityFramework.xml
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\Newtonsoft.Json.xml
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Net.Http.Formatting.xml
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.Http.xml
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.Http.WebHost.xml
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.Mvc.xml
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.Razor.xml
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.WebPages.xml
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.WebPages.Deployment.xml
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.WebPages.Razor.xml
+C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\obj\Debug\LTW_CK_Q.C80E6A98.Up2Date

@@ -1,0 +1,1103 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Chào mừng đến VietScape - Khám phá Việt Nam</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Dancing+Script:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --deep-slate: #1e293b;
+            --sky-blue: #0EA5E9;
+            --sky-light: #38BDF8;
+            --white: #ffffff;
+            --vn-red: #DA251D;
+            --vn-gold: #FFCD00;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow: hidden;
+            background: var(--deep-slate);
+        }
+
+        /* ===== INTRO OVERLAY ===== */
+        .intro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(ellipse at center, rgba(30, 41, 59, 0.95), #0a0f1a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        /* ===== AMBIENT PARTICLES ===== */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleFloat 8s infinite ease-in-out;
+        }
+
+        @@keyframes particleFloat {
+            0% {
+                opacity: 0;
+                transform: translateY(100vh) scale(0);
+            }
+
+            20% {
+                opacity: 0.6;
+            }
+
+            80% {
+                opacity: 0.3;
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-20vh) scale(1);
+            }
+        }
+
+        /* ===== CINEMATIC CARD ===== */
+        .cinema-card {
+            position: relative;
+            border-radius: 32px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 80px rgba(218, 37, 29, 0.15), 0 0 160px rgba(14, 165, 233, 0.1), 0 32px 100px rgba(0, 0, 0, 0.6);
+            z-index: 1;
+            opacity: 0;
+            transform: scale(0.9);
+        }
+
+            .cinema-card.entered {
+                animation: cardEntrance 2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            }
+
+        @@keyframes cardEntrance {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* ===== IMAGE GRID 2x2 ===== */
+        .image-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+        }
+
+        .img-cell {
+            overflow: hidden;
+            position: relative;
+            opacity: 0.35;
+            transition: opacity 0.6s ease;
+        }
+
+            .img-cell.filled {
+                opacity: 1;
+            }
+
+        /* Cell backgrounds */
+        .cell-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .cell-bg--1 {
+            background: linear-gradient(145deg, #08213e, #0e3258);
+        }
+
+        .cell-bg--2 {
+            background: linear-gradient(145deg, #2d1307, #3f2212);
+        }
+
+        .cell-bg--3 {
+            background: linear-gradient(145deg, #082416, #0d3320);
+        }
+
+        .cell-bg--4 {
+            background: linear-gradient(145deg, #160d2c, #20163e);
+        }
+
+        .cell-media {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .img-cell.filled .cell-media {
+            opacity: 1;
+        }
+
+        .cell-bg::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.12) 100%), linear-gradient(180deg, rgba(0,0,0,0.06), rgba(0,0,0,0.14));
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Badge */
+        .img-badge {
+            position: absolute;
+            top: 0.55rem;
+            left: 0.7rem;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.88);
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 0.28rem 0.65rem;
+            border-radius: 999px;
+            border: 1.5px solid rgba(255,255,255,0.18);
+            opacity: 0;
+            transition: opacity 0.5s ease, background 0.25s ease, border-color 0.25s ease;
+            z-index: 10;
+            cursor: default;
+        }
+
+            .img-badge i {
+                font-size: 0.88rem;
+                color: var(--white);
+                transition: color 0.25s ease, filter 0.25s ease;
+            }
+
+            .img-badge:hover {
+                background: rgba(56, 189, 248, 0.12);
+                border-color: rgba(56, 189, 248, 0.38);
+            }
+
+                .img-badge:hover i {
+                    color: var(--sky-light);
+                    filter: drop-shadow(0 0 5px rgba(56, 189, 248, 0.6));
+                }
+
+        .img-cell.filled .img-badge {
+            opacity: 1;
+        }
+
+        /* ===== SPOTLIGHT FRAME ===== */
+        .spotlight {
+            position: absolute;
+            z-index: 5;
+            border-radius: 16px;
+            overflow: hidden;
+            opacity: 0;
+            will-change: left, top, width, height, opacity, border-radius;
+            border: 2px solid rgba(255, 255, 255, 0.35);
+        }
+
+        .spotlight-glow {
+            position: absolute;
+            inset: -24px;
+            border-radius: 28px;
+            box-shadow: 0 0 50px rgba(255, 205, 0, 0.28), 0 0 100px rgba(218, 37, 29, 0.14), 0 24px 70px rgba(0, 0, 0, 0.45);
+            pointer-events: none;
+            z-index: -1;
+            transition: opacity 0.4s ease;
+        }
+
+        .spotlight-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+            .spotlight-inner video {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: none;
+            }
+
+                .spotlight-inner video.active {
+                    display: block;
+                }
+
+        .spotlight-label {
+            position: absolute;
+            bottom: 0.8rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--white);
+            background: rgba(0,0,0,0.45);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 0.3rem 0.9rem;
+            border-radius: 999px;
+            white-space: nowrap;
+            z-index: 2;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .spotlight.showing .spotlight-label {
+            opacity: 1;
+        }
+
+        /* ===== VIDEO OVERLAY ===== */
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(0deg, rgba(10, 15, 26, 0.30) 0%, transparent 32%), linear-gradient(135deg, rgba(218, 37, 29, 0.07) 0%, transparent 50%);
+            z-index: 6;
+            pointer-events: none;
+        }
+
+        /* ===== CONTENT ===== */
+        .cinema-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 3rem 3.5rem;
+            z-index: 7;
+            background: linear-gradient( to top, rgba(15, 23, 42, 0.75) 0%, rgba(15, 23, 42, 0.45) 40%, rgba(15, 23, 42, 0.0) 100% );
+        }
+
+        .flag-accent {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+            .flag-accent.show {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+        .flag-line {
+            width: 48px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--vn-red), var(--vn-gold));
+            border-radius: 4px;
+        }
+
+        .flag-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--vn-gold);
+        }
+
+        .cinema-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 3.2rem;
+            font-weight: 800;
+            color: var(--white);
+            line-height: 1.15;
+            margin-bottom: 1rem;
+            text-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+            .cinema-title.show {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            .cinema-title span {
+                background: linear-gradient(135deg, var(--vn-gold), #FFE066);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+        .cinema-subtitle {
+            font-size: 1.15rem;
+            color: rgba(255, 255, 255, 0.85);
+            max-width: 520px;
+            line-height: 1.6;
+            text-shadow: 0 2px 15px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+            .cinema-subtitle.show {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+        /* ===== TAGLINE (16-18s) ===== */
+        .cinema-tagline {
+            position: absolute;
+            top: 2.2rem;
+            left: 2.5rem;
+            z-index: 8;
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: rgba(255,255,255,0.9);
+            text-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            transition: opacity 1s ease;
+            pointer-events: none;
+        }
+
+            .cinema-tagline span {
+                background: linear-gradient(135deg, var(--vn-gold), #FFE066);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            .cinema-tagline.show {
+                opacity: 1;
+            }
+
+
+
+        /* ===== LOGO ===== */
+        .cinema-logo {
+            position: absolute;
+            top: 1.5rem;
+            right: 2rem;
+            z-index: 7;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.2rem;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+            .cinema-logo.show {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            .cinema-logo .logo-row {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .cinema-logo .flag-accent {
+                opacity: 1 !important;
+                transform: none !important;
+                margin-bottom: 0;
+                transition: none !important;
+                justify-content: flex-end;
+            }
+
+            .cinema-logo i {
+                font-size: 1.5rem;
+                color: var(--sky-light);
+                filter: drop-shadow(0 2px 8px rgba(14, 165, 233, 0.5));
+            }
+
+            .cinema-logo span {
+                font-size: 1.2rem;
+                font-weight: 800;
+                color: var(--white);
+                letter-spacing: 1px;
+                text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+            }
+
+        /* ===== SKIP BUTTON ===== */
+        .skip-btn {
+            position: fixed;
+            bottom: 2.5rem;
+            right: 3rem;
+            z-index: 10000;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--white);
+            padding: 0.7rem 1.8rem;
+            border-radius: 999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+            .skip-btn.show {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            .skip-btn:hover {
+                background: rgba(255, 255, 255, 0.2);
+                border-color: rgba(255, 255, 255, 0.4);
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            }
+
+            .skip-btn.hidden {
+                opacity: 0 !important;
+                pointer-events: none;
+            }
+
+        /* ===== PROGRESS RING ===== */
+        .progress-ring {
+            position: fixed;
+            bottom: 2.5rem;
+            left: 3rem;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+            .progress-ring.show {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            .progress-ring.hidden {
+                opacity: 0 !important;
+                pointer-events: none;
+            }
+
+        .ring-svg {
+            width: 36px;
+            height: 36px;
+            transform: rotate(-90deg);
+        }
+
+        .ring-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.15);
+            stroke-width: 3;
+        }
+
+        .ring-fill {
+            fill: none;
+            stroke: var(--vn-gold);
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-dasharray: 88;
+            stroke-dashoffset: 88;
+            transition: stroke-dashoffset 0.1s linear;
+        }
+
+        .progress-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 500;
+        }
+
+            .progress-label strong {
+                color: var(--white);
+                font-variant-numeric: tabular-nums;
+            }
+
+        /* ===== GLOW PHASE ===== */
+        .cinema-card.glowing {
+            box-shadow: 0 0 60px rgba(255, 205, 0, 0.2), 0 0 120px rgba(218, 37, 29, 0.12), 0 0 200px rgba(14, 165, 233, 0.08) !important;
+            transition: box-shadow 1.5s ease !important;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @@media (max-width: 768px) {
+            .cinema-content {
+                padding: 2rem 1.75rem;
+            }
+
+            .cinema-title {
+                font-size: 2rem;
+            }
+
+            .cinema-subtitle {
+                font-size: 0.95rem;
+            }
+
+            .cinema-logo span {
+                display: none;
+            }
+
+            .cinema-tagline {
+                font-size: 1rem;
+            }
+
+            .skip-btn {
+                bottom: 1.5rem;
+                right: 1.5rem;
+                padding: 0.6rem 1.4rem;
+            }
+
+            .progress-ring {
+                bottom: 1.5rem;
+                left: 1.5rem;
+            }
+        }
+
+        /* ===== CINEMATIC FLASH TRANSITION ===== */
+        .flash-burst {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 19998;
+            pointer-events: none;
+            opacity: 0;
+            transform: scale(0.85);
+            background: radial-gradient(ellipse at center, rgba(242, 201, 76, 0.98) 0%, rgba(200, 16, 46, 0.88) 22%, rgba(140, 10, 30, 0.65) 42%, rgba(30, 41, 59, 0.45) 65%, transparent 100%);
+            transition: opacity 0.42s ease-out, transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .flash-slate {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 19999;
+            pointer-events: none;
+            opacity: 0;
+            background: #1e293b;
+            transition: opacity 0.9s ease-in;
+        }
+    </style>
+</head>
+<body>
+    <div class="intro-overlay" id="introOverlay">
+        <div class="particles" id="particles"></div>
+        <div class="cinema-card" id="cinemaCard">
+            <!-- Image Grid 2x2 (placeholder state) -->
+            <div class="image-grid">
+                <div class="img-cell" id="imgCell0">
+                    <div class="cell-bg cell-bg--1">
+                        <video class="cell-media" muted loop playsinline preload="auto" poster="/Content/images/halong.jpg">
+                            <source src="/Content/videos/halong.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                    <div class="img-badge"><i class="bi bi-water"></i><span>Vịnh Hạ Long</span></div>
+                </div>
+                <div class="img-cell" id="imgCell1">
+                    <div class="cell-bg cell-bg--2">
+                        <video class="cell-media" muted loop playsinline preload="auto" poster="/Content/images/hoian.jpg">
+                            <source src="/Content/videos/hoian.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                    <div class="img-badge"><i class="bi bi-house-door"></i><span>Phố cổ Hội An</span></div>
+                </div>
+                <div class="img-cell" id="imgCell2">
+                    <div class="cell-bg cell-bg--3">
+                        <video class="cell-media" muted loop playsinline preload="auto" poster="/Content/images/trangan.jpg">
+                            <source src="/Content/videos/trangan.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                    <div class="img-badge"><i class="bi bi-tree"></i><span>Tràng An</span></div>
+                </div>
+                <div class="img-cell" id="imgCell3">
+                    <div class="cell-bg cell-bg--4">
+                        <video class="cell-media" muted loop playsinline preload="auto" poster="/Content/images/ducba.jpg">
+                            <source src="/Content/videos/ducba.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                    <div class="img-badge"><i class="bi bi-building"></i><span>Nhà thờ Đức Bà</span></div>
+                </div>
+            </div>
+
+            <!-- Spotlight Frame -->
+            <div class="spotlight" id="spotlight">
+                <div class="spotlight-glow"></div>
+                <div class="spotlight-inner">
+                    <video id="spotVid0" muted playsinline preload="auto" poster="/Content/images/halong.jpg">
+                        <source src="/Content/videos/halong.mp4" type="video/mp4">
+                    </video>
+                    <video id="spotVid1" muted playsinline preload="auto" poster="/Content/images/hoian.jpg">
+                        <source src="/Content/videos/hoian.mp4" type="video/mp4">
+                    </video>
+                    <video id="spotVid2" muted playsinline preload="auto" poster="/Content/images/trangan.jpg">
+                        <source src="/Content/videos/trangan.mp4" type="video/mp4">
+                    </video>
+                    <video id="spotVid3" muted playsinline preload="auto" poster="/Content/images/ducba.jpg">
+                        <source src="/Content/videos/ducba.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="spotlight-label" id="spotLabel"></div>
+            </div>
+
+            <!-- Overlay gradient -->
+            <div class="video-overlay"></div>
+
+            <!-- Tagline (16-18s) -->
+            <div class="cinema-tagline" id="cinemaTagline">
+                Discover <span>Vietnam</span>
+            </div>
+
+            <!-- Brand flash (pre-intro accent) -->
+            <div class="brand-flash" id="brandFlash">
+                <div class="brand-flash-line"></div>
+                <span class="brand-flash-text">Việt Nam</span>
+            </div>
+
+            <!-- Logo -->
+            <div class="cinema-logo" id="cinemaLogo">
+                <div class="flag-accent" id="flagAccent">
+                    <div class="flag-line"></div>
+                    <span class="flag-label">Việt Nam</span>
+                </div>
+                <div class="logo-row">
+                    <i class="bi bi-compass"></i>
+                    <span>VietScape</span>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="cinema-content" id="cinemaContent">
+
+                <h1 class="cinema-title" id="cinemaTitle">
+                    Khám phá <span>Việt Nam</span><br>theo cách của bạn
+                </h1>
+                <p class="cinema-subtitle" id="cinemaSubtitle">
+                    Hành trình tuyệt vời qua những miền đất, văn hóa và ẩm thực đặc sắc bắt đầu từ đây.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <button class="skip-btn" id="skipBtn">
+        Bỏ qua <i class="bi bi-arrow-right"></i>
+    </button>
+
+    <div class="progress-ring" id="progressRing">
+        <svg class="ring-svg" viewBox="0 0 36 36">
+            <circle class="ring-bg" cx="18" cy="18" r="14"></circle>
+            <circle class="ring-fill" id="ringFill" cx="18" cy="18" r="14"></circle>
+        </svg>
+        <span class="progress-label"><strong id="countdownNum">20</strong>s</span>
+    </div>
+
+    <div class="flash-burst" id="flashBurst"></div>
+    <div class="flash-slate" id="flashSlate"></div>
+
+    <script>
+        (function () {
+            /* ── DOM ── */
+            var card          = document.getElementById('cinemaCard');
+            var skipBtn       = document.getElementById('skipBtn');
+            var ringFill      = document.getElementById('ringFill');
+            var countdownNum  = document.getElementById('countdownNum');
+            var progressRing  = document.getElementById('progressRing');
+            var cinemaContent = document.getElementById('cinemaContent');
+            var cinemaLogo    = document.getElementById('cinemaLogo');
+            var flagAccent    = document.getElementById('flagAccent');
+            var cinemaTitle   = document.getElementById('cinemaTitle');
+            var cinemaSubtitle= document.getElementById('cinemaSubtitle');
+            var cinemaTagline = document.getElementById('cinemaTagline');
+            var particles     = document.getElementById('particles');
+            var flashBurst    = document.getElementById('flashBurst');
+            var flashSlate    = document.getElementById('flashSlate');
+            var spotlight     = document.getElementById('spotlight');
+            var spotLabel     = document.getElementById('spotLabel');
+            var spotGlow      = spotlight ? spotlight.querySelector('.spotlight-glow') : null;
+            var brandFlash    = document.getElementById('brandFlash');
+
+            /* ── CONFIG ── */
+            var TOTAL = 20000;
+            var C     = 2 * Math.PI * 14;
+            var transitioning = false;
+            var globalStart   = Date.now();
+
+            /* ── SCREEN ── */
+            var SW = window.innerWidth;
+            var SH = window.innerHeight;
+            var isMobile = SW <= 768;
+            var startWr  = isMobile ? 0.92 : 0.65;
+            var startW   = Math.round(SW * startWr);
+            var startH   = Math.round(startW * 9 / 16);
+            var startR   = isMobile ? 24 : 32;
+
+            if (card) {
+                card.style.width    = startW + 'px';
+                card.style.height   = startH + 'px';
+                card.style.maxWidth = 'none';
+            }
+
+            /* ── PARTICLES ── */
+            var pColors = ['rgba(218,37,29,0.4)','rgba(255,205,0,0.3)','rgba(14,165,233,0.3)','rgba(255,255,255,0.2)'];
+            for (var i = 0; i < 20; i++) {
+                var p = document.createElement('div');
+                p.className = 'particle';
+                var sz = Math.random() * 6 + 2;
+                p.style.width  = sz + 'px';
+                p.style.height = sz + 'px';
+                p.style.left   = Math.random() * 100 + '%';
+                p.style.background = pColors[Math.floor(Math.random() * pColors.length)];
+                p.style.animationDelay    = (Math.random() * 8) + 's';
+                p.style.animationDuration = (Math.random() * 6 + 6) + 's';
+                if (particles) particles.appendChild(p);
+            }
+
+            /* ── SPOTLIGHT DATA ── */
+            var spotVids = [
+                document.getElementById('spotVid0'),
+                document.getElementById('spotVid1'),
+                document.getElementById('spotVid2'),
+                document.getElementById('spotVid3')
+            ];
+
+            var cells     = [
+                document.getElementById('imgCell0'),
+                document.getElementById('imgCell1'),
+                document.getElementById('imgCell2'),
+                document.getElementById('imgCell3')
+            ];
+
+            var cellVids = [];
+            cells.forEach(function (c) { 
+                if (c) {
+                    var cellMedia = c.querySelector('.cell-media');
+                    if (cellMedia) cellVids.push(cellMedia);
+                }
+            });
+
+            var labels = ['Vịnh Hạ Long', 'Phố cổ Hội An', 'Tràng An', 'Nhà thờ Đức Bà'];
+
+            /* Spotlight size: 60% of card (=120% of one cell) */
+            var SPOT_W = 60, SPOT_H = 60;
+            var SPOT_CL = (100 - SPOT_W) / 2;
+            var SPOT_CT = (100 - SPOT_H) / 2;
+
+            /* Cell target positions (% of card) */
+            var cellPos = [
+                { l: 0,  t: 0,  w: 50, h: 50 },
+                { l: 50, t: 0,  w: 50, h: 50 },
+                { l: 0,  t: 50, w: 50, h: 50 },
+                { l: 50, t: 50, w: 50, h: 50 }
+            ];
+
+            /* ── SPOTLIGHT FUNCTIONS ── */
+
+            /* Reset spotlight to center (no transition) */
+            function spotReset() {
+                if (!spotlight) return;
+                spotlight.style.transition = 'none';
+                spotlight.style.left   = SPOT_CL + '%';
+                spotlight.style.top    = SPOT_CT + '%';
+                spotlight.style.width  = SPOT_W + '%';
+                spotlight.style.height = SPOT_H + '%';
+                spotlight.style.borderRadius = '16px';
+                spotlight.style.opacity = '0';
+                spotlight.style.transform = 'scale(0.82)';
+                spotlight.classList.remove('showing');
+                if (spotGlow) {
+                    var glowEl = spotGlow;
+                    glowEl.style.opacity = '1';
+                }
+            }
+
+            /* Scale-in spotlight at center with video idx */
+            function spotShow(idx) {
+                spotVids.forEach(function (v, i) {
+                    if (v) {
+                        var mediaEl = v;
+                        if (i === idx) {
+                            v.classList.add('active');
+                            mediaEl.currentTime = 0;
+                            mediaEl.play().catch(function(){});
+                        } else {
+                            v.classList.remove('active');
+                            mediaEl.pause();
+                        }
+                    }
+                });
+                if (spotLabel) spotLabel.textContent = labels[idx];
+
+                if (spotlight) {
+                    /* force reflow */
+                    spotlight.offsetHeight;
+
+                    spotlight.style.transition =
+                        'opacity 0.5s ease, transform 0.6s cubic-bezier(0.16,1,0.3,1)';
+                    spotlight.style.opacity   = '1';
+                    spotlight.style.transform = 'scale(1)';
+                    spotlight.classList.add('showing');
+                }
+            }
+
+            /* Fly spotlight to cell AND simultaneously start filling cell.
+               Cell opacity transition (0.5s) completes before the fly ends (0.7s),
+               so spotlight can be hidden cleanly with no visible gap/flash. */
+            function spotFlyToCell(idx) {
+                if (!spotlight) return;
+                var p = cellPos[idx];
+                spotlight.style.transition =
+                    'left 0.7s cubic-bezier(0.16,1,0.3,1),' +
+                    'top 0.7s cubic-bezier(0.16,1,0.3,1),' +
+                    'width 0.7s cubic-bezier(0.16,1,0.3,1),' +
+                    'height 0.7s cubic-bezier(0.16,1,0.3,1),' +
+                    'border-radius 0.7s cubic-bezier(0.16,1,0.3,1)';
+                spotlight.style.left         = p.l + '%';
+                spotlight.style.top          = p.t + '%';
+                spotlight.style.width        = p.w + '%';
+                spotlight.style.height       = p.h + '%';
+                spotlight.style.borderRadius = '0px';
+                spotlight.classList.remove('showing');
+                if (spotGlow) {
+                    var glowEl = spotGlow;
+                    glowEl.style.opacity = '0';
+                }
+
+                /* Pre-fill the grid cell during the fly so it is fully visible
+                   by the time the spotlight lands (no flash on handoff) */
+                if (cells[idx]) {
+                    cells[idx].classList.add('filled');
+                    var v = cellVids[idx];
+                    if (v) {
+                        var spotVid = spotVids[idx];
+                        if (spotVid && !(spotVid).paused) {
+                            (v).currentTime = (spotVid).currentTime;
+                        }
+                        v.play().catch(function(){});
+                    }
+                }
+            }
+
+            /* Cell is already filled – just hide spotlight */
+            function fillCell(idx) {
+                if (!spotlight) return;
+                spotlight.style.transition = 'opacity 0.3s ease';
+                spotlight.style.opacity    = '0';
+            }
+
+            /* ── EASING ── */
+            function ease(t) {
+                return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3) / 2;
+            }
+
+            /* ═══════════════════════════════════════
+               TIMELINE - NETFLIX STYLE (20 giây)
+               ═══════════════════════════════════════ */
+
+            /*  0s : Card entrance starts immediately  */
+            setTimeout(function () {
+                if (card) card.classList.add('entered');
+                if (cinemaLogo) cinemaLogo.classList.add('show');
+            }, 0);
+
+            /*  0s : Brand flash appears during card entrance  */
+            setTimeout(function () {
+                if (brandFlash) {
+                    brandFlash.style.transition =
+                        'opacity 0.18s ease-out, transform 0.22s cubic-bezier(0.34,1.2,0.64,1)';
+                    brandFlash.offsetHeight;
+                    brandFlash.style.opacity   = '1';
+                    brandFlash.style.transform = 'translate(-50%,-50%) scale(1.05)';
+                }
+            }, 0);
+
+            /*  0.3s : Skip button and progress ring appear  */
+            setTimeout(function () {
+                if (skipBtn) skipBtn.classList.add('show');
+                if (progressRing) progressRing.classList.add('show');
+            }, 300);
+
+            /*  0.4s : Brand flash fades out  */
+            setTimeout(function () {
+                if (brandFlash) {
+                    brandFlash.style.transition =
+                        'opacity 0.18s ease-in, transform 0.22s ease-in';
+                    brandFlash.style.opacity   = '0';
+                    brandFlash.style.transform = 'translate(-50%,-50%) scale(0.88) translateY(-10px)';
+                }
+            }, 400);
+
+            /*  1.5 - 3.2s : Spotlight → Video 1 (Hạ Long) — show 1s, fly 0.7s  */
+            setTimeout(function () {
+                spotReset();
+                setTimeout(function () { spotShow(0); }, 60);
+            }, 1500);
+            setTimeout(function () { spotFlyToCell(0); }, 2500);
+            setTimeout(function () { fillCell(0); spotReset(); }, 3200);
+
+            /*  3.4 - 5.1s : Spotlight → Video 2 (Hội An)  */
+            setTimeout(function () {
+                setTimeout(function () { spotShow(1); }, 60);
+            }, 3400);
+            setTimeout(function () { spotFlyToCell(1); }, 4400);
+            setTimeout(function () { fillCell(1); spotReset(); }, 5100);
+
+            /*  5.3 - 7.0s : Spotlight → Video 3 (Tràng An)  */
+            setTimeout(function () {
+                setTimeout(function () { spotShow(2); }, 60);
+            }, 5300);
+            setTimeout(function () { spotFlyToCell(2); }, 6300);
+            setTimeout(function () { fillCell(2); spotReset(); }, 7000);
+
+            /*  7.2 - 8.9s : Spotlight → Video 4 (Đức Bà)  */
+            setTimeout(function () {
+                setTimeout(function () { spotShow(3); }, 60);
+            }, 7200);
+            setTimeout(function () { spotFlyToCell(3); }, 8200);
+            setTimeout(function () { fillCell(3); spotReset(); }, 8900);
+
+            /*  9.1s : Content text appears  */
+            setTimeout(function () { if (cinemaTitle) cinemaTitle.classList.add('show'); }, 9100);
+            setTimeout(function () { if (cinemaSubtitle) cinemaSubtitle.classList.add('show'); }, 9400);
+
+            /*  10.8s : Glow + tagline  */
+            setTimeout(function () {
+                if (card) card.classList.add('glowing');
+                if (cinemaTagline) cinemaTagline.classList.add('show');
+            }, 10800);
+
+            /*  5.7 - 20s : Progressive zoom to fullscreen (smooth & gradual) — 14.3s duration  */
+            var ZOOM_START = 5700;
+            var ZOOM_DUR   = TOTAL - ZOOM_START;
+            var zoomStart  = 0;
+
+            setTimeout(function () {
+                zoomStart = Date.now();
+                requestAnimationFrame(zoomLoop);
+            }, ZOOM_START);
+
+            function zoomLoop() {
+                if (transitioning || !card || !zoomStart) return;
+                var elapsed = Date.now() - zoomStart;
+                var raw = Math.min(elapsed / ZOOM_DUR, 1);
+
+                /* ease-in quadratic: slow at first, fast near end */
+                var e = raw * raw;
+
+                card.style.width  = (startW + (SW - startW) * e) + 'px';
+                card.style.height = (startH + (SH - startH) * e) + 'px';
+                card.style.borderRadius = (startR * (1 - e)) + 'px';
+                card.style.borderColor  = 'rgba(255,255,255,' + (0.2 * (1 - e)) + ')';
+
+                /* shadow fades from 70% */
+                if (raw > 0.7 && !card.classList.contains('glowing')) {
+                    var sf = 1 - (raw - 0.7) / 0.3;
+                    card.style.boxShadow =
+                        '0 0 ' + Math.round(80*sf) + 'px rgba(218,37,29,' + (0.15*sf).toFixed(3) + '),' +
+                        '0 32px ' + Math.round(100*sf) + 'px rgba(0,0,0,' + (0.6*sf).toFixed(3) + ')';
+                }
+
+                if (raw < 1) {
+                    requestAnimationFrame(zoomLoop);
+                } else {
+                    beginTransition();
+                }
+            }
+
+            /* ── COUNTDOWN ── */
+            function countdown() {
+                if (transitioning || !ringFill || !countdownNum) return;
+                var elapsed  = Date.now() - globalStart;
+                var progress = Math.min(elapsed / TOTAL, 1);
+                ringFill.style.strokeDashoffset = (C * (1 - progress)).toString();
+                var rem = Math.ceil((TOTAL - elapsed) / 1000);
+                countdownNum.textContent = rem > 0 ? rem.toString() : '0';
+                if (progress < 1) requestAnimationFrame(countdown);
+            }
+            requestAnimationFrame(countdown);
+
+            /* ── TRANSITION ── */
+            function beginTransition() {
+                if (transitioning || !card) return;
+                transitioning = true;
+                if (skipBtn) skipBtn.classList.add('hidden');
+                if (progressRing) progressRing.classList.add('hidden');
+
+                card.style.width        = SW + 'px';
+                card.style.height       = SH + 'px';
+                card.style.borderRadius = '0';
+                card.style.borderColor  = 'transparent';
+                card.style.boxShadow    = 'none';
+
+
+
+                    setTimeout(function () {
+                        if (flashBurst) flashBurst.style.opacity = '0';
+                        if (flashSlate) flashSlate.style.opacity = '1';
+
+                        setTimeout(function () {
+                            window.location.href = '/Home/Index';
+                        }, 920);
+                    }, 440);
+            }
+
+            if (skipBtn) skipBtn.addEventListener('click', function () { beginTransition(); });
+            document.body.style.overflow = 'hidden';
+        })();
+    </script>
+</body>
+</html>

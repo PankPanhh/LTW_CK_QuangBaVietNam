@@ -1,0 +1,235 @@
+﻿@{
+    ViewBag.Title = "Đăng ký";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    :root {
+        --sky-blue: #0EA5E9;
+        --deep-slate: #1e293b;
+        --slate: #334155;
+        --slate-light: #cbd5e1;
+        --slate-200: #e2e8f0;
+        --white: #ffffff;
+        --spacing-3: 0.75rem;
+        --spacing-4: 1rem;
+        --spacing-6: 1.5rem;
+        --spacing-8: 2rem;
+    }
+
+    .auth-container {
+        position: relative;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.8)), url('https://images.unsplash.com/photo-1507525428034-b723a9ce6899?w=1920&q=80') center/cover;
+        background-attachment: fixed;
+        padding: var(--spacing-8);
+        overflow: hidden;
+    }
+
+    .auth-container::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 20% 80%, rgba(14, 165, 233, 0.1), transparent 60%);
+        pointer-events: none;
+    }
+
+    .auth-card {
+        position: relative;
+        z-index: 2;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 24px;
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+        padding: var(--spacing-8);
+        max-width: 420px;
+        width: 100%;
+        animation: fadeInScale 0.6s ease-out;
+    }
+
+    @@keyframes fadeInScale {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .auth-header {
+        text-align: center;
+        margin-bottom: var(--spacing-6);
+    }
+
+    .auth-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--white);
+        margin-bottom: var(--spacing-3);
+    }
+
+    .auth-header p {
+        font-size: 1rem;
+        color: var(--slate-light);
+        margin: 0;
+    }
+
+    .form-group-icon {
+        position: relative;
+        margin-bottom: var(--spacing-6);
+    }
+
+    .form-group-icon .form-control {
+        width: 100%;
+        padding: var(--spacing-4) var(--spacing-4) var(--spacing-4) 3rem;
+        font-size: 1rem;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--white);
+        transition: all 0.3s ease;
+    }
+
+    .form-group-icon .form-control::placeholder {
+        color: var(--slate-light);
+    }
+
+    .form-group-icon .form-control:focus {
+        outline: none;
+        border-color: var(--sky-blue);
+        background: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.2);
+    }
+
+    .form-group-icon .input-icon {
+        position: absolute;
+        top: 50%;
+        left: 1rem;
+        transform: translateY(-50%);
+        color: var(--slate-light);
+        font-size: 1.2rem;
+    }
+
+    .btn-auth {
+        width: 100%;
+        padding: var(--spacing-4);
+        font-size: 1rem;
+        font-weight: 600;
+        background: var(--sky-blue);
+        color: var(--white);
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-auth:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(14, 165, 233, 0.4);
+    }
+
+    .auth-links {
+        text-align: center;
+        margin-top: var(--spacing-6);
+    }
+
+    .auth-links a {
+        color: var(--slate-light);
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .auth-links a:hover {
+        color: var(--white);
+    }
+</style>
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1>Bắt đầu hành trình</h1>
+            <p>Tạo tài khoản để khám phá Việt Nam</p>
+        </div>
+
+        <form onsubmit="handleRegister(event)">
+            <div class="form-group-icon">
+                <i class="bi bi-person input-icon"></i>
+                <input type="text" id="registerName" class="form-control" placeholder="Họ và tên" required />
+            </div>
+
+            <div class="form-group-icon">
+                <i class="bi bi-envelope input-icon"></i>
+                <input type="email" id="registerEmail" class="form-control" placeholder="Email" required />
+            </div>
+
+            <div class="form-group-icon">
+                <i class="bi bi-lock input-icon"></i>
+                <input type="password" id="registerPassword" class="form-control" placeholder="Mật khẩu" required />
+            </div>
+
+            <div class="form-group-icon">
+                <i class="bi bi-shield-lock input-icon"></i>
+                <input type="password" id="registerConfirmPassword" class="form-control" placeholder="Xác nhận mật khẩu" required />
+            </div>
+
+            <button type="submit" class="btn-auth">Đăng ký</button>
+
+            <div class="auth-links">
+                <span>Đã có tài khoản? </span>
+                <a href="@Url.Action("Login", "Home")">Đăng nhập</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function handleRegister(event) {
+        event.preventDefault();
+
+        const name = document.getElementById('registerName').value.trim();
+        const email = document.getElementById('registerEmail').value.trim();
+        const password = document.getElementById('registerPassword').value.trim();
+        const confirmPassword = document.getElementById('registerConfirmPassword').value.trim();
+
+        // Validation
+        if (!name || !email || !password || !confirmPassword) {
+            showToast('Lỗi', 'Vui lòng điền đầy đủ tất cả các trường.', 'error');
+            return;
+        }
+
+        if (password.length < 6) {
+            showToast('Lỗi', 'Mật khẩu phải có ít nhất 6 ký tự.', 'error');
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            showToast('Lỗi', 'Mật khẩu xác nhận không khớp.', 'error');
+            return;
+        }
+
+        const emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+        if (!emailRegex.test(email)) {
+            showToast('Lỗi', 'Vui lòng nhập email hợp lệ.', 'error');
+            return;
+        }
+
+        // Show success notification
+        showToast('Đăng ký thành công', 'Tài khoản của bạn đã được tạo. Hãy đăng nhập để tiếp tục.', 'success');
+
+        // Store registration data
+        localStorage.setItem('registeredEmail', email);
+        localStorage.setItem('registeredName', name);
+
+        // Redirect to login after delay
+        setTimeout(() => {
+            window.location.href = '@Url.Action("Login", "Home")';
+        }, 1500);
+    }
+</script>

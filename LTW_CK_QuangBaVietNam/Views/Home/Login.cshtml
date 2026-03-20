@@ -1,0 +1,217 @@
+﻿@{
+    ViewBag.Title = "Đăng nhập";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    :root {
+        --sky-blue: #0EA5E9;
+        --deep-slate: #1e293b;
+        --slate: #334155;
+        --slate-light: #cbd5e1;
+        --slate-200: #e2e8f0;
+        --white: #ffffff;
+        --spacing-3: 0.75rem;
+        --spacing-4: 1rem;
+        --spacing-6: 1.5rem;
+        --spacing-8: 2rem;
+    }
+
+    .auth-container {
+        position: relative;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.8)), url('https://images.unsplash.com/photo-1528127269322-539801943592?w=1920&q=80') center/cover;
+        background-attachment: fixed;
+        padding: var(--spacing-8);
+        overflow: hidden;
+    }
+
+    .auth-container::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 80% 20%, rgba(14, 165, 233, 0.1), transparent 60%);
+        pointer-events: none;
+    }
+
+    .auth-card {
+        position: relative;
+        z-index: 2;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 24px;
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+        padding: var(--spacing-8);
+        max-width: 420px;
+        width: 100%;
+        animation: fadeInScale 0.6s ease-out;
+    }
+
+    @@keyframes fadeInScale {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .auth-header {
+        text-align: center;
+        margin-bottom: var(--spacing-6);
+    }
+
+    .auth-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--white);
+        margin-bottom: var(--spacing-3);
+    }
+
+    .auth-header p {
+        font-size: 1rem;
+        color: var(--slate-light);
+        margin: 0;
+    }
+
+    .form-group-icon {
+        position: relative;
+        margin-bottom: var(--spacing-6);
+    }
+
+    .form-group-icon .form-control {
+        width: 100%;
+        padding: var(--spacing-4) var(--spacing-4) var(--spacing-4) 3rem;
+        font-size: 1rem;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--white);
+        transition: all 0.3s ease;
+    }
+
+    .form-group-icon .form-control::placeholder {
+        color: var(--slate-light);
+    }
+
+    .form-group-icon .form-control:focus {
+        outline: none;
+        border-color: var(--sky-blue);
+        background: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.2);
+    }
+
+    .form-group-icon .input-icon {
+        position: absolute;
+        top: 50%;
+        left: 1rem;
+        transform: translateY(-50%);
+        color: var(--slate-light);
+        font-size: 1.2rem;
+    }
+
+    .btn-auth {
+        width: 100%;
+        padding: var(--spacing-4);
+        font-size: 1rem;
+        font-weight: 600;
+        background: var(--sky-blue);
+        color: var(--white);
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-auth:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(14, 165, 233, 0.4);
+    }
+
+    .auth-links {
+        text-align: center;
+        margin-top: var(--spacing-6);
+    }
+
+    .auth-links a {
+        color: var(--slate-light);
+        text-decoration: none;
+        margin: 0 0.5rem;
+        transition: color 0.3s ease;
+    }
+
+    .auth-links a:hover {
+        color: var(--white);
+    }
+</style>
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1>Chào mừng trở lại</h1>
+            <p>Đăng nhập để tiếp tục hành trình của bạn</p>
+        </div>
+
+        <form onsubmit="handleLogin(event)">
+            <div class="form-group-icon">
+                <i class="bi bi-envelope input-icon"></i>
+                <input type="email" id="loginEmail" class="form-control" placeholder="Email" required />
+            </div>
+
+            <div class="form-group-icon">
+                <i class="bi bi-lock input-icon"></i>
+                <input type="password" id="loginPassword" class="form-control" placeholder="Mật khẩu" required />
+            </div>
+
+            <button type="submit" class="btn-auth">Đăng nhập</button>
+
+            <div class="auth-links">
+                <a href="@Url.Action("Register", "Home")">Tạo tài khoản</a>
+                <span>|</span>
+                <a href="#">Quên mật khẩu?</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function handleLogin(event) {
+        event.preventDefault();
+
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value.trim();
+
+        // Validation
+        if (!email || !password) {
+            showToast('Lỗi', 'Vui lòng nhập đầy đủ email và mật khẩu.', 'error');
+            return;
+        }
+
+        var at = String.fromCharCode(64);
+        const emailRegex = new RegExp('^[^\\s' + at + ']+' + at + '[^\\s' + at + ']+\\.[^\\s' + at + ']+$');
+        if (!emailRegex.test(email)) {
+            showToast('Lỗi', 'Vui lòng nhập email hợp lệ.', 'error');
+            return;
+        }
+
+        // Show success notification
+        showToast('Đăng nhập thành công', 'Bạn sẽ được chuyển hướng sau giây lát...', 'success');
+
+        // Store login state in localStorage
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('userEmail', email);
+        localStorage.setItem('userName', 'Tên Người Dùng');
+
+        // Redirect after delay
+        setTimeout(() => {
+            window.location.href = '@Url.Action("Profile", "Home")';
+        }, 1500);
+    }
+</script>

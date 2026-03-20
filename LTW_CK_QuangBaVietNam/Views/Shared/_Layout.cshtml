@@ -1,0 +1,742 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --deep-slate: #1e293b;
+            --slate: #334155;
+            --sky-blue: #0EA5E9;
+            --sky-light: #38BDF8;
+            --slate-light: #cbd5e1;
+            --slate-200: #e2e8f0;
+            --white: #ffffff;
+            --spacing-2: 0.5rem;
+            --spacing-3: 0.75rem;
+            --spacing-4: 1rem;
+            --spacing-6: 1.5rem;
+            --spacing-8: 2rem;
+            --spacing-12: 3rem;
+            --spacing-16: 4rem;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: #f8fafc;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+        }
+
+        main {
+            flex: 1;
+        }
+
+        /* TOPBAR */
+        .topbar {
+            background: var(--deep-slate);
+            color: var(--white);
+            padding: var(--spacing-3) 0;
+            font-size: 0.875rem;
+            text-align: center;
+            z-index: 1040;
+        }
+
+        .topbar-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-6);
+            flex-wrap: wrap;
+        }
+
+        .topbar-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+        }
+
+        .topbar i {
+            color: var(--sky-blue);
+        }
+
+        /* HEADER GLASSMORPHISM */
+        .header-glass {
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            box-shadow: 0 4px 32px rgba(0, 0, 0, 0.12);
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+            border-bottom: 1px solid rgba(14, 165, 233, 0.2);
+            padding: var(--spacing-2) 0;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+            .navbar-brand:hover {
+                color: var(--sky-blue);
+            }
+
+            .navbar-brand i {
+                color: var(--sky-blue);
+                font-size: 1.5rem;
+            }
+
+        .nav-link {
+            font-weight: 600;
+            color: var(--slate-light) !important;
+            padding: var(--spacing-2) var(--spacing-3);
+            margin: 0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+            white-space: nowrap;
+        }
+
+            .nav-link i {
+                color: var(--sky-blue);
+                margin-right: var(--spacing-2);
+                font-size: 0.95rem;
+            }
+
+            .nav-link:hover {
+                color: var(--white) !important;
+                background: rgba(14, 165, 233, 0.1);
+            }
+
+        .search-box {
+            position: relative;
+            max-width: 280px;
+            width: 100%;
+        }
+
+            .search-box input {
+                padding: var(--spacing-2) var(--spacing-3) var(--spacing-2) 2.5rem;
+                border: 2px solid rgba(14, 165, 233, 0.3);
+                background: rgba(255, 255, 255, 0.1);
+                backdrop-filter: blur(10px);
+                border-radius: 999px;
+                color: var(--white);
+                font-size: 0.875rem;
+            }
+
+                .search-box input::placeholder {
+                    color: var(--slate-light);
+                }
+
+                .search-box input:focus {
+                    outline: none;
+                    border-color: var(--sky-blue);
+                    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+                }
+
+            .search-box i {
+                position: absolute;
+                left: var(--spacing-3);
+                top: 50%;
+                transform: translateY(-50%);
+                color: var(--sky-blue);
+                font-size: 1rem;
+            }
+
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(14, 165, 233, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+            .btn-icon:hover {
+                background: var(--sky-blue);
+                border-color: var(--sky-blue);
+                transform: scale(1.1);
+            }
+
+            .btn-icon i {
+                color: var(--sky-blue);
+                font-size: 1.1rem;
+            }
+
+            .btn-icon:hover i {
+                color: var(--white);
+            }
+
+        .btn-create-trip {
+            background: linear-gradient(135deg, var(--sky-blue), var(--sky-light));
+            color: var(--white);
+            border: none;
+            padding: var(--spacing-2) var(--spacing-4);
+            border-radius: 999px;
+            font-weight: 600;
+            box-shadow: 0 4px 20px rgba(14, 165, 233, 0.3);
+            font-size: 0.875rem;
+            white-space: nowrap;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+            .btn-create-trip:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 28px rgba(14, 165, 233, 0.45);
+                color: var(--white);
+            }
+
+            .btn-create-trip i {
+                font-size: 0.95rem;
+            }
+
+        .avatar-dropdown img {
+            width: 38px;
+            height: 38px;
+            border: 2px solid rgba(14, 165, 233, 0.4);
+            cursor: pointer;
+        }
+
+            .avatar-dropdown img:hover {
+                border-color: var(--sky-blue);
+                box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+            }
+
+        .navbar-nav {
+            gap: 0;
+        }
+
+            .navbar-nav .nav-item {
+                margin: 0;
+            }
+
+        .container {
+            max-width: 1400px;
+        }
+
+        .d-flex.align-items-center {
+            gap: 0.375rem !important;
+        }
+
+        .dropdown-menu {
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(14, 165, 233, 0.2);
+            border-radius: 16px;
+            padding: var(--spacing-2);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+            min-width: 200px;
+        }
+
+        .dropdown-item {
+            color: var(--slate-light);
+            padding: var(--spacing-3) var(--spacing-4);
+            border-radius: 10px;
+            margin-bottom: var(--spacing-2);
+        }
+
+            .dropdown-item:hover {
+                background: rgba(14, 165, 233, 0.15);
+                color: var(--white);
+            }
+
+            .dropdown-item i {
+                color: var(--sky-blue);
+                width: 24px;
+            }
+
+        .dropdown-divider {
+            border-color: rgba(14, 165, 233, 0.2);
+        }
+
+        /* BREADCRUMB */
+        .breadcrumb-wrapper {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: var(--spacing-4) 0;
+            border-bottom: 1px solid var(--slate-200);
+            position: sticky;
+            top: 62px;
+            z-index: 1020;
+        }
+
+        .breadcrumb {
+            background: transparent;
+            margin-bottom: 0;
+        }
+
+        .breadcrumb-item a {
+            color: var(--sky-blue);
+            text-decoration: none;
+        }
+
+        .breadcrumb-item.active {
+            color: var(--deep-slate);
+            font-weight: 600;
+        }
+
+        /* FOOTER */
+        footer {
+            background: linear-gradient(135deg, #0f172a, var(--deep-slate));
+            color: var(--slate-light);
+            padding: var(--spacing-16) 0 0;
+            border-top: 3px solid var(--sky-blue);
+            margin-top: auto;
+        }
+
+            footer h5 {
+                color: var(--white);
+                font-weight: 700;
+                margin-bottom: var(--spacing-6);
+                padding-bottom: var(--spacing-3);
+                position: relative;
+            }
+
+                footer h5::after {
+                    content: '';
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    width: 40px;
+                    height: 3px;
+                    background: var(--sky-blue);
+                }
+
+            footer a {
+                color: var(--slate-light);
+                text-decoration: none;
+                display: inline-block;
+                margin-bottom: var(--spacing-3);
+            }
+
+                footer a:hover {
+                    color: var(--sky-blue);
+                    transform: translateX(5px);
+                }
+
+        .social-icons {
+            display: flex;
+            gap: var(--spacing-3);
+            margin-top: var(--spacing-6);
+        }
+
+            .social-icons a {
+                width: 48px;
+                height: 48px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: rgba(14, 165, 233, 0.1);
+                border: 2px solid rgba(14, 165, 233, 0.2);
+                border-radius: 12px;
+            }
+
+                .social-icons a:hover {
+                    background: var(--sky-blue);
+                    transform: translateY(-4px);
+                }
+
+            .social-icons i {
+                color: var(--sky-blue);
+                font-size: 1.25rem;
+            }
+
+            .social-icons a:hover i {
+                color: var(--white);
+            }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(14, 165, 233, 0.2);
+            margin-top: var(--spacing-12);
+            padding: var(--spacing-8) 0;
+            text-align: center;
+            color: #64748b;
+        }
+
+        /* MOBILE */
+        .navbar-toggler {
+            border: 2px solid rgba(14, 165, 233, 0.3);
+        }
+
+        .navbar-toggler-icon {
+            filter: invert(1);
+        }
+
+        .offcanvas {
+            background: var(--deep-slate);
+        }
+
+        .offcanvas-title {
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+        }
+
+            .offcanvas-title i {
+                color: var(--sky-blue);
+            }
+
+        .btn-close {
+            filter: invert(1);
+        }
+
+        @@media (max-width: 991px) {
+            .search-box {
+                max-width: 100%;
+                margin: var(--spacing-4) 0;
+            }
+
+            .btn-create-trip {
+                width: 100%;
+                margin-top: var(--spacing-4);
+            }
+        }
+
+        /* TOAST NOTIFICATION */
+        .toast-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 9999;
+        }
+
+        .toast {
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(14, 165, 233, 0.2);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            color: var(--white);
+            min-width: 300px;
+        }
+
+        .toast-header {
+            background: transparent;
+            border: none;
+            padding: var(--spacing-4);
+            padding-bottom: var(--spacing-2);
+        }
+
+        .toast-header strong {
+            color: var(--white);
+            flex-grow: 1;
+        }
+
+        .toast-header .btn-close {
+            filter: invert(1);
+        }
+
+        .toast-body {
+            padding: 0 var(--spacing-4) var(--spacing-4);
+            color: var(--slate-light);
+        }
+
+        .toast.success .toast-header strong {
+            color: #10b981;
+        }
+
+        .toast.error .toast-header strong {
+            color: #ef4444;
+        }
+
+        .toast.info .toast-header strong {
+            color: var(--sky-blue);
+        }
+    </style>
+</head>
+<body>
+    <!-- TOPBAR -->
+    <div class="topbar">
+        <div class="container">
+            <div class="topbar-content">
+                <div class="topbar-item">
+                    <i class="bi bi-fire"></i>
+                    <span>Địa điểm hot: Sapa, Phú Quốc, Đà Lạt</span>
+                </div>
+                <div class="topbar-item">
+                    <i class="bi bi-calendar-event"></i>
+                    <span>Mùa xuân - Thời điểm lý tưởng khám phá miền Bắc</span>
+                </div>
+                <div class="topbar-item">
+                    <i class="bi bi-star"></i>
+                    <span>100+ địa danh mới được cập nhật</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <nav class="navbar navbar-expand-lg header-glass">
+        <div class="container">
+            <a class="navbar-brand" href="/Home/Index">
+                <i class="bi bi-compass"></i>
+                <span>VietScape</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title">
+                        <i class="bi bi-compass"></i>
+                        <span>VietScape</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Home/Index">
+                                <i class="bi bi-binoculars"></i>Khám phá
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/ban-do">
+                                <i class="bi bi-map"></i>Bản đồ
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/blog">
+                                <i class="bi bi-journal-text"></i>Blog
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/lich-trinh">
+                                <i class="bi bi-calendar-event"></i>Lịch trình
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="d-flex align-items-center gap-2 flex-nowrap">
+                        <div class="search-box d-none d-lg-block">
+                            <input type="text" class="form-control" placeholder="Tìm địa điểm...">
+                            <i class="bi bi-search"></i>
+                        </div>
+
+                        <button class="btn btn-icon d-none d-lg-flex" title="Thông báo">
+                            <i class="bi bi-bell"></i>
+                        </button>
+
+                        <button class="btn btn-icon d-none d-lg-flex" title="Yêu thích">
+                            <i class="bi bi-heart"></i>
+                        </button>
+
+                        <a href="/Home/Createschedule" class="btn-create-trip d-none d-lg-flex" style="text-decoration: none; display: inline-flex !important; align-items: center;">
+                            <i class="bi bi-plus-circle me-1"></i>Tạo lịch trình
+                        </a>
+
+                        <div id="authSection">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <div class="search-box d-lg-none mt-3">
+                        <input type="text" class="form-control" placeholder="Tìm địa điểm...">
+                        <i class="bi bi-search"></i>
+                    </div>
+
+                    <a href="/Home/Createschedule" class="btn-create-trip d-lg-none" style="text-decoration: none; display: block;">
+                        <i class="bi bi-plus-circle me-2"></i>Tạo lịch trình
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main>
+        @if (ViewBag.Breadcrumbs != null)
+        {
+            <div class="breadcrumb-wrapper">
+                <div class="container">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><i class="bi bi-house-door-fill me-1"></i></li>
+                            @foreach (var crumb in ViewBag.Breadcrumbs)
+                            {
+                                string url = null;
+                                try { url = crumb.Url != null ? crumb.Url.ToString() : null; } catch { }
+                                string name = null;
+                                try { name = crumb.Name != null ? crumb.Name.ToString() : null; } catch { }
+
+                                if (string.IsNullOrEmpty(url))
+                                {
+                                    <li class="breadcrumb-item active" aria-current="page">@name</li>
+                                }
+                                else
+                                {
+                                    <li class="breadcrumb-item"><a href="@url">@name</a></li>
+                                }
+                            }
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        }
+
+        @RenderBody()
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5>VietScape</h5>
+                    <p>Khám phá vẻ đẹp Việt Nam qua từng địa danh. Hành trình của bạn bắt đầu từ đây.</p>
+                    <div class="social-icons">
+                        <a href="#" title="Facebook"><i class="bi bi-facebook"></i></a>
+                        <a href="#" title="Instagram"><i class="bi bi-instagram"></i></a>
+                        <a href="#" title="TikTok"><i class="bi bi-tiktok"></i></a>
+                        <a href="#" title="YouTube"><i class="bi bi-youtube"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h5>Danh mục</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Biển</a></li>
+                        <li><a href="#">Núi</a></li>
+                        <li><a href="#">Văn hóa</a></li>
+                        <li><a href="#">Sinh thái</a></li>
+                        <li><a href="#">Ẩm thực</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h5>Hỗ trợ</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Hướng dẫn</a></li>
+                        <li><a href="#">Điều khoản</a></li>
+                        <li><a href="#">Bảo mật</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-4 col-md-4 mb-4">
+                    <h5>Liên hệ</h5>
+                    <p><i class="bi bi-envelope me-2"></i>support@vietscape.vn</p>
+                    <p><i class="bi bi-telephone me-2"></i>0123 456 789</p>
+                    <p><i class="bi bi-geo-alt me-2"></i>Hà Nội, Việt Nam</p>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p class="mb-0">&copy; 2024 VietScape. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div class="toast-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <script>
+        // Global toast notification system
+        function showToast(title, message, type = 'info') {
+            const container = document.querySelector('.toast-container');
+            const toastId = 'toast-' + Date.now();
+
+            const toastHTML = `
+                <div id="${toastId}" class="toast ${type}" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header">
+                        <strong class="me-auto">${title}</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                </div>
+            `;
+
+            container.insertAdjacentHTML('beforeend', toastHTML);
+
+            const toastElement = document.getElementById(toastId);
+            const toast = new bootstrap.Toast(toastElement);
+            toast.show();
+
+            toastElement.addEventListener('hidden.bs.toast', () => {
+                toastElement.remove();
+            });
+        }
+
+        // Authentication state management
+        function updateAuthSection() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            const authSection = document.getElementById('authSection');
+
+            if (isLoggedIn) {
+                const userName = localStorage.getItem('userName') || 'User';
+                authSection.innerHTML = `
+                    <div class="avatar-dropdown dropdown">
+                        <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=0EA5E9&color=fff"
+                             class="rounded-circle"
+                             data-bs-toggle="dropdown"
+                             alt="Avatar"
+                             style="width: 38px; height: 38px; border: 2px solid rgba(14, 165, 233, 0.4); cursor: pointer;">
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="/Home/Profile"><i class="bi bi-person me-2"></i>Hồ sơ</a></li>
+                            <li><a class="dropdown-item" href="/Home/Settings"><i class="bi bi-gear me-2"></i>Cài đặt</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="javascript:logout()"><i class="bi bi-box-arrow-right me-2"></i>Đăng xuất</a></li>
+                        </ul>
+                    </div>
+                `;
+            } else {
+                authSection.innerHTML = `
+                    <div class="d-flex gap-2">
+                        <a href="/Home/Login" class="btn-create-trip" style="text-decoration: none; display: inline-flex !important; align-items: center;">
+                            <i class="bi bi-box-arrow-in-right me-1"></i>Đăng nhập
+                        </a>
+                        <a href="/Home/Register" class="btn-create-trip" style="text-decoration: none; display: inline-flex !important; align-items: center;">
+                            <i class="bi bi-person-plus me-1"></i>Đăng ký
+                        </a>
+                    </div>
+                `;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('userName');
+            showToast('Đã đăng xuất', 'Bạn sẽ được chuyển hướng về trang chủ...', 'info');
+
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 1500);
+        }
+
+        // Initialize auth section on page load
+        document.addEventListener('DOMContentLoaded', updateAuthSection);
+    </script>
+</body>
+</html>
