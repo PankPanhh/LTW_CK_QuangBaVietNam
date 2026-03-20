@@ -80,5 +80,17 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             return View();
         }
 
+        public ActionResult Map()
+        {
+            // Set breadcrumbs for Map page
+            var breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem("Bản đồ", "/Home/Map", isActive: true)
+            };
+            this.SetBreadcrumbs(breadcrumbs);
+
+            return View();
+        }
+
     }
 }

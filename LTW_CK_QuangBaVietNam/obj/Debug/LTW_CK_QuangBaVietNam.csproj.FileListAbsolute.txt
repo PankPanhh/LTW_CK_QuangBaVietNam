@@ -58,3 +58,37 @@ C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBa
 C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.WebPages.Deployment.xml
 C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.WebPages.Razor.xml
 C:\Users\DELL\OneDrive - University Of Industry and Trade\Desktop\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\obj\Debug\LTW_CK_Q.C80E6A98.Up2Date
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\LTW_CK_QuangBaVietNam.dll.config
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\LTW_CK_QuangBaVietNam.dll
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\LTW_CK_QuangBaVietNam.pdb
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\Antlr3.Runtime.dll
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\EntityFramework.dll
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\Microsoft.Web.Infrastructure.dll
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\Microsoft.Web.Mvc.FixedDisplayModes.dll
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\Newtonsoft.Json.dll
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Net.Http.Formatting.dll
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.Http.dll
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.Http.WebHost.dll
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.Mvc.dll
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.Optimization.dll
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.Providers.dll
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.Razor.dll
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.WebPages.Deployment.dll
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.WebPages.dll
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.WebPages.Razor.dll
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\WebGrease.dll
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\EntityFramework.xml
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\Newtonsoft.Json.xml
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Net.Http.Formatting.xml
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.Http.xml
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.Http.WebHost.xml
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.Mvc.xml
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.Razor.xml
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.WebPages.xml
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.WebPages.Deployment.xml
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\bin\System.Web.WebPages.Razor.xml
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\obj\Debug\LTW_CK_QuangBaVietNam.csproj.AssemblyReference.cache
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\obj\Debug\LTW_CK_QuangBaVietNam.csproj.CoreCompileInputs.cache
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\obj\Debug\LTW_CK_Q.C80E6A98.Up2Date
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\obj\Debug\LTW_CK_QuangBaVietNam.dll
+D:\LTW_CK_QuangBaVietNam\LTW_CK_QuangBaVietNam\obj\Debug\LTW_CK_QuangBaVietNam.pdb

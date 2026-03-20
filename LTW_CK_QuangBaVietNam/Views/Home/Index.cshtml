@@ -110,11 +110,23 @@
         box-shadow: 0 4px 20px rgba(14, 165, 233, 0.4);
         white-space: nowrap;
         font-size: 1rem;
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        text-decoration: none;
+        cursor: pointer;
     }
 
-        .btn-primary-custom:hover {
+        .btn-primary-custom:hover,
+        .btn-primary-custom:focus {
             transform: translateY(-3px);
             box-shadow: 0 8px 32px rgba(14, 165, 233, 0.5);
+            color: var(--white);
+            text-decoration: none;
+        }
+
+        .btn-primary-custom:active {
+            transform: translateY(-1px);
         }
 
     /* STICKY FILTER BAR */
@@ -1177,9 +1189,9 @@
         </iframe>
     </div>
     <div class="text-center">
-        <button class="btn-primary-custom">
+        <a href="/Home/Map" class="btn-primary-custom">
             <i class="bi bi-map me-2"></i>Xem bản đồ đầy đủ
-        </button>
+        </a>
     </div>
 </section>
 

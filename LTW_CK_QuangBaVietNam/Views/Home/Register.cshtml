@@ -23,7 +23,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: linear-gradient(135deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.8)), url('https://images.unsplash.com/photo-1507525428034-b723a9ce6899?w=1920&q=80') center/cover;
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.8)), url('https://images.unsplash.com/photo-1528127269322-539801943592?w=1920&q=80') center/cover;
         background-attachment: fixed;
         padding: var(--spacing-8);
         overflow: hidden;
@@ -193,10 +193,20 @@
     function handleRegister(event) {
         event.preventDefault();
 
-        const name = document.getElementById('registerName').value.trim();
-        const email = document.getElementById('registerEmail').value.trim();
-        const password = document.getElementById('registerPassword').value.trim();
-        const confirmPassword = document.getElementById('registerConfirmPassword').value.trim();
+        const nameInput = document.getElementById('registerName');
+        const emailInput = document.getElementById('registerEmail');
+        const passwordInput = document.getElementById('registerPassword');
+        const confirmPasswordInput = document.getElementById('registerConfirmPassword');
+
+        if (!nameInput || !emailInput || !passwordInput || !confirmPasswordInput) {
+            console.error('Form inputs not found');
+            return;
+        }
+
+        const name = (nameInput instanceof HTMLInputElement ? nameInput.value : '').trim();
+        const email = (emailInput instanceof HTMLInputElement ? emailInput.value : '').trim();
+        const password = (passwordInput instanceof HTMLInputElement ? passwordInput.value : '').trim();
+        const confirmPassword = (confirmPasswordInput instanceof HTMLInputElement ? confirmPasswordInput.value : '').trim();
 
         // Validation
         if (!name || !email || !password || !confirmPassword) {

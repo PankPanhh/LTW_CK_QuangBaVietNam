@@ -185,8 +185,16 @@
     function handleLogin(event) {
         event.preventDefault();
 
-        const email = document.getElementById('loginEmail').value.trim();
-        const password = document.getElementById('loginPassword').value.trim();
+        const emailInput = document.getElementById('loginEmail');
+        const passwordInput = document.getElementById('loginPassword');
+
+        if (!emailInput || !passwordInput) {
+            console.error('Form inputs not found');
+            return;
+        }
+
+        const email = (emailInput instanceof HTMLInputElement ? emailInput.value : '').trim();
+        const password = (passwordInput instanceof HTMLInputElement ? passwordInput.value : '').trim();
 
         // Validation
         if (!email || !password) {

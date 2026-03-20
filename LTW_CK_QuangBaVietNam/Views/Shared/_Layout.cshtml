@@ -518,7 +518,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/ban-do">
+                            <a class="nav-link" href="/Home/Map">
                                 <i class="bi bi-map"></i>Bản đồ
                             </a>
                         </li>
@@ -663,6 +663,11 @@
         // Global toast notification system
         function showToast(title, message, type = 'info') {
             const container = document.querySelector('.toast-container');
+            if (!container) {
+                console.error('Toast container not found');
+                return;
+            }
+
             const toastId = 'toast-' + Date.now();
 
             const toastHTML = `
@@ -680,18 +685,25 @@
             container.insertAdjacentHTML('beforeend', toastHTML);
 
             const toastElement = document.getElementById(toastId);
-            const toast = new bootstrap.Toast(toastElement);
-            toast.show();
+            if (toastElement && typeof bootstrap !== 'undefined') {
+                const toast = new bootstrap.Toast(toastElement);
+                toast.show();
 
-            toastElement.addEventListener('hidden.bs.toast', () => {
-                toastElement.remove();
-            });
+                toastElement.addEventListener('hidden.bs.toast', () => {
+                    toastElement.remove();
+                });
+            }
         }
 
         // Authentication state management
         function updateAuthSection() {
             const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
             const authSection = document.getElementById('authSection');
+
+            if (!authSection) {
+                console.error('Auth section not found');
+                return;
+            }
 
             if (isLoggedIn) {
                 const userName = localStorage.getItem('userName') || 'User';
