@@ -8,6 +8,7 @@ using LTW_CK_QuangBaVietNam.Models;
 
 namespace LTW_CK_QuangBaVietNam.Controllers
 {
+    //Hello Word
     public class HomeController : Controller
     {
         //

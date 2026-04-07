@@ -1,0 +1,48 @@
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build output
+[Bb]in/
+[Oo]bj/
+
+# Rider / VS Code
+.idea/
+.vscode/
+
+# NuGet
+packages/
+*.nupkg
+
+# Resharper
+_ReSharper*/
+*.DotSettings.user
+
+# IIS Express / applicationhost
+/.vs/**/applicationhost.config
+
+# Copilot / IDE indexes (seen in your screenshot)
+VSWorkspaceState.json
+CopilotIndices*/
+copilot-chat*/
+FileContentIndex*/
+
+# Logs
+*.log
+
+# OS files
+Thumbs.db
+desktop.ini
+
+# DLLs and symbols (do not track build artifacts)
+*.dll
+*.pdb
+
+# Others
+*.cache
+
+# Ensure project files remain tracked
+!Packages.config
