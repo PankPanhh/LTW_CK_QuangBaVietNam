@@ -137,6 +137,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include=".gitignore" />
     <Content Include="Content\images\ducba.jpg" />
     <Content Include="Content\images\halong.jpg" />
     <Content Include="Content\images\hoian.jpg" />
