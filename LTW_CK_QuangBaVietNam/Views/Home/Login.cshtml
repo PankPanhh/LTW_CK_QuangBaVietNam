@@ -159,17 +159,23 @@
             <p>Đăng nhập để tiếp tục hành trình của bạn</p>
         </div>
 
-        <form onsubmit="handleLogin(event)">
+        @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { onsubmit = "return handleLogin(event)" }))
+        {
+            @Html.AntiForgeryToken()
             <div class="form-group-icon">
                 <i class="bi bi-envelope input-icon"></i>
-                <input type="email" id="loginEmail" class="form-control" placeholder="Email" required />
+                <input type="email" id="loginEmail" name="email" class="form-control" placeholder="Email" required />
             </div>
 
             <div class="form-group-icon">
                 <i class="bi bi-lock input-icon"></i>
-                <input type="password" id="loginPassword" class="form-control" placeholder="Mật khẩu" required />
+                <input type="password" id="loginPassword" name="password" class="form-control" placeholder="Mật khẩu" required />
             </div>
 
+            <div style="margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+                <input type="checkbox" id="rememberMe" name="rememberMe" value="true" />
+                <label for="rememberMe" style="color:#cbd5e1; margin:0;">Ghi nhớ đăng nhập</label>
+            </div>
             <button type="submit" class="btn-auth">Đăng nhập</button>
 
             <div class="auth-links">
@@ -177,20 +183,30 @@
                 <span>|</span>
                 <a href="#">Quên mật khẩu?</a>
             </div>
-        </form>
+        }
+
+        @* Server messages from AccountController *@
+        @if (TempData["AuthError"] != null)
+        {
+            <div style="margin-top:12px; color:#ff6b6b; text-align:center;">@TempData["AuthError"]</div>
+        }
+
+        @if (TempData["AuthSuccess"] != null)
+        {
+            <div style="margin-top:12px; color:#34d399; text-align:center;">@TempData["AuthSuccess"]</div>
+        }
     </div>
 </div>
 
 <script>
     function handleLogin(event) {
-        event.preventDefault();
-
+        // onsubmit handler — return true to allow submission, false to block
         const emailInput = document.getElementById('loginEmail');
         const passwordInput = document.getElementById('loginPassword');
 
         if (!emailInput || !passwordInput) {
             console.error('Form inputs not found');
-            return;
+            return false;
         }
 
         const email = (emailInput instanceof HTMLInputElement ? emailInput.value : '').trim();
@@ -199,27 +215,17 @@
         // Validation
         if (!email || !password) {
             showToast('Lỗi', 'Vui lòng nhập đầy đủ email và mật khẩu.', 'error');
-            return;
+            return false;
         }
 
         var at = String.fromCharCode(64);
         const emailRegex = new RegExp('^[^\\s' + at + ']+' + at + '[^\\s' + at + ']+\\.[^\\s' + at + ']+$');
         if (!emailRegex.test(email)) {
             showToast('Lỗi', 'Vui lòng nhập email hợp lệ.', 'error');
-            return;
+            return false;
         }
 
-        // Show success notification
-        showToast('Đăng nhập thành công', 'Bạn sẽ được chuyển hướng sau giây lát...', 'success');
-
-        // Store login state in localStorage
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('userEmail', email);
-        localStorage.setItem('userName', 'Tên Người Dùng');
-
-        // Redirect after delay
-        setTimeout(() => {
-            window.location.href = '@Url.Action("Profile", "Home")';
-        }, 1500);
+        // allow the form to submit to server; server performs authentication and redirect
+        return true;
     }
 </script>

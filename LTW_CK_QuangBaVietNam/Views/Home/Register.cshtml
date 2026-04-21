@@ -158,25 +158,27 @@
             <p>Tạo tài khoản để khám phá Việt Nam</p>
         </div>
 
-        <form onsubmit="handleRegister(event)">
+        @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { onsubmit = "return handleRegister(event)" }))
+        {
+            @Html.AntiForgeryToken()
             <div class="form-group-icon">
                 <i class="bi bi-person input-icon"></i>
-                <input type="text" id="registerName" class="form-control" placeholder="Họ và tên" required />
+                <input type="text" id="registerName" name="fullName" class="form-control" placeholder="Họ và tên" required />
             </div>
 
             <div class="form-group-icon">
                 <i class="bi bi-envelope input-icon"></i>
-                <input type="email" id="registerEmail" class="form-control" placeholder="Email" required />
+                <input type="email" id="registerEmail" name="email" class="form-control" placeholder="Email" required />
             </div>
 
             <div class="form-group-icon">
                 <i class="bi bi-lock input-icon"></i>
-                <input type="password" id="registerPassword" class="form-control" placeholder="Mật khẩu" required />
+                <input type="password" id="registerPassword" name="password" class="form-control" placeholder="Mật khẩu" required />
             </div>
 
             <div class="form-group-icon">
                 <i class="bi bi-shield-lock input-icon"></i>
-                <input type="password" id="registerConfirmPassword" class="form-control" placeholder="Xác nhận mật khẩu" required />
+                <input type="password" id="registerConfirmPassword" name="confirmPassword" class="form-control" placeholder="Xác nhận mật khẩu" required />
             </div>
 
             <button type="submit" class="btn-auth">Đăng ký</button>
@@ -185,14 +187,24 @@
                 <span>Đã có tài khoản? </span>
                 <a href="@Url.Action("Login", "Home")">Đăng nhập</a>
             </div>
-        </form>
+        }
+
+        @* Server messages from AccountController *@
+        @if (TempData["AuthError"] != null)
+        {
+            <div style="margin-top:12px; color:#ff6b6b; text-align:center;">@TempData["AuthError"]</div>
+        }
+
+        @if (TempData["AuthSuccess"] != null)
+        {
+            <div style="margin-top:12px; color:#34d399; text-align:center;">@TempData["AuthSuccess"]</div>
+        }
     </div>
 </div>
 
 <script>
     function handleRegister(event) {
-        event.preventDefault();
-
+        // onsubmit handler — return true to allow submission, false to block
         const nameInput = document.getElementById('registerName');
         const emailInput = document.getElementById('registerEmail');
         const passwordInput = document.getElementById('registerPassword');
@@ -200,7 +212,7 @@
 
         if (!nameInput || !emailInput || !passwordInput || !confirmPasswordInput) {
             console.error('Form inputs not found');
-            return;
+            return false;
         }
 
         const name = (nameInput instanceof HTMLInputElement ? nameInput.value : '').trim();
@@ -211,35 +223,26 @@
         // Validation
         if (!name || !email || !password || !confirmPassword) {
             showToast('Lỗi', 'Vui lòng điền đầy đủ tất cả các trường.', 'error');
-            return;
+            return false;
         }
 
         if (password.length < 6) {
             showToast('Lỗi', 'Mật khẩu phải có ít nhất 6 ký tự.', 'error');
-            return;
+            return false;
         }
 
         if (password !== confirmPassword) {
             showToast('Lỗi', 'Mật khẩu xác nhận không khớp.', 'error');
-            return;
+            return false;
         }
 
         const emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
         if (!emailRegex.test(email)) {
             showToast('Lỗi', 'Vui lòng nhập email hợp lệ.', 'error');
-            return;
+            return false;
         }
 
-        // Show success notification
-        showToast('Đăng ký thành công', 'Tài khoản của bạn đã được tạo. Hãy đăng nhập để tiếp tục.', 'success');
-
-        // Store registration data
-        localStorage.setItem('registeredEmail', email);
-        localStorage.setItem('registeredName', name);
-
-        // Redirect to login after delay
-        setTimeout(() => {
-            window.location.href = '@Url.Action("Login", "Home")';
-        }, 1500);
+        // allow the form to submit to server; server performs registration and redirect
+        return true;
     }
 </script>
