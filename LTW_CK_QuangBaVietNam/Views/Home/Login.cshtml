@@ -159,15 +159,18 @@
             <p>Đăng nhập để tiếp tục hành trình của bạn</p>
         </div>
 
-        <form onsubmit="handleLogin(event)">
+        @using (Html.BeginForm("DangNhap", "Login", FormMethod.Post, new { onsubmit = "return validateLoginForm();" }))
+        {
+            @Html.AntiForgeryToken()
+
             <div class="form-group-icon">
                 <i class="bi bi-envelope input-icon"></i>
-                <input type="email" id="loginEmail" class="form-control" placeholder="Email" required />
+                <input type="email" id="loginEmail" name="txtTDN" class="form-control" placeholder="Email" required />
             </div>
 
             <div class="form-group-icon">
                 <i class="bi bi-lock input-icon"></i>
-                <input type="password" id="loginPassword" class="form-control" placeholder="Mật khẩu" required />
+                <input type="password" id="loginPassword" name="txtPass" class="form-control" placeholder="Mật khẩu" required />
             </div>
 
             <button type="submit" class="btn-auth">Đăng nhập</button>
@@ -177,49 +180,52 @@
                 <span>|</span>
                 <a href="#">Quên mật khẩu?</a>
             </div>
-        </form>
+        }
     </div>
 </div>
 
 <script>
-    function handleLogin(event) {
-        event.preventDefault();
-
+    function validateLoginForm() {
         const emailInput = document.getElementById('loginEmail');
         const passwordInput = document.getElementById('loginPassword');
 
         if (!emailInput || !passwordInput) {
-            console.error('Form inputs not found');
-            return;
+            return false;
         }
 
-        const email = (emailInput instanceof HTMLInputElement ? emailInput.value : '').trim();
-        const password = (passwordInput instanceof HTMLInputElement ? passwordInput.value : '').trim();
+        const email = (emailInput.value || '').trim();
+        const password = (passwordInput.value || '').trim();
 
-        // Validation
         if (!email || !password) {
             showToast('Lỗi', 'Vui lòng nhập đầy đủ email và mật khẩu.', 'error');
-            return;
+            return false;
         }
 
         var at = String.fromCharCode(64);
         const emailRegex = new RegExp('^[^\\s' + at + ']+' + at + '[^\\s' + at + ']+\\.[^\\s' + at + ']+$');
         if (!emailRegex.test(email)) {
             showToast('Lỗi', 'Vui lòng nhập email hợp lệ.', 'error');
-            return;
+            return false;
         }
 
-        // Show success notification
-        showToast('Đăng nhập thành công', 'Bạn sẽ được chuyển hướng sau giây lát...', 'success');
-
-        // Store login state in localStorage
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('userEmail', email);
-        localStorage.setItem('userName', 'Tên Người Dùng');
-
-        // Redirect after delay
-        setTimeout(() => {
-            window.location.href = '@Url.Action("Profile", "Home")';
-        }, 1500);
+        return true;
     }
 </script>
+
+@if (TempData["LoginError"] != null)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            showToast('Lỗi', @Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(TempData["LoginError"].ToString(), true)), 'error');
+        });
+    </script>
+}
+
+@if (TempData["RegisterSuccess"] != null)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            showToast('Thành công', @Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(TempData["RegisterSuccess"].ToString(), true)), 'success');
+        });
+    </script>
+}
