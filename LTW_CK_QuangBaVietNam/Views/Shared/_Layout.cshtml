@@ -553,7 +553,34 @@
                         </a>
 
                         <div id="authSection">
-                            <!-- Will be populated by JavaScript -->
+                            @if (Session["nguoiDung"] != null)
+                            {
+                                var currentUser = (LTW_CK_QuangBaVietNam.Models.NguoiDung)Session["nguoiDung"];
+                                var userName = !string.IsNullOrWhiteSpace(currentUser.HoTen) ? currentUser.HoTen : "User";
+                                <div class="avatar-dropdown dropdown">
+                                    <img src="https://ui-avatars.com/api/?name=@Uri.EscapeDataString(userName)&background=0EA5E9&color=fff"
+                                         class="rounded-circle"
+                                         data-bs-toggle="dropdown"
+                                         alt="Avatar"
+                                         style="width: 38px; height: 38px; border: 2px solid rgba(14, 165, 233, 0.4); cursor: pointer;">
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li><a class="dropdown-item" href="/Home/Profile"><i class="bi bi-person me-2"></i>Hồ sơ</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" href="/Login/Logout"><i class="bi bi-box-arrow-right me-2"></i>Đăng xuất</a></li>
+                                    </ul>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="d-flex gap-2">
+                                    <a href="/Home/Login" class="btn-create-trip" style="text-decoration: none; display: inline-flex !important; align-items: center;">
+                                        <i class="bi bi-box-arrow-in-right me-1"></i>Đăng nhập
+                                    </a>
+                                    <a href="/Home/Register" class="btn-create-trip" style="text-decoration: none; display: inline-flex !important; align-items: center;">
+                                        <i class="bi bi-person-plus me-1"></i>Đăng ký
+                                    </a>
+                                </div>
+                            }
                         </div>
                     </div>
 
@@ -694,61 +721,6 @@
                 });
             }
         }
-
-        // Authentication state management
-        function updateAuthSection() {
-            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-            const authSection = document.getElementById('authSection');
-
-            if (!authSection) {
-                console.error('Auth section not found');
-                return;
-            }
-
-            if (isLoggedIn) {
-                const userName = localStorage.getItem('userName') || 'User';
-                authSection.innerHTML = `
-                    <div class="avatar-dropdown dropdown">
-                        <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=0EA5E9&color=fff"
-                             class="rounded-circle"
-                             data-bs-toggle="dropdown"
-                             alt="Avatar"
-                             style="width: 38px; height: 38px; border: 2px solid rgba(14, 165, 233, 0.4); cursor: pointer;">
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="/Home/Profile"><i class="bi bi-person me-2"></i>Hồ sơ</a></li>
-                            <li><a class="dropdown-item" href="/Home/Settings"><i class="bi bi-gear me-2"></i>Cài đặt</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="javascript:logout()"><i class="bi bi-box-arrow-right me-2"></i>Đăng xuất</a></li>
-                        </ul>
-                    </div>
-                `;
-            } else {
-                authSection.innerHTML = `
-                    <div class="d-flex gap-2">
-                        <a href="/Home/Login" class="btn-create-trip" style="text-decoration: none; display: inline-flex !important; align-items: center;">
-                            <i class="bi bi-box-arrow-in-right me-1"></i>Đăng nhập
-                        </a>
-                        <a href="/Home/Register" class="btn-create-trip" style="text-decoration: none; display: inline-flex !important; align-items: center;">
-                            <i class="bi bi-person-plus me-1"></i>Đăng ký
-                        </a>
-                    </div>
-                `;
-            }
-        }
-
-        function logout() {
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('userEmail');
-            localStorage.removeItem('userName');
-            showToast('Đã đăng xuất', 'Bạn sẽ được chuyển hướng về trang chủ...', 'info');
-
-            setTimeout(() => {
-                window.location.href = '/';
-            }, 1500);
-        }
-
-        // Initialize auth section on page load
-        document.addEventListener('DOMContentLoaded', updateAuthSection);
     </script>
 </body>
 </html>
