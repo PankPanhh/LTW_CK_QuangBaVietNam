@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -10,6 +11,33 @@ namespace LTW_CK_QuangBaVietNam.Controllers
 {
     public class HomeController : Controller
     {
+        private class UserProfileExtraData
+        {
+            public DateTime? NgaySinh { get; set; }
+            public string TieuSu { get; set; }
+            public string ThanhPho { get; set; }
+            public string QuocGia { get; set; }
+        }
+
+        private readonly DataClasses1DataContext db = new DataClasses1DataContext(GetConnectionString());
+
+        private static string GetConnectionString()
+        {
+            var appConnection = ConfigurationManager.ConnectionStrings["QL_DL_LTWConnectionString"];
+            if (appConnection != null && !string.IsNullOrWhiteSpace(appConnection.ConnectionString))
+            {
+                return appConnection.ConnectionString;
+            }
+
+            var defaultConnection = ConfigurationManager.ConnectionStrings["DefaultConnection"];
+            if (defaultConnection != null && !string.IsNullOrWhiteSpace(defaultConnection.ConnectionString))
+            {
+                return defaultConnection.ConnectionString;
+            }
+
+            throw new ConfigurationErrorsException("Missing connection string. Please add 'QL_DL_LTWConnectionString' (or 'DefaultConnection') in Web.config.");
+        }
+
         //
         // GET: /Home/
 
@@ -70,6 +98,36 @@ namespace LTW_CK_QuangBaVietNam.Controllers
 
         public ActionResult Profile()
         {
+            var sessionUser = Session["nguoiDung"] as NguoiDung;
+            if (sessionUser == null)
+            {
+                TempData["LoginError"] = "Vui lòng đăng nhập để xem hồ sơ.";
+                return RedirectToAction("Login", "Home");
+            }
+
+            var user = db.NguoiDungs.FirstOrDefault(x => x.MaNguoiDung == sessionUser.MaNguoiDung && x.TrangThai);
+            if (user == null)
+            {
+                Session["nguoiDung"] = null;
+                Session["khach"] = null;
+                TempData["LoginError"] = "Phiên đăng nhập không hợp lệ. Vui lòng đăng nhập lại.";
+                return RedirectToAction("Login", "Home");
+            }
+
+            Session["nguoiDung"] = user;
+            Session["khach"] = user;
+
+            var extra = db.ExecuteQuery<UserProfileExtraData>(
+                "SELECT NgaySinh, TieuSu, ThanhPho, QuocGia FROM NguoiDung WHERE MaNguoiDung = {0}",
+                user.MaNguoiDung).FirstOrDefault();
+
+            ViewBag.BirthDate = (extra != null && extra.NgaySinh.HasValue)
+                ? extra.NgaySinh.Value.ToString("yyyy-MM-dd")
+                : string.Empty;
+            ViewBag.Bio = extra != null ? (extra.TieuSu ?? string.Empty) : string.Empty;
+            ViewBag.City = extra != null ? (extra.ThanhPho ?? string.Empty) : string.Empty;
+            ViewBag.Country = extra != null ? (extra.QuocGia ?? string.Empty) : string.Empty;
+
             // Set breadcrumbs for Profile page
             var breadcrumbs = new List<BreadcrumbItem>
             {
@@ -77,7 +135,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             };
             this.SetBreadcrumbs(breadcrumbs);
 
-            return View();
+            return View(user);
         }
 
         public ActionResult Map()
