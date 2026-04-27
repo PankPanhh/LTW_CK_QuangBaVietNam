@@ -1,6 +1,17 @@
-﻿@{
+﻿@model LTW_CK_QuangBaVietNam.Models.NguoiDung
+@{
     ViewBag.Title = "Hồ sơ cá nhân";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var displayName = (Model != null && !string.IsNullOrWhiteSpace(Model.HoTen)) ? Model.HoTen : string.Empty;
+    var displayEmail = (Model != null && !string.IsNullOrWhiteSpace(Model.Email)) ? Model.Email : string.Empty;
+    var displayPhone = (Model != null && !string.IsNullOrWhiteSpace(Model.SoDienThoai)) ? Model.SoDienThoai : string.Empty;
+    var displayAvatar = (Model != null && !string.IsNullOrWhiteSpace(Model.AnhDaiDien)) ? Model.AnhDaiDien : string.Empty;
+    var joinedYear = (Model != null && Model.NgayTao != DateTime.MinValue) ? Model.NgayTao.Year.ToString() : string.Empty;
+    var displayBirthDate = ViewBag.BirthDate != null ? ViewBag.BirthDate.ToString() : string.Empty;
+    var displayBio = ViewBag.Bio != null ? ViewBag.Bio.ToString() : string.Empty;
+    var displayCity = ViewBag.City != null ? ViewBag.City.ToString() : string.Empty;
+    var displayCountry = ViewBag.Country != null ? ViewBag.Country.ToString() : string.Empty;
 }
 
 <style>
@@ -340,11 +351,15 @@
 </style>
 
 <div class="profile-container">
+    <form id="profileAntiForgeryForm" style="display: none;">
+        @Html.AntiForgeryToken()
+    </form>
+
     <div class="profile-header">
         <div class="profile-header-overlay"></div>
         <div class="profile-avatar-container">
             <label for="avatarUpload" style="cursor: pointer; position: relative; display: inline-block;">
-                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&h=120&fit=crop" alt="Avatar" class="profile-avatar" id="profileAvatar" />
+                <img src="@displayAvatar" alt="Avatar" class="profile-avatar" id="profileAvatar" />
                 <div id="avatarEditOverlay" style="display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.5); border-radius: 50%; color: white; justify-content: center; align-items: center; bottom: 4px; border: 4px solid transparent;">
                     <i class="bi bi-camera" style="font-size: 1.5rem;"></i>
                 </div>
@@ -357,23 +372,23 @@
 
     <div class="profile-info">
         <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: var(--spacing-2);">
-            <h1 class="profile-name" id="displayName" style="margin-bottom: 0;">Tên Người Dùng</h1>
+            <h1 class="profile-name" id="displayName" style="margin-bottom: 0;">@displayName</h1>
             <button class="btn-outline-edit" onclick="switchTab('settings'); enableEditMode();" title="Chỉnh sửa hồ sơ">
                 <i class="bi bi-pencil"></i>
             </button>
         </div>
-        <p class="profile-bio" id="displayBio">"Traveler • Food Lover • Explorer"</p>
+        <p class="profile-bio" id="displayBio">@displayBio</p>
         <div class="profile-stats">
             <div class="stat-item">
-                <div class="stat-value">12</div>
+                <div class="stat-value"></div>
                 <div class="stat-label">Hành trình</div>
             </div>
             <div class="stat-item">
-                <div class="stat-value">45</div>
+                <div class="stat-value"></div>
                 <div class="stat-label">Địa điểm đã lưu</div>
             </div>
             <div class="stat-item">
-                <div class="stat-value">2023</div>
+                <div class="stat-value">@joinedYear</div>
                 <div class="stat-label">Tham gia</div>
             </div>
         </div>
@@ -388,20 +403,10 @@
 
         <div id="journeys" class="tab-content active">
             <div class="journeys-grid">
-                <!-- Sample Journey Card -->
-                <div class="journey-card">
-                    <div class="journey-card-img" style="background-image: url('https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=300&h=180&fit=crop')"></div>
-                    <div class="journey-card-content">
-                        <h3 class="journey-title">Đà Lạt 3 ngày chữa lành</h3>
-                        <p class="journey-meta">3 ngày | 5 địa điểm</p>
-                    </div>
-                </div>
-                <!-- Add more journey cards here -->
             </div>
         </div>
 
         <div id="saved" class="tab-content">
-            <p>Nội dung các địa điểm đã lưu...</p>
         </div>
 
         <div id="settings" class="tab-content">
@@ -425,42 +430,43 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="fullName">Họ và tên</label>
-                        <input type="text" id="fullName" disabled value="Tên Người Dùng" />
+                        <input type="text" id="fullName" data-db-editable="true" disabled value="@displayName" />
                     </div>
                     <div class="form-group">
                         <label for="email">Email</label>
-                        <input type="email" id="email" disabled value="user@example.com" />
+                        <input type="email" id="email" data-db-editable="true" disabled value="@displayEmail" />
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="phone">Số điện thoại</label>
-                        <input type="tel" id="phone" disabled value="(+84) 123 456 789" />
+                        <input type="tel" id="phone" data-db-editable="true" disabled value="@displayPhone" />
                     </div>
                     <div class="form-group">
                         <label for="birthDate">Ngày sinh</label>
-                        <input type="date" id="birthDate" disabled value="1995-03-15" />
+                        <input type="date" id="birthDate" data-db-editable="true" disabled value="@displayBirthDate" />
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group" style="grid-column: 1 / -1;">
                         <label for="bio">Tiểu sử</label>
-                        <textarea id="bio" disabled>"Traveler • Food Lover • Explorer"</textarea>
+                        <textarea id="bio" data-db-editable="true" disabled>@displayBio</textarea>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="city">Thành phố</label>
-                        <input type="text" id="city" disabled value="Hà Nội" />
+                        <input type="text" id="city" data-db-editable="true" disabled value="@displayCity" />
                     </div>
                     <div class="form-group">
                         <label for="country">Quốc gia</label>
-                        <input type="text" id="country" disabled value="Việt Nam" />
+                        <input type="text" id="country" data-db-editable="true" disabled value="@displayCountry" />
                     </div>
                 </div>
+               
             </div>
 
             <div class="stats-section" style="margin-top: var(--spacing-8);">
@@ -537,7 +543,6 @@
     function enableEditMode() {
         isEditMode = true;
 
-        // Store original values
         originalValues = {
             fullName: document.getElementById('fullName').value,
             email: document.getElementById('email').value,
@@ -549,39 +554,33 @@
         };
         originalAvatarSrc = document.getElementById('profileAvatar').src;
 
-        // Enable all inputs
-        document.querySelectorAll('.profile-form input, .profile-form textarea').forEach(input => {
+        document.querySelectorAll('.profile-form [data-db-editable="true"]').forEach(input => {
             input.disabled = false;
         });
 
-        // Show edit mode actions
         document.getElementById('editModeActions').classList.add('active');
         document.getElementById('editBtn').style.display = 'none';
-
-        // Show avatar edit options
         document.getElementById('avatarEditOverlay').style.display = 'flex';
         document.getElementById('btnChangeAvatar').style.display = 'inline-block';
 
-        // Show toast
-        showToast('Chế độ chỉnh sửa', 'Bạn đã bật chế độ chỉnh sửa. Hãy thay đổi thông tin của bạn.', 'info');
+        showToast('Chế độ chỉnh sửa', 'Bạn đang chỉnh sửa các trường hỗ trợ lưu DB.', 'info');
     }
 
-    function saveProfile() {
+    async function saveProfile() {
         const fullName = document.getElementById('fullName').value.trim();
         const email = document.getElementById('email').value.trim();
         const phone = document.getElementById('phone').value.trim();
+        const avatarUrl = document.getElementById('profileAvatar').src;
         const birthDate = document.getElementById('birthDate').value.trim();
         const bio = document.getElementById('bio').value.trim();
         const city = document.getElementById('city').value.trim();
         const country = document.getElementById('country').value.trim();
 
-        // Validation
-        if (!fullName || !email || !phone) {
-            showToast('Lỗi', 'Vui lòng điền đầy đủ các trường bắt buộc: Họ tên, Email, Số điện thoại.', 'error');
+        if (!fullName || !email) {
+            showToast('Lỗi', 'Vui lòng điền đầy đủ các trường bắt buộc: Họ tên, Email.', 'error');
             return;
         }
 
-        // Basic email validation
         var at = String.fromCharCode(64);
         const emailRegex = new RegExp('^[^\\s' + at + ']+' + at + '[^\\s' + at + ']+\\.[^\\s' + at + ']+$');
         if (!emailRegex.test(email)) {
@@ -589,56 +588,117 @@
             return;
         }
 
-        // Disable all inputs
-        document.querySelectorAll('.profile-form input, .profile-form textarea').forEach(input => {
+        const tokenInput = document.querySelector('#profileAntiForgeryForm input[name="__RequestVerificationToken"]');
+        if (!tokenInput) {
+            showToast('Lỗi', 'Không tìm thấy bảo mật CSRF token.', 'error');
+            return;
+        }
+
+        const payload = new URLSearchParams();
+        payload.append('__RequestVerificationToken', tokenInput.value);
+        payload.append('fullName', fullName);
+        payload.append('email', email);
+        payload.append('phone', phone);
+        payload.append('avatarUrl', avatarUrl);
+        payload.append('birthDate', birthDate);
+        payload.append('bio', bio);
+        payload.append('city', city);
+        payload.append('country', country);
+
+        let result;
+        try {
+            const response = await fetch('@Url.Action("Update", "Profile")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                },
+                body: payload.toString()
+            });
+
+            result = await response.json();
+
+            if (!response.ok || !result.success) {
+                showToast('Lỗi', (result && result.message) ? result.message : 'Không thể cập nhật thông tin.', 'error');
+                return;
+            }
+        } catch (error) {
+            showToast('Lỗi', 'Có lỗi xảy ra khi kết nối máy chủ.', 'error');
+            return;
+        }
+
+        document.querySelectorAll('.profile-form [data-db-editable="true"]').forEach(input => {
             input.disabled = true;
         });
 
-        // Hide edit mode actions
         document.getElementById('editModeActions').classList.remove('active');
         document.getElementById('editBtn').style.display = 'block';
-
-        // Hide avatar edit options
         document.getElementById('avatarEditOverlay').style.display = 'none';
         document.getElementById('btnChangeAvatar').style.display = 'none';
 
-        // Update display name
-        document.getElementById('displayName').textContent = fullName;
-        document.getElementById('displayBio').textContent = bio || originalValues.bio;
+        if (result && result.data) {
+            if (result.data.fullName) {
+                document.getElementById('fullName').value = result.data.fullName;
+                document.getElementById('displayName').textContent = result.data.fullName;
+            }
+            if (result.data.email) {
+                document.getElementById('email').value = result.data.email;
+            }
+            if (typeof result.data.phone !== 'undefined') {
+                document.getElementById('phone').value = result.data.phone || '';
+            }
+            if (result.data.avatarUrl) {
+                document.getElementById('profileAvatar').src = result.data.avatarUrl;
+            }
+            if (typeof result.data.birthDate !== 'undefined') {
+                document.getElementById('birthDate').value = result.data.birthDate || '';
+            }
+            if (typeof result.data.bio !== 'undefined') {
+                document.getElementById('bio').value = result.data.bio || '';
+                document.getElementById('displayBio').textContent = result.data.bio || '';
+            }
+            if (typeof result.data.city !== 'undefined') {
+                document.getElementById('city').value = result.data.city || '';
+            }
+            if (typeof result.data.country !== 'undefined') {
+                document.getElementById('country').value = result.data.country || '';
+            }
+        }
 
-        // Show success toast
-        showToast('Thành công', 'Thông tin cá nhân của bạn đã được lưu.', 'success');
+        originalValues = {
+            fullName: document.getElementById('fullName').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value,
+            birthDate: document.getElementById('birthDate').value,
+            bio: document.getElementById('bio').value,
+            city: document.getElementById('city').value,
+            country: document.getElementById('country').value
+        };
+
+        showToast('Thành công', (result && result.message) ? result.message : 'Cập nhật thành công.', 'success');
 
         isEditMode = false;
     }
 
     function cancelEdit() {
-        // Restore original values
-        document.getElementById('fullName').value = originalValues.fullName;
-        document.getElementById('email').value = originalValues.email;
-        document.getElementById('phone').value = originalValues.phone;
-        document.getElementById('birthDate').value = originalValues.birthDate;
-        document.getElementById('bio').value = originalValues.bio;
-        document.getElementById('city').value = originalValues.city;
-        document.getElementById('country').value = originalValues.country;
+        document.getElementById('fullName').value = originalValues.fullName || '';
+        document.getElementById('email').value = originalValues.email || '';
+        document.getElementById('phone').value = originalValues.phone || '';
+        document.getElementById('birthDate').value = originalValues.birthDate || '';
+        document.getElementById('bio').value = originalValues.bio || '';
+        document.getElementById('city').value = originalValues.city || '';
+        document.getElementById('country').value = originalValues.country || '';
+        document.getElementById('displayBio').textContent = originalValues.bio || '';
 
-        // Disable all inputs
-        document.querySelectorAll('.profile-form input, .profile-form textarea').forEach(input => {
+        document.querySelectorAll('.profile-form [data-db-editable="true"]').forEach(input => {
             input.disabled = true;
         });
 
-        // Revert avatar
         document.getElementById('profileAvatar').src = originalAvatarSrc;
-
-        // Hide edit mode actions
         document.getElementById('editModeActions').classList.remove('active');
         document.getElementById('editBtn').style.display = 'block';
-
-        // Hide avatar edit options
         document.getElementById('avatarEditOverlay').style.display = 'none';
         document.getElementById('btnChangeAvatar').style.display = 'none';
 
-        // Show cancel toast
         showToast('Đã hủy', 'Các thay đổi của bạn đã được hủy.', 'info');
 
         isEditMode = false;

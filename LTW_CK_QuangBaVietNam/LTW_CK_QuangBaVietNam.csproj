@@ -136,6 +136,7 @@
     </Compile>
     <Compile Include="Helpers\BreadcrumbHelper.cs" />
     <Compile Include="Helpers\PasswordHasher.cs" />
+    <Compile Include="Controllers\ProfileController.cs" />
     <Compile Include="Models\BreadcrumbItem.cs" />
     <Compile Include="Models\DataClasses1.designer.cs">
       <AutoGen>True</AutoGen>

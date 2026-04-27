@@ -9,9 +9,10 @@ namespace LTW_CK_QuangBaVietNam.Controllers
 {
     public class LoginController : Controller
     {
-        //private readonly DataClasses1DataContext db = new DataClasses1DataContext(
-        //    ConfigurationManager.ConnectionStrings["QL_DL_LTWConnectionString"].ConnectionString);
-       DataClasses1DataContext db = new DataClasses1DataContext();
+        private readonly DataClasses1DataContext db = new DataClasses1DataContext(
+            ConfigurationManager.ConnectionStrings["QL_DL_LTWConnectionString"].ConnectionString);
+       
+        //DataClasses1DataContext db = new DataClasses1DataContext();
 
         public ActionResult Index()
         {
