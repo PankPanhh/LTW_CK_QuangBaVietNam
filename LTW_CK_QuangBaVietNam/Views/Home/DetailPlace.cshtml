@@ -1,0 +1,1053 @@
+﻿@{
+    ViewBag.Title = "Vịnh Hạ Long - Chi tiết địa điểm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    :root {
+        --deep-slate: #1e293b;
+        --slate: #334155;
+        --sky-blue: #0EA5E9;
+        --sky-light: #38BDF8;
+        --slate-light: #cbd5e1;
+        --slate-200: #e2e8f0;
+        --white: #ffffff;
+        --spacing-2: 0.5rem;
+        --spacing-3: 0.75rem;
+        --spacing-4: 1rem;
+        --spacing-6: 1.5rem;
+        --spacing-8: 2rem;
+        --spacing-12: 3rem;
+        --spacing-16: 4rem;
+    }
+
+    .place-detail-page {
+        background: #f8fafc;
+    }
+
+    /* Hero Section */
+    .place-hero {
+        position: relative;
+        width: 100%;
+        height: 500px;
+        overflow: hidden;
+        margin-bottom: var(--spacing-12);
+    }
+
+    .place-hero-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+
+    .place-hero:hover .place-hero-image {
+        transform: scale(1.02);
+    }
+
+    .place-hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(220, 38, 38, 0.3), rgba(30, 41, 59, 0.6));
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: var(--spacing-12);
+        z-index: 2;
+    }
+
+    .place-hero-content {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-4);
+    }
+
+    .place-hero-title {
+        font-size: 3rem;
+        font-weight: 800;
+        color: white;
+        line-height: 1.2;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        margin: 0;
+    }
+
+    .place-hero-location {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        font-size: 1.25rem;
+        color: rgba(255, 255, 255, 0.95);
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .place-hero-location i {
+        color: #fbbf24;
+        font-size: 1.5rem;
+    }
+
+    .place-hero-actions {
+        display: flex;
+        gap: var(--spacing-3);
+        flex-wrap: wrap;
+    }
+
+    .place-action-btn {
+        padding: var(--spacing-3) var(--spacing-6);
+        background: rgba(255, 255, 255, 0.95);
+        color: var(--deep-slate);
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9375rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        backdrop-filter: blur(4px);
+    }
+
+    .place-action-btn:hover {
+        background: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .place-action-btn i {
+        font-size: 1.1rem;
+    }
+
+    /* Main Content Area */
+    .place-content-wrapper {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: var(--spacing-8);
+        margin-bottom: var(--spacing-12);
+        padding: 0 var(--spacing-4);
+    }
+
+    .place-main {
+        flex: 1;
+    }
+
+    /* Info Section */
+    .place-info-section {
+        background: white;
+        border-radius: 16px;
+        padding: var(--spacing-8);
+        margin-bottom: var(--spacing-8);
+        box-shadow: 0 2px 12px rgba(30, 41, 59, 0.08);
+    }
+
+    .place-description {
+        font-size: 1.0625rem;
+        line-height: 1.8;
+        color: #64748b;
+        margin-bottom: var(--spacing-6);
+    }
+
+    .place-description p {
+        margin: 0 0 var(--spacing-4) 0;
+    }
+
+    .place-description strong {
+        color: var(--deep-slate);
+        font-weight: 700;
+    }
+
+    /* Info Card (Glassmorphism) */
+    .place-info-card {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(20px);
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        border-radius: 16px;
+        padding: var(--spacing-6);
+        position: sticky;
+        top: 100px;
+    }
+
+    .info-item {
+        margin-bottom: var(--spacing-6);
+        padding-bottom: var(--spacing-6);
+        border-bottom: 1px solid rgba(30, 41, 59, 0.1);
+    }
+
+    .info-item:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .info-label {
+        font-size: 0.8125rem;
+        font-weight: 700;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: var(--spacing-2);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+    }
+
+    .info-label i {
+        color: var(--sky-blue);
+        font-size: 1rem;
+    }
+
+    .info-value {
+        font-size: 1rem;
+        color: var(--deep-slate);
+        font-weight: 600;
+        line-height: 1.6;
+    }
+
+    .info-card-btn {
+        width: 100%;
+        padding: var(--spacing-4);
+        background: linear-gradient(135deg, var(--sky-blue), var(--sky-light));
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--spacing-2);
+        margin-top: var(--spacing-4);
+    }
+
+    .info-card-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(14, 165, 233, 0.3);
+    }
+
+    /* Gallery Section */
+    .gallery-section {
+        margin-bottom: var(--spacing-12);
+    }
+
+    .gallery-section h2 {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--deep-slate);
+        margin: 0 0 var(--spacing-6) 0;
+    }
+
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--spacing-4);
+    }
+
+    .gallery-item {
+        position: relative;
+        height: 200px;
+        border-radius: 12px;
+        overflow: hidden;
+        cursor: pointer;
+        group: 'gallery-hover';
+        transition: all 0.3s ease;
+    }
+
+    .gallery-item:hover {
+        transform: translateY(-4px);
+    }
+
+    .gallery-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .gallery-item:hover .gallery-image {
+        transform: scale(1.08);
+    }
+
+    .gallery-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(30, 41, 59, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .gallery-item:hover .gallery-overlay {
+        opacity: 1;
+    }
+
+    .gallery-overlay i {
+        font-size: 2.5rem;
+        color: white;
+    }
+
+    .gallery-badge {
+        position: absolute;
+        top: var(--spacing-3);
+        right: var(--spacing-3);
+        background: rgba(14, 165, 233, 0.9);
+        color: white;
+        padding: var(--spacing-2) var(--spacing-3);
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+
+    /* Experience Section */
+    .experience-section {
+        margin-bottom: var(--spacing-12);
+    }
+
+    .experience-section h2 {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--deep-slate);
+        margin: 0 0 var(--spacing-6) 0;
+    }
+
+    .experience-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--spacing-6);
+    }
+
+    .experience-card {
+        background: white;
+        border-radius: 12px;
+        padding: var(--spacing-6);
+        box-shadow: 0 2px 12px rgba(30, 41, 59, 0.08);
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+
+    .experience-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 8px 24px rgba(30, 41, 59, 0.12);
+    }
+
+    .experience-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(56, 189, 248, 0.1));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: var(--sky-blue);
+        margin: 0 auto var(--spacing-4);
+    }
+
+    .experience-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--deep-slate);
+        margin: 0 0 var(--spacing-3) 0;
+    }
+
+    .experience-description {
+        font-size: 0.9375rem;
+        color: #64748b;
+        line-height: 1.6;
+        margin-bottom: var(--spacing-4);
+    }
+
+    .experience-btn {
+        background: transparent;
+        color: var(--sky-blue);
+        border: 2px solid var(--sky-blue);
+        padding: var(--spacing-2) var(--spacing-4);
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.875rem;
+    }
+
+    .experience-btn:hover {
+        background: var(--sky-blue);
+        color: white;
+    }
+
+    /* Related Places Section */
+    .related-section {
+        margin-bottom: var(--spacing-12);
+    }
+
+    .related-section h2 {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--deep-slate);
+        margin: 0 0 var(--spacing-6) 0;
+    }
+
+    .related-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: var(--spacing-6);
+    }
+
+    .related-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 12px rgba(30, 41, 59, 0.08);
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .related-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 8px 24px rgba(30, 41, 59, 0.15);
+    }
+
+    .related-image {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        background: linear-gradient(135deg, #e0e7ff, #f3e8ff);
+    }
+
+    .related-content {
+        padding: var(--spacing-4);
+    }
+
+    .related-title {
+        font-size: 1.0625rem;
+        font-weight: 700;
+        color: var(--deep-slate);
+        margin: 0 0 var(--spacing-2) 0;
+    }
+
+    .related-location {
+        font-size: 0.875rem;
+        color: #94a3b8;
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-1);
+        margin-bottom: var(--spacing-3);
+    }
+
+    .related-distance {
+        font-size: 0.75rem;
+        background: rgba(14, 165, 233, 0.1);
+        color: var(--sky-blue);
+        padding: var(--spacing-1) var(--spacing-2);
+        border-radius: 4px;
+        font-weight: 600;
+    }
+
+    /* CTA Section */
+    .cta-section {
+        background: linear-gradient(135deg, var(--deep-slate), var(--slate));
+        border-radius: 16px;
+        padding: var(--spacing-12);
+        text-align: center;
+        margin-bottom: var(--spacing-12);
+        color: white;
+    }
+
+    .cta-title {
+        font-size: 2rem;
+        font-weight: 800;
+        margin: 0 0 var(--spacing-3) 0;
+    }
+
+    .cta-subtitle {
+        font-size: 1.0625rem;
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: var(--spacing-8);
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .cta-buttons {
+        display: flex;
+        gap: var(--spacing-4);
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .cta-btn {
+        padding: var(--spacing-4) var(--spacing-8);
+        border: 2px solid white;
+        background: transparent;
+        color: white;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+    }
+
+    .cta-btn:hover {
+        background: white;
+        color: var(--deep-slate);
+        transform: translateY(-2px);
+    }
+
+    .cta-btn.primary {
+        background: var(--sky-blue);
+        border-color: var(--sky-blue);
+        color: white;
+    }
+
+    .cta-btn.primary:hover {
+        background: var(--sky-light);
+        border-color: var(--sky-light);
+        color: white;
+    }
+
+    /* Image Modal */
+    .image-modal {
+        display: none;
+        position: fixed;
+        z-index: 2000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.95);
+        animation: fadeIn 0.3s ease;
+    }
+
+    .image-modal.show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-image-container {
+        position: relative;
+        max-width: 90%;
+        max-height: 85vh;
+    }
+
+    .modal-image {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        animation: zoomIn 0.3s ease;
+    }
+
+    .modal-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        color: white;
+        font-size: 2rem;
+        cursor: pointer;
+        padding: var(--spacing-4);
+        border-radius: 4px;
+        transition: all 0.3s ease;
+        z-index: 10;
+    }
+
+    .modal-nav:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .modal-nav.prev {
+        left: var(--spacing-4);
+    }
+
+    .modal-nav.next {
+        right: var(--spacing-4);
+    }
+
+    .modal-close {
+        position: absolute;
+        top: var(--spacing-4);
+        right: var(--spacing-4);
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        color: white;
+        font-size: 2rem;
+        cursor: pointer;
+        padding: 0;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+
+    .modal-close:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .modal-counter {
+        position: absolute;
+        bottom: var(--spacing-4);
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        padding: var(--spacing-2) var(--spacing-4);
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    @@keyframes zoomIn {
+        from {
+            transform: scale(0.8);
+            opacity: 0;
+        }
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    /* Responsive */
+    @@media (max-width: 1024px) {
+        .place-content-wrapper {
+            grid-template-columns: 1fr;
+        }
+
+        .place-info-card {
+            position: static;
+        }
+
+        .gallery-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .experience-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .place-hero {
+            height: 350px;
+            margin-bottom: var(--spacing-8);
+        }
+
+        .place-hero-title {
+            font-size: 2rem;
+        }
+
+        .place-hero-overlay {
+            padding: var(--spacing-6);
+        }
+
+        .place-hero-actions {
+            gap: var(--spacing-2);
+        }
+
+        .place-action-btn {
+            padding: var(--spacing-3) var(--spacing-4);
+            font-size: 0.8125rem;
+        }
+
+        .place-info-section {
+            padding: var(--spacing-6);
+        }
+
+        .gallery-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .experience-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .cta-buttons {
+            flex-direction: column;
+        }
+
+        .cta-btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .related-grid {
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        }
+    }
+</style>
+
+<div class="place-detail-page">
+    <!-- Hero Section -->
+    <section class="place-hero">
+        <img src="https://images.unsplash.com/photo-1528127269322-539801943592?w=1200&h=600&fit=crop" alt="Vịnh Hạ Long" class="place-hero-image">
+        <div class="place-hero-overlay">
+            <div class="place-hero-content">
+                <h1 class="place-hero-title">Vịnh Hạ Long</h1>
+                <div class="place-hero-location">
+                    <i class="bi bi-geo-alt-fill"></i>
+                    <span>Quảng Ninh, Việt Nam</span>
+                </div>
+                <div class="place-hero-actions">
+                    <button class="place-action-btn" onclick="toggleFavorite()">
+                        <i class="bi bi-heart"></i> Yêu thích
+                    </button>
+                    <button class="place-action-btn" onclick="addToSchedule()">
+                        <i class="bi bi-plus-lg"></i> Thêm vào lịch trình
+                    </button>
+                    <button class="place-action-btn" onclick="viewOnMap()">
+                        <i class="bi bi-map"></i> Xem trên bản đồ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container-fluid" style="padding: 0 var(--spacing-4);">
+        <div class="place-content-wrapper">
+            <!-- Main Content -->
+            <main class="place-main">
+                <!-- Info Section -->
+                <section class="place-info-section">
+                    <div class="place-description">
+                        <p><strong>Vịnh Hạ Long</strong> là một trong những di sản thế giới được UNESCO công nhận, nổi tiếng với những hòn đảo đá vôi và cảnh quan biển tuyệt đẹp.</p>
+
+                        <p>Với hơn 3,000 hòn đảo được tạo thành bởi các tảng đá vôi hùng vĩ mọc lên từ vùng biển xanh ngọc, Vịnh Hạ Long mang đến trải nghiệm thiên nhiên tuyệt vời. Du khách có thể khám phá các hang động bí ẩn như Hang Múa, tham gia các hoạt động như chèo thuyền kayak, lặn biển, hay đơn giản là ngắm cảnh hoàng hôn trên boong tàu.</p>
+
+                        <p>Mỗi góc của vịnh đều có một câu chuyện, từ các bãi biển hoang sơ đến những ngôi làng chài truyền thống nơi người dân vẫn giữ lối sống truyền thống trong hàng thế kỷ.</p>
+                    </div>
+                </section>
+
+                <!-- Gallery Section -->
+                <section class="gallery-section">
+                    <h2>Khám phá Vịnh Hạ Long</h2>
+                    <div class="gallery-grid">
+                        <div class="gallery-item" onclick="openGallery(0)">
+                            <img src="https://images.unsplash.com/photo-1528127269322-539801943592?w=400&h=300&fit=crop" alt="Vịnh Hạ Long" class="gallery-image">
+                            <div class="gallery-overlay">
+                                <i class="bi bi-zoom-in"></i>
+                            </div>
+                            <div class="gallery-badge">1/8</div>
+                        </div>
+                        <div class="gallery-item" onclick="openGallery(1)">
+                            <img src="https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=400&h=300&fit=crop" alt="Hang động" class="gallery-image">
+                            <div class="gallery-overlay">
+                                <i class="bi bi-zoom-in"></i>
+                            </div>
+                            <div class="gallery-badge">2/8</div>
+                        </div>
+                        <div class="gallery-item" onclick="openGallery(2)">
+                            <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&h=300&fit=crop" alt="Hoàng hôn" class="gallery-image">
+                            <div class="gallery-overlay">
+                                <i class="bi bi-zoom-in"></i>
+                            </div>
+                            <div class="gallery-badge">3/8</div>
+                        </div>
+                        <div class="gallery-item" onclick="openGallery(3)">
+                            <img src="https://images.unsplash.com/photo-1519046904884-53103b34b206?w=400&h=300&fit=crop" alt="Kayak" class="gallery-image">
+                            <div class="gallery-overlay">
+                                <i class="bi bi-zoom-in"></i>
+                            </div>
+                            <div class="gallery-badge">4/8</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Experience Section -->
+                <section class="experience-section">
+                    <h2>Trải nghiệm tại đây</h2>
+                    <div class="experience-grid">
+                        <div class="experience-card">
+                            <div class="experience-icon">
+                                <i class="bi bi-cup-hot"></i>
+                            </div>
+                            <h3 class="experience-title">Ăn gì</h3>
+                            <p class="experience-description">Hải sản tươi ngon, cơm chiên hải sản, bánh mỳ cáy, và các đặc sản địa phương.</p>
+                            <button class="experience-btn" onclick="expandExperience('eat')">Xem thêm</button>
+                        </div>
+                        <div class="experience-card">
+                            <div class="experience-icon">
+                                <i class="bi bi-gamepad"></i>
+                            </div>
+                            <h3 class="experience-title">Chơi gì</h3>
+                            <p class="experience-description">Chèo kayak, lặn biển, tham quan hang động, tour thuyền, cắm trại trên đảo.</p>
+                            <button class="experience-btn" onclick="expandExperience('play')">Xem thêm</button>
+                        </div>
+                        <div class="experience-card">
+                            <div class="experience-icon">
+                                <i class="bi bi-camera"></i>
+                            </div>
+                            <h3 class="experience-title">Check-in</h3>
+                            <p class="experience-description">Điểm check-in nổi tiếng: Hang Múa, Đảo Tuần Châu, Vạn Hạ resort.</p>
+                            <button class="experience-btn" onclick="expandExperience('checkin')">Xem thêm</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Related Places Section -->
+                <section class="related-section">
+                    <h2>Địa điểm gần đó</h2>
+                    <div class="related-grid">
+                        <div class="related-card" onclick="goToPlace(1)">
+                            <img src="https://images.unsplash.com/photo-1464207687429-7505649dae38?w=300&h=200&fit=crop" alt="Hang Múa" class="related-image">
+                            <div class="related-content">
+                                <h3 class="related-title">Hang Múa</h3>
+                                <div class="related-location">
+                                    <i class="bi bi-geo-alt"></i>
+                                    <span>Ninh Bình</span>
+                                </div>
+                                <div class="related-distance">5 km</div>
+                            </div>
+                        </div>
+                        <div class="related-card" onclick="goToPlace(2)">
+                            <img src="https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=300&h=200&fit=crop" alt="Đảo Cát Bà" class="related-image">
+                            <div class="related-content">
+                                <h3 class="related-title">Đảo Cát Bà</h3>
+                                <div class="related-location">
+                                    <i class="bi bi-geo-alt"></i>
+                                    <span>Hải Phòng</span>
+                                </div>
+                                <div class="related-distance">12 km</div>
+                            </div>
+                        </div>
+                        <div class="related-card" onclick="goToPlace(3)">
+                            <img src="https://images.unsplash.com/photo-1518256578533-c90d3e85d77f?w=300&h=200&fit=crop" alt="Vạn Hạ Resort" class="related-image">
+                            <div class="related-content">
+                                <h3 class="related-title">Vạn Hạ Resort</h3>
+                                <div class="related-location">
+                                    <i class="bi bi-geo-alt"></i>
+                                    <span>Quảng Ninh</span>
+                                </div>
+                                <div class="related-distance">8 km</div>
+                            </div>
+                        </div>
+                        <div class="related-card" onclick="goToPlace(4)">
+                            <img src="https://images.unsplash.com/photo-1519452575417-564c1401ecc0?w=300&h=200&fit=crop" alt="Đảo Tuần Châu" class="related-image">
+                            <div class="related-content">
+                                <h3 class="related-title">Đảo Tuần Châu</h3>
+                                <div class="related-location">
+                                    <i class="bi bi-geo-alt"></i>
+                                    <span>Quảng Ninh</span>
+                                </div>
+                                <div class="related-distance">3 km</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+
+            <!-- Sidebar - Info Card -->
+            <aside>
+                <div class="place-info-card">
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="bi bi-geo-alt"></i> Địa chỉ
+                        </div>
+                        <div class="info-value">Vịnh Hạ Long, Quảng Ninh, Việt Nam</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="bi bi-clock"></i> Giờ mở cửa
+                        </div>
+                        <div class="info-value">
+                            Từ 7:30 - 17:30<br>
+                            <small style="color: #94a3b8; font-weight: 400;">Hàng ngày</small>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="bi bi-tag"></i> Giá vé
+                        </div>
+                        <div class="info-value">
+                            Người lớn: 250,000 VND<br>
+                            <small style="color: #94a3b8; font-weight: 400;">Trẻ em: 125,000 VND</small>
+                        </div>
+                    </div>
+
+                    <button class="info-card-btn" onclick="scrollToMap()">
+                        <i class="bi bi-map"></i> Xem bản đồ
+                    </button>
+                </div>
+            </aside>
+        </div>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <h2 class="cta-title">Sẵn sàng khám phá?</h2>
+            <p class="cta-subtitle">Thêm Vịnh Hạ Long vào lịch trình du lịch của bạn và tạo ra những kỷ niệm không quên.</p>
+            <div class="cta-buttons">
+                <button class="cta-btn primary" onclick="addToSchedule()">
+                    <i class="bi bi-plus-lg"></i> Thêm vào lịch trình
+                </button>
+                <button class="cta-btn" onclick="viewOnMap()">
+                    <i class="bi bi-map"></i> Xem trên bản đồ
+                </button>
+                <button class="cta-btn" onclick="exploreMore()">
+                    <i class="bi bi-arrow-right"></i> Khám phá thêm
+                </button>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- Image Gallery Modal -->
+<div id="imageModal" class="image-modal">
+    <div class="modal-image-container">
+        <img id="modalImage" src="" alt="Gallery" class="modal-image">
+        <button class="modal-nav prev" onclick="prevImage()">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+        <button class="modal-nav next" onclick="nextImage()">
+            <i class="bi bi-chevron-right"></i>
+        </button>
+        <button class="modal-close" onclick="closeGallery()">
+            <i class="bi bi-x"></i>
+        </button>
+        <div class="modal-counter">
+            <span id="imageCounter">1</span> / <span id="totalImages">8</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Gallery Data
+    const galleryImages = [
+        'https://images.unsplash.com/photo-1528127269322-539801943592?w=1200&h=800&fit=crop',
+        'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=1200&h=800&fit=crop',
+        'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&h=800&fit=crop',
+        'https://images.unsplash.com/photo-1519046904884-53103b34b206?w=1200&h=800&fit=crop',
+        'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1200&h=800&fit=crop',
+        'https://images.unsplash.com/photo-1511522713356-e6b8bfd4a5f4?w=1200&h=800&fit=crop',
+        'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1200&h=800&fit=crop',
+        'https://images.unsplash.com/photo-1520852741943-47f3b76e0a72?w=1200&h=800&fit=crop'
+    ];
+
+    let currentImageIndex = 0;
+
+    // Open Gallery Modal
+    function openGallery(index) {
+        currentImageIndex = index;
+        const modal = document.getElementById('imageModal');
+        const img = document.getElementById('modalImage');
+
+        img.src = galleryImages[currentImageIndex];
+        document.getElementById('imageCounter').textContent = currentImageIndex + 1;
+        document.getElementById('totalImages').textContent = galleryImages.length;
+
+        modal.classList.add('show');
+    }
+
+    // Close Gallery Modal
+    function closeGallery() {
+        document.getElementById('imageModal').classList.remove('show');
+    }
+
+    // Navigate Gallery
+    function prevImage() {
+        currentImageIndex = (currentImageIndex - 1 + galleryImages.length) % galleryImages.length;
+        updateModalImage();
+    }
+
+    function nextImage() {
+        currentImageIndex = (currentImageIndex + 1) % galleryImages.length;
+        updateModalImage();
+    }
+
+    function updateModalImage() {
+        document.getElementById('modalImage').src = galleryImages[currentImageIndex];
+        document.getElementById('imageCounter').textContent = currentImageIndex + 1;
+    }
+
+    // Toggle Favorite
+    function toggleFavorite() {
+        showToast('Yêu thích', 'Đã thêm Vịnh Hạ Long vào danh sách yêu thích!', 'success');
+    }
+
+    // Add to Schedule
+    function addToSchedule() {
+        showToast('Thêm lịch trình', 'Vịnh Hạ Long đã được thêm vào lịch trình!', 'success');
+    }
+
+    // View on Map
+    function viewOnMap() {
+        showToast('Chuyển hướng', 'Đang chuyển đến trang bản đồ...', 'info');
+        setTimeout(() => {
+            window.location.href = '/Home/Map#halong-bay';
+        }, 800);
+    }
+
+    // Expand Experience
+    function expandExperience(type) {
+        const experiences = {
+            'eat': 'Cơm chiên hải sản, bánh mỳ cáy, gỏi cua, mực nướng, canh chua tôm...',
+            'play': 'Chèo kayak giữa hòn đảo, lặn biển khám phá san hô, tour thuyền Sunrise/Sunset...',
+            'checkin': 'Hang Múa, Đảo Tuần Châu, Vạn Hạ Resort, Ngũ Cát Bà...'
+        };
+
+        showToast('Chi tiết', experiences[type], 'info');
+    }
+
+    // Go to Related Place
+    function goToPlace(placeId) {
+        showToast('Chuyển hướng', 'Đang tải trang chi tiết địa điểm...', 'info');
+        setTimeout(() => {
+            window.location.href = '/Home/DetailPlace?id=' + placeId;
+        }, 800);
+    }
+
+    // Scroll to Map
+    function scrollToMap() {
+        showToast('Chuyển hướng', 'Đang mở bản đồ...', 'info');
+        setTimeout(() => {
+            window.location.href = '/Home/Map';
+        }, 800);
+    }
+
+    // Explore More
+    function exploreMore() {
+        showToast('Khám phá', 'Đang tải các địa điểm khác...', 'info');
+        setTimeout(() => {
+            window.location.href = '/Home/Map';
+        }, 800);
+    }
+
+    // Keyboard Navigation for Gallery
+    document.addEventListener('keydown', function(event) {
+        const modal = document.getElementById('imageModal');
+        if (!modal.classList.contains('show')) return;
+
+        if (event.key === 'ArrowLeft') prevImage();
+        if (event.key === 'ArrowRight') nextImage();
+        if (event.key === 'Escape') closeGallery();
+    });
+
+    // Close modal on background click
+    document.getElementById('imageModal').addEventListener('click', function(event) {
+        if (event.target === this) {
+            closeGallery();
+        }
+    });
+</script>

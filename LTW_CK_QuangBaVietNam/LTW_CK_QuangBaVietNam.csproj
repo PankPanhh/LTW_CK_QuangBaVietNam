@@ -259,6 +259,11 @@
     <Content Include="Views\Home\Register.cshtml" />
     <Content Include="Views\Home\Profile.cshtml" />
     <Content Include="Views\Home\Map.cshtml" />
+    <Content Include="Views\Home\Schedule.cshtml" />
+    <Content Include="Views\Home\Blog.cshtml" />
+    <Content Include="Views\Home\DetailBlog.cshtml" />
+    <Content Include="Views\Home\DetailSchedule.cshtml" />
+    <Content Include="Views\Home\DetailPlace.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

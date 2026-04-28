@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Bản đồ";
+    ViewBag.Title = "Map";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -438,12 +438,12 @@
     </section>
 </div>
 
-<!-- Leaflet CSS & JS -->
+<!-- Leaflet CSS & JS - KHÔNG CẦN API KEY, HIỂN THỊ RÕ ĐẢO -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
 <script>
-    // Vietnam locations data
+    // Vietnam locations data - INCLUDES HOÀNG SA & TRƯỜNG SA
     const locations = [
         {
             id: 1,
@@ -524,6 +524,26 @@
             image: "https://images.unsplash.com/photo-1540611025311-01df3cef54b5?w=600",
             description: "Bãi biển xinh đẹp với cát trắng mịn và nước biển trong xanh. Nha Trang là một trong những điểm đến biển nổi tiếng nhất của Việt Nam.",
             badge: "Biển nắng"
+        },
+        {
+            id: 9,
+            name: "🇻🇳 Quần đảo Hoàng Sa",
+            region: "Đà Nẵng",
+            coordinates: [16.5333, 112.0333],
+            category: "beach",
+            image: "https://images.unsplash.com/photo-1539391913033-6461ffad8d80?w=600",
+            description: "Quần đảo Hoàng Sa là một phần lãnh thổ vững chắc của Việt Nam tại Biển Đông. Đây là vùng biển quan trọng có giá trị chiến lược và kinh tế cao.",
+            badge: "🇻🇳 Thiên thiêng"
+        },
+        {
+            id: 10,
+            name: "🇻🇳 Quần đảo Trường Sa",
+            region: "Khánh Hòa",
+            coordinates: [8.6333, 111.9667],
+            category: "beach",
+            image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600",
+            description: "Quần đảo Trường Sa là một phần máu thịt của tổ quốc Việt Nam, nằm ở phía đông nam Biển Đông, là điểm giao thoa của các tuyến đường hàng hải quốc tế.",
+            badge: "🇻🇳 Cột mốc chủ quyền"
         }
     ];
 
@@ -532,17 +552,22 @@
     let currentLocation = null;
     let currentFilter = 'all';
 
-    // Initialize map
+    // Initialize Map
     function initMap() {
-        map = L.map('map').setView([15.5007, 104.869], 6);
+        if (!document.getElementById('map')) return;
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        // Set view focusing on center of Vietnam to clearly show both mainland and islands
+        map = L.map('map').setView([15.5007, 108.869], 5);
+
+        // OpenStreetMap TileLayer (100% Free, No API Key, Shows Islands)
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             maxZoom: 19,
             minZoom: 5
         }).addTo(map);
 
         displayMarkers(locations);
+        setupEventListeners();
     }
 
     // Display markers on map
@@ -552,21 +577,38 @@
         markers = [];
 
         locationsToShow.forEach(location => {
+            const isIsland = location.id === 9 || location.id === 10;
+
+            const markerColor = isIsland ? 'linear-gradient(135deg, #FF3D00, #FF8A00)' : 'linear-gradient(135deg, #0EA5E9, #38BDF8)';
+            const markerSize = isIsland ? '56px' : '40px';
+            const iconSize = isIsland ? '28px' : '20px';
+            const pulseEffect = isIsland ? '<div class="marker-pulse"></div>' : '';
+
             const markerIcon = L.divIcon({
-                html: `<div style="background: linear-gradient(135deg, #0EA5E9, #38BDF8); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3); border: 3px solid white;">
-                    <i class="bi bi-geo-alt-fill" style="font-size: 20px;"></i>
-                </div>`,
+                html: `
+                <div style="position: relative;">
+                    ${pulseEffect}
+                    <div style="background: ${markerColor}; color: white; width: ${markerSize}; height: ${markerSize}; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: ${iconSize}; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border: 3px solid white; position: relative; z-index: 2;">
+                        <i class="bi bi-geo-alt-fill" style="font-size: ${iconSize};"></i>
+                    </div>
+                    ${isIsland ? `<div style="position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%); background: white; padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; color: #FF3D00; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,0.2); border: 1px solid #FF3D00;">${location.name}</div>` : ''}
+                </div>
+                `,
                 className: 'location-marker',
-                iconSize: [40, 40],
-                iconAnchor: [20, 40],
-                popupAnchor: [0, -40]
+                iconSize: [parseInt(markerSize), parseInt(markerSize)],
+                iconAnchor: [parseInt(markerSize)/2, parseInt(markerSize)],
+                popupAnchor: [0, -parseInt(markerSize)]
             });
 
             const marker = L.marker(location.coordinates, { icon: markerIcon })
                 .bindPopup(`<strong>${location.name}</strong><br>${location.region}`)
                 .addTo(map);
 
-            marker.on('click', () => showLocationInfo(location));
+            marker.on('click', () => {
+                showLocationInfo(location);
+                map.flyTo(location.coordinates, 8, { duration: 1.5 });
+            });
+
             markers.push(marker);
         });
     }
@@ -589,7 +631,7 @@
                 <div class="location-type-badge">${location.badge}</div>
                 <p class="location-description">${location.description}</p>
                 <div class="action-buttons">
-                    <a href="/Home/LocationDetails?id=${location.id}" class="btn-view-details" target="_blank">
+                    <a href="/Home/DetailPlace?id=${location.id}" class="btn-view-details" target="_blank">
                         <i class="bi bi-eye"></i> Xem chi tiết
                     </a>
                     <button class="btn-add-itinerary" onclick="addToItinerary(${location.id})">
@@ -601,9 +643,6 @@
 
         const infoPanel = document.querySelector('.info-panel');
         infoPanel.innerHTML = infoPanelContent;
-
-        // Center map on selected location
-        map.flyTo(location.coordinates, 10, { duration: 1.5 });
     }
 
     // Toggle favorite
@@ -645,6 +684,7 @@
             displayMarkers(results);
             if (results.length === 1) {
                 showLocationInfo(results[0]);
+                map.flyTo(results[0].coordinates, 8, { duration: 1.5 });
             }
         } else {
             displayMarkers([]);
@@ -652,29 +692,68 @@
         }
     }
 
-    // Event listeners
-    document.addEventListener('DOMContentLoaded', function () {
-        initMap();
-
+    // Setup event listeners
+    function setupEventListeners() {
         // Search functionality
-        document.getElementById('searchBtn').addEventListener('click', function () {
-            const query = document.getElementById('searchInput').value;
-            searchLocations(query);
-        });
+        const searchBtn = document.getElementById('searchBtn');
+        const searchInput = document.getElementById('searchInput');
 
-        document.getElementById('searchInput').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                searchLocations(this.value);
-            }
-        });
+        if (searchBtn) {
+            searchBtn.addEventListener('click', function () {
+                const query = searchInput.value;
+                searchLocations(query);
+            });
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    searchLocations(this.value);
+                }
+            });
+        }
 
         // Filter functionality
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', function () {
                 document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
-                filterLocations(this.dataset.filter);
+                filterLocations(this.getAttribute('data-filter') || 'all');
             });
         });
-    });
+    }
+
+    // Initialize map on document load
+    document.addEventListener('DOMContentLoaded', initMap);
 </script>
+
+<style>
+    /* CSS Pulse Animation for Islands */
+    .marker-pulse {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: rgba(255, 61, 0, 0.5);
+        z-index: 1;
+        animation: pulse 2s infinite;
+    }
+
+    @@keyframes pulse {
+        0% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0.8;
+        }
+        70% {
+            transform: translate(-50%, -50%) scale(2);
+            opacity: 0;
+        }
+        100% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0;
+        }
+    }
+</style>

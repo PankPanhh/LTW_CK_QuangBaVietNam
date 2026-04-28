@@ -1,0 +1,735 @@
+﻿@{
+    ViewBag.Title = "Hạ Long - Kỳ quan thiên nhiên thế giới";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    :root {
+        --deep-slate: #1e293b;
+        --slate: #334155;
+        --sky-blue: #0EA5E9;
+        --sky-light: #38BDF8;
+        --slate-light: #cbd5e1;
+        --slate-200: #e2e8f0;
+        --white: #ffffff;
+        --spacing-2: 0.5rem;
+        --spacing-3: 0.75rem;
+        --spacing-4: 1rem;
+        --spacing-6: 1.5rem;
+        --spacing-8: 2rem;
+        --spacing-12: 3rem;
+        --spacing-16: 4rem;
+    }
+
+    .blog-detail-page {
+        background: #f8fafc;
+    }
+
+    /* Hero Section */
+    .blog-hero {
+        position: relative;
+        width: 100%;
+        height: 500px;
+        background: linear-gradient(135deg, #e0e7ff, #f3e8ff);
+        overflow: hidden;
+        margin-bottom: var(--spacing-12);
+    }
+
+    .blog-hero-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+
+    .blog-hero:hover .blog-hero-image {
+        transform: scale(1.02);
+    }
+
+    .blog-hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to top, rgba(30, 41, 59, 0.7), rgba(30, 41, 59, 0.3), transparent);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: var(--spacing-12);
+        z-index: 2;
+    }
+
+    .blog-hero-content {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-4);
+        max-width: 800px;
+    }
+
+    .blog-hero-category {
+        display: inline-block;
+        width: fit-content;
+        padding: var(--spacing-2) var(--spacing-4);
+        background: rgba(14, 165, 233, 0.9);
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: white;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .blog-hero-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: white;
+        line-height: 1.2;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .blog-hero-meta {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-4);
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 0.9375rem;
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .blog-hero-meta-item {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+    }
+
+    .blog-hero-meta-item i {
+        font-size: 1.1rem;
+    }
+
+    .blog-hero-actions {
+        display: flex;
+        gap: var(--spacing-3);
+        margin-top: var(--spacing-4);
+    }
+
+    .blog-action-btn {
+        padding: var(--spacing-3) var(--spacing-6);
+        border: 2px solid white;
+        background: transparent;
+        color: white;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.9375rem;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        white-space: nowrap;
+    }
+
+    .blog-action-btn:hover {
+        background: white;
+        color: var(--deep-slate);
+    }
+
+    .blog-action-btn.active {
+        background: var(--sky-blue);
+        border-color: var(--sky-blue);
+    }
+
+    /* Main Content Layout */
+    .blog-content-wrapper {
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: var(--spacing-8);
+        padding: 0 var(--spacing-6);
+        margin-bottom: var(--spacing-16);
+    }
+
+    .blog-main-content {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    /* Article Content */
+    .article-text {
+        color: #475569;
+        line-height: 1.8;
+        font-size: 1.0625rem;
+    }
+
+    .article-text h2 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--deep-slate);
+        margin: var(--spacing-8) 0 var(--spacing-4) 0;
+        line-height: 1.3;
+    }
+
+    .article-text h3 {
+        font-size: 1.375rem;
+        font-weight: 700;
+        color: var(--deep-slate);
+        margin: var(--spacing-6) 0 var(--spacing-3) 0;
+    }
+
+    .article-text p {
+        margin: 0 0 var(--spacing-4) 0;
+    }
+
+    .article-text ul, .article-text ol {
+        margin: var(--spacing-4) 0;
+        padding-left: var(--spacing-8);
+    }
+
+    .article-text li {
+        margin-bottom: var(--spacing-2);
+    }
+
+    .article-text strong {
+        color: var(--deep-slate);
+        font-weight: 700;
+    }
+
+    .article-text em {
+        color: var(--sky-blue);
+        font-style: italic;
+    }
+
+    /* Article Images */
+    .article-image {
+        width: 100%;
+        height: auto;
+        border-radius: 12px;
+        margin: var(--spacing-8) 0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 20px rgba(30, 41, 59, 0.1);
+    }
+
+    .article-image:hover {
+        transform: scale(1.01);
+        box-shadow: 0 8px 32px rgba(30, 41, 59, 0.15);
+    }
+
+    .article-image-caption {
+        font-size: 0.875rem;
+        color: #94a3b8;
+        text-align: center;
+        margin-top: var(--spacing-2);
+        font-style: italic;
+    }
+
+    /* Sidebar */
+    .blog-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-8);
+    }
+
+    .sidebar-card {
+        background: white;
+        border-radius: 16px;
+        padding: var(--spacing-6);
+        box-shadow: 0 2px 12px rgba(30, 41, 59, 0.08);
+        position: sticky;
+        top: 100px;
+    }
+
+    .sidebar-card-title {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: var(--deep-slate);
+        margin: 0 0 var(--spacing-4) 0;
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+    }
+
+    .sidebar-card-title i {
+        color: var(--sky-blue);
+    }
+
+    .sidebar-item {
+        padding: var(--spacing-3) 0;
+        border-bottom: 1px solid var(--slate-200);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .sidebar-item:last-child {
+        border-bottom: none;
+    }
+
+    .sidebar-item:hover {
+        padding-left: var(--spacing-2);
+        color: var(--sky-blue);
+    }
+
+    .sidebar-item-name {
+        font-weight: 600;
+        color: var(--deep-slate);
+        margin-bottom: var(--spacing-1);
+        font-size: 0.9375rem;
+    }
+
+    .sidebar-item-meta {
+        font-size: 0.8125rem;
+        color: #94a3b8;
+    }
+
+    .sidebar-view-more {
+        width: 100%;
+        padding: var(--spacing-3) var(--spacing-4);
+        background: rgba(14, 165, 233, 0.1);
+        color: var(--sky-blue);
+        border: 2px solid rgba(14, 165, 233, 0.2);
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+        margin-top: var(--spacing-4);
+    }
+
+    .sidebar-view-more:hover {
+        background: rgba(14, 165, 233, 0.2);
+        border-color: var(--sky-blue);
+    }
+
+    /* Article Footer */
+    .article-footer {
+        border-top: 2px solid var(--slate-200);
+        border-bottom: 2px solid var(--slate-200);
+        padding: var(--spacing-8) 0;
+        margin: var(--spacing-12) 0;
+    }
+
+    .article-footer-actions {
+        display: flex;
+        gap: var(--spacing-4);
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .footer-action-btn {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        padding: var(--spacing-4) var(--spacing-6);
+        background: white;
+        border: 2px solid var(--slate-200);
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.9375rem;
+        color: var(--slate);
+        transition: all 0.3s ease;
+    }
+
+    .footer-action-btn:hover {
+        border-color: var(--sky-blue);
+        color: var(--sky-blue);
+        background: rgba(14, 165, 233, 0.05);
+    }
+
+    .footer-action-btn i {
+        font-size: 1.25rem;
+    }
+
+    .footer-action-btn.active {
+        background: rgba(14, 165, 233, 0.1);
+        border-color: var(--sky-blue);
+        color: var(--sky-blue);
+    }
+
+    /* Modal */
+    .image-modal {
+        display: none;
+        position: fixed;
+        z-index: 2000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.95);
+        animation: fadeIn 0.3s ease;
+    }
+
+    .image-modal.show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .image-modal-content {
+        position: relative;
+        max-width: 90%;
+        max-height: 90vh;
+        animation: zoomIn 0.3s ease;
+    }
+
+    .image-modal-content img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border-radius: 8px;
+    }
+
+    .image-modal-close {
+        position: absolute;
+        top: -40px;
+        right: 0;
+        font-size: 2rem;
+        color: white;
+        cursor: pointer;
+        background: none;
+        border: none;
+        transition: all 0.3s ease;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .image-modal-close:hover {
+        color: var(--sky-blue);
+        transform: scale(1.2);
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    @@keyframes zoomIn {
+        from {
+            transform: scale(0.8);
+            opacity: 0;
+        }
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    /* Responsive */
+    @@media (max-width: 1024px) {
+        .blog-content-wrapper {
+            grid-template-columns: 1fr;
+        }
+
+        .blog-hero-title {
+            font-size: 2rem;
+        }
+
+        .article-text {
+            font-size: 1rem;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .blog-hero {
+            height: 350px;
+            margin-bottom: var(--spacing-8);
+        }
+
+        .blog-hero-overlay {
+            padding: var(--spacing-6);
+        }
+
+        .blog-hero-title {
+            font-size: 1.5rem;
+        }
+
+        .blog-hero-actions {
+            flex-direction: column;
+            gap: var(--spacing-2);
+        }
+
+        .blog-action-btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .blog-content-wrapper {
+            padding: 0 var(--spacing-4);
+        }
+
+        .article-footer-actions {
+            gap: var(--spacing-2);
+        }
+
+        .footer-action-btn {
+            flex: 1;
+            flex-direction: column;
+            gap: var(--spacing-1);
+            padding: var(--spacing-3) var(--spacing-2);
+            font-size: 0.8125rem;
+        }
+
+        .footer-action-btn i {
+            font-size: 1.125rem;
+        }
+    }
+</style>
+
+<!-- Hero Section -->
+<section class="blog-hero">
+    <img src="https://images.unsplash.com/photo-1528127269322-539801943592?w=1200&h=600&fit=crop" alt="Vịnh Hạ Long" class="blog-hero-image">
+    <div class="blog-hero-overlay">
+        <div class="blog-hero-content">
+            <span class="blog-hero-category">Thiên Nhiên</span>
+            <h1 class="blog-hero-title">Hạ Long - Kỳ quan thiên nhiên thế giới</h1>
+            <div class="blog-hero-meta">
+                <div class="blog-hero-meta-item">
+                    <i class="bi bi-calendar-event"></i>
+                    <span>15 Tháng 12, 2024</span>
+                </div>
+                <div class="blog-hero-meta-item">
+                    <i class="bi bi-person-circle"></i>
+                    <span>Tác giả: Nguyễn Văn A</span>
+                </div>
+            </div>
+            <div class="blog-hero-actions">
+                <button class="blog-action-btn" onclick="toggleFavorite(this)">
+                    <i class="bi bi-heart"></i> Yêu thích
+                </button>
+                <button class="blog-action-btn" onclick="shareArticle()">
+                    <i class="bi bi-share"></i> Chia sẻ
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main Content -->
+<div class="container-fluid">
+    <div class="blog-content-wrapper">
+        <!-- Article Content -->
+        <main class="blog-main-content">
+            <article class="article-text">
+                <p>Vịnh Hạ Long, nằm ở phía đông bắc của Việt Nam, là một trong những di sản thiên nhiên thế giới được UNESCO công nhận. Với hơn 1600 hòn đảo đá vôi nổi trên mặt nước xanh ngọc, Hạ Long tạo nên một bức tranh thiên nhiên kỳ vĩ mà ít nơi nào trên thế giới có thể sánh được.</p>
+
+                <h2>Vẻ đẹp kỳ vĩ của thiên nhiên</h2>
+                <p>Mỗi hòn đảo trong vịnh là một <strong>kiến trúc tự nhiên độc đáo</strong>, được hình thành trong suốt hàng triệu năm qua. Những vách đá vôi cao hàng chục mét, những hang động bí ẩn, và những bãi cát trắng hoang sơ tạo nên một cảnh tượng không tưởng.</p>
+
+                <img src="https://images.unsplash.com/photo-1528127269322-539801943592?w=800&h=400&fit=crop" alt="Vịnh Hạ Long lúc bình minh" class="article-image">
+                <p class="article-image-caption">Vịnh Hạ Long trong ánh sáng bình minh - một cảnh tượng tuyệt mỹ</p>
+
+                <h3>Những hòn đảo nổi tiếng</h3>
+                <p>Trong vịnh Hạ Long, có nhiều hòn đảo nổi tiếng mà du khách không nên bỏ lỡ:</p>
+                <ul>
+                    <li><strong>Hòn Gà:</strong> Với hình dáng giống con gà, hòn đảo này trở thành biểu tượng của Hạ Long</li>
+                    <li><strong>Hang Sơn Đông:</strong> Hang động lớn nhất vịnh, với những tạo hình đá tự nhiên tuyệt đẹp</li>
+                    <li><strong>Đảo Tuần Châu:</strong> Là trung tâm du lịch hiện đại với nhiều hoạt động thú vị</li>
+                </ul>
+
+                <h2>Trải nghiệm du lịch tuyệt vời</h2>
+                <p>Du khách đến Hạ Long có thể tham gia vào <em>nhiều hoạt động hấp dẫn</em>:</p>
+                <ul>
+                    <li>Đi du thuyền khám phá những hòn đảo</li>
+                    <li>Thăm các hang động bí ẩn</li>
+                    <li>Tắm biển trên những bãi cát hoang sơ</li>
+                    <li>Tham gia các hoạt động thể thao nước</li>
+                </ul>
+
+                <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=400&fit=crop" alt="Du thuyền trên Vịnh Hạ Long" class="article-image">
+                <p class="article-image-caption">Du thuyền hạng sang là cách tuyệt nhất để khám phá Hạ Long</p>
+
+                <h2>Thời gian tốt nhất để đi</h2>
+                <p>Mùa đẹp nhất để ghé thăm Hạ Long là <strong>tháng 9 đến tháng 11</strong>, khi thời tiết mát mẻ và trời ít mưa. Tuy nhiên, bất kỳ thời điểm nào trong năm cũng có sức hấp dẫn riêng của nó.</p>
+
+                <p>Hạ Long không chỉ là một điểm đến du lịch, mà còn là một hành trình khám phá thiên nhiên tuyệt vời của Việt Nam. Nếu bạn chưa bao giờ đến đây, hãy sắp xếp thời gian soonest possible để không bỏ lỡ kỳ quan này!</p>
+            </article>
+
+            <!-- Article Footer -->
+            <div class="article-footer">
+                <div class="article-footer-actions">
+                    <button class="footer-action-btn" onclick="toggleLike(this)">
+                        <i class="bi bi-hand-thumbs-up"></i>
+                        <span>Thích</span>
+                    </button>
+                    <button class="footer-action-btn" onclick="toggleSave(this)">
+                        <i class="bi bi-bookmark"></i>
+                        <span>Lưu</span>
+                    </button>
+                    <button class="footer-action-btn" onclick="shareArticle()">
+                        <i class="bi bi-share"></i>
+                        <span>Chia sẻ</span>
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Sidebar -->
+        <aside class="blog-sidebar">
+            <!-- Related Locations -->
+            <div class="sidebar-card">
+                <h3 class="sidebar-card-title">
+                    <i class="bi bi-geo-alt-fill"></i>
+                    Địa điểm liên quan
+                </h3>
+                <div class="sidebar-item" onclick="navigateToLocation(1)">
+                    <div class="sidebar-item-name">Vịnh Hạ Long</div>
+                    <div class="sidebar-item-meta"><i class="bi bi-geo-alt"></i> Quảng Ninh</div>
+                </div>
+                <div class="sidebar-item" onclick="navigateToLocation(2)">
+                    <div class="sidebar-item-name">Đảo Cát Bà</div>
+                    <div class="sidebar-item-meta"><i class="bi bi-geo-alt"></i> Quảng Ninh</div>
+                </div>
+                <div class="sidebar-item" onclick="navigateToLocation(3)">
+                    <div class="sidebar-item-name">Hang Sơn Đông</div>
+                    <div class="sidebar-item-meta"><i class="bi bi-geo-alt"></i> Quảng Ninh</div>
+                </div>
+                <button class="sidebar-view-more" onclick="showMoreLocations()">Xem thêm →</button>
+            </div>
+
+            <!-- Related Articles -->
+            <div class="sidebar-card">
+                <h3 class="sidebar-card-title">
+                    <i class="bi bi-journal-text"></i>
+                    Gợi ý bài viết khác
+                </h3>
+                <div class="sidebar-item" onclick="navigateToArticle(2)">
+                    <div class="sidebar-item-name">Phở Hà Nội - Linh hồn ẩm thực</div>
+                    <div class="sidebar-item-meta">12 Tháng 12, 2024</div>
+                </div>
+                <div class="sidebar-item" onclick="navigateToArticle(3)">
+                    <div class="sidebar-item-name">Phố cổ Hội An rực rỡ</div>
+                    <div class="sidebar-item-meta">10 Tháng 12, 2024</div>
+                </div>
+                <div class="sidebar-item" onclick="navigateToArticle(4)">
+                    <div class="sidebar-item-name">Đà Lạt - Thành phố sương mù</div>
+                    <div class="sidebar-item-meta">08 Tháng 12, 2024</div>
+                </div>
+                <button class="sidebar-view-more" onclick="showMoreArticles()">Xem thêm →</button>
+            </div>
+        </aside>
+    </div>
+</div>
+
+<!-- Image Modal -->
+<div class="image-modal" id="imageModal">
+    <div class="image-modal-content">
+        <button class="image-modal-close" onclick="closeImageModal()">×</button>
+        <img id="modalImage" src="" alt="">
+    </div>
+</div>
+
+<script>
+    // Toggle Favorite in Hero
+    function toggleFavorite(btn) {
+        btn.classList.toggle('active');
+        const isFavorite = btn.classList.contains('active');
+        showToast(
+            'Bài viết yêu thích',
+            isFavorite ? 'Đã thêm bài viết vào yêu thích!' : 'Đã bỏ yêu thích!',
+            'success'
+        );
+    }
+
+    // Toggle Like
+    function toggleLike(btn) {
+        btn.classList.toggle('active');
+        const isLiked = btn.classList.contains('active');
+        showToast(
+            'Thích bài viết',
+            isLiked ? 'Cảm ơn bạn đã thích bài viết!' : 'Đã bỏ thích!',
+            'success'
+        );
+    }
+
+    // Toggle Save
+    function toggleSave(btn) {
+        btn.classList.toggle('active');
+        const isSaved = btn.classList.contains('active');
+        showToast(
+            'Lưu bài viết',
+            isSaved ? 'Bài viết đã được lưu!' : 'Đã xóa khỏi danh sách lưu!',
+            'success'
+        );
+    }
+
+    // Share Article
+    function shareArticle() {
+        const url = window.location.href;
+        const text = document.querySelector('.blog-hero-title').innerText;
+
+        if (navigator.share) {
+            navigator.share({
+                title: 'VietScape',
+                text: text,
+                url: url
+            });
+        } else {
+            // Fallback: Copy to clipboard
+            navigator.clipboard.writeText(url).then(() => {
+                showToast('Chia sẻ', 'Đã sao chép liên kết bài viết!', 'success');
+            });
+        }
+    }
+
+    // Open Image Modal
+    document.querySelectorAll('.article-image').forEach(img => {
+        img.addEventListener('click', function() {
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            modalImage.src = this.src;
+            modal.classList.add('show');
+        });
+    });
+
+    // Close Image Modal
+    function closeImageModal() {
+        const modal = document.getElementById('imageModal');
+        modal.classList.remove('show');
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('imageModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeImageModal();
+        }
+    });
+
+    // Navigate to Location
+    function navigateToLocation(locationId) {
+        showToast('Chuyển hướng', 'Đang chuyển đến trang bản đồ...', 'info');
+        setTimeout(() => {
+            window.location.href = '/Home/Map#location-' + locationId;
+        }, 500);
+    }
+
+    // Navigate to Article
+    function navigateToArticle(articleId) {
+        showToast('Tải bài viết', 'Đang tải bài viết...', 'info');
+        setTimeout(() => {
+            window.location.href = '/Home/DetailBlog?id=' + articleId;
+        }, 500);
+    }
+
+    // Show More Locations
+    function showMoreLocations() {
+        showToast('Xem thêm', 'Hiển thị các địa điểm liên quan khác...', 'info');
+    }
+
+    // Show More Articles
+    function showMoreArticles() {
+        showToast('Xem thêm', 'Hiển thị các bài viết liên quan khác...', 'info');
+    }
+
+    // Keyboard - close modal with ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeImageModal();
+        }
+    });
+</script>
