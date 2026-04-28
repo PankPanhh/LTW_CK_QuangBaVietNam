@@ -1,0 +1,971 @@
+﻿@{
+    ViewBag.Title = "Lịch trình du lịch";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    :root {
+        --deep-slate: #1e293b;
+        --slate: #334155;
+        --sky-blue: #0EA5E9;
+        --sky-light: #38BDF8;
+        --slate-light: #cbd5e1;
+        --slate-200: #e2e8f0;
+        --white: #ffffff;
+        --spacing-2: 0.5rem;
+        --spacing-3: 0.75rem;
+        --spacing-4: 1rem;
+        --spacing-6: 1.5rem;
+        --spacing-8: 2rem;
+        --spacing-12: 3rem;
+        --spacing-16: 4rem;
+    }
+
+    .schedule-page {
+        background: #f8fafc;
+        padding: var(--spacing-12) 0;
+    }
+
+    /* Page Header Section */
+    .schedule-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--spacing-8);
+        margin-bottom: var(--spacing-12);
+        flex-wrap: wrap;
+    }
+
+    .schedule-header-content h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--deep-slate);
+        margin: 0 0 var(--spacing-2) 0;
+        line-height: 1.2;
+    }
+
+    .schedule-header-content p {
+        font-size: 1.0625rem;
+        color: #64748b;
+        margin: 0;
+        max-width: 600px;
+        line-height: 1.6;
+    }
+
+    .schedule-header-action {
+        flex-shrink: 0;
+    }
+
+    .btn-create-schedule {
+        padding: var(--spacing-4) var(--spacing-8);
+        background: linear-gradient(135deg, var(--sky-blue), var(--sky-light));
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-3);
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .btn-create-schedule:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(14, 165, 233, 0.3);
+        color: white;
+        text-decoration: none;
+    }
+
+    /* Search & Filter Toolbar */
+    .toolbar-section {
+        display: flex;
+        gap: var(--spacing-3);
+        margin-bottom: var(--spacing-8);
+        flex-wrap: wrap;
+    }
+
+    .search-box {
+        flex: 1;
+        min-width: 250px;
+        background: white;
+        border-radius: 12px;
+        padding: var(--spacing-3) var(--spacing-4);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-3);
+        border: 2px solid var(--slate-200);
+        box-shadow: 0 2px 8px rgba(30, 41, 59, 0.08);
+        transition: all 0.3s ease;
+    }
+
+    .search-box:focus-within {
+        border-color: var(--sky-blue);
+        box-shadow: 0 4px 16px rgba(14, 165, 233, 0.15);
+    }
+
+    .search-box input {
+        flex: 1;
+        border: none;
+        background: transparent;
+        outline: none;
+        font-size: 0.9375rem;
+        color: var(--deep-slate);
+    }
+
+    .search-box input::placeholder {
+        color: #94a3b8;
+    }
+
+    .search-box i {
+        color: #94a3b8;
+        font-size: 1.1rem;
+    }
+
+    .filter-group {
+        display: flex;
+        gap: var(--spacing-2);
+        background: white;
+        border-radius: 12px;
+        padding: var(--spacing-2);
+        box-shadow: 0 2px 8px rgba(30, 41, 59, 0.08);
+        overflow-x: auto;
+        border: 2px solid var(--slate-200);
+    }
+
+    .filter-btn {
+        padding: var(--spacing-3) var(--spacing-4);
+        border: 2px solid transparent;
+        background: transparent;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: var(--slate);
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .filter-btn:hover {
+        background: rgba(14, 165, 233, 0.08);
+        color: var(--sky-blue);
+    }
+
+    .filter-btn.active {
+        background: rgba(14, 165, 233, 0.1);
+        border-color: var(--sky-blue);
+        color: var(--sky-blue);
+        font-weight: 700;
+    }
+
+    /* Tabs Navigation */
+    .tabs-container {
+        border-bottom: 2px solid var(--slate-200);
+        margin-bottom: var(--spacing-8);
+        display: flex;
+        gap: var(--spacing-6);
+    }
+
+    .tab-button {
+        padding: var(--spacing-4) var(--spacing-2);
+        border: none;
+        background: transparent;
+        color: #94a3b8;
+        font-size: 1.0625rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px;
+    }
+
+    .tab-button:hover {
+        color: var(--slate);
+    }
+
+    .tab-button.active {
+        color: var(--sky-blue);
+        border-bottom-color: var(--sky-blue);
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Itinerary Grid */
+    .itinerary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: var(--spacing-6);
+        margin-bottom: var(--spacing-12);
+    }
+
+    /* Itinerary Card */
+    .itinerary-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(30, 41, 59, 0.08);
+        transition: all 0.3s ease;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .itinerary-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 32px rgba(30, 41, 59, 0.15);
+    }
+
+    .itinerary-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        background: linear-gradient(135deg, #e0e7ff, #f3e8ff);
+    }
+
+    .itinerary-content {
+        padding: var(--spacing-4);
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-3);
+        flex: 1;
+    }
+
+    .itinerary-meta {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        font-size: 0.8125rem;
+        color: #94a3b8;
+    }
+
+    .itinerary-title {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: var(--deep-slate);
+        margin: 0;
+        line-height: 1.4;
+    }
+
+    .itinerary-description {
+        font-size: 0.875rem;
+        color: #64748b;
+        line-height: 1.5;
+        margin: 0;
+        flex: 1;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* Author Info (Discover Tab) */
+    .author-info {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        padding-top: var(--spacing-3);
+        border-top: 1px solid var(--slate-200);
+        font-size: 0.8125rem;
+        color: #64748b;
+    }
+
+    .author-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: rgba(14, 165, 233, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: var(--sky-blue);
+        flex-shrink: 0;
+    }
+
+    /* Action Buttons - Hidden by default, shown on hover */
+    .card-actions {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(30, 41, 59, 0.9);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--spacing-3);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        border-radius: 16px;
+        flex-wrap: wrap;
+        padding: var(--spacing-4);
+    }
+
+    .itinerary-card:hover .card-actions {
+        opacity: 1;
+    }
+
+    .action-btn {
+        padding: var(--spacing-3) var(--spacing-4);
+        border: 2px solid white;
+        background: transparent;
+        color: white;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        white-space: nowrap;
+        text-decoration: none;
+    }
+
+    .action-btn:hover {
+        background: var(--sky-blue);
+        border-color: var(--sky-blue);
+        color: white;
+        transform: scale(1.05);
+    }
+
+    .action-btn.primary {
+        background: var(--sky-blue);
+        border-color: var(--sky-blue);
+        color: white;
+    }
+
+    .action-btn.danger {
+        border-color: #ef4444;
+        color: #ef4444;
+    }
+
+    .action-btn.danger:hover {
+        background: #ef4444;
+        border-color: #ef4444;
+        color: white;
+    }
+
+    /* Favorite Button */
+    .favorite-btn {
+        position: absolute;
+        top: var(--spacing-4);
+        right: var(--spacing-4);
+        width: 40px;
+        height: 40px;
+        border: none;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #94a3b8;
+        font-size: 1.25rem;
+        transition: all 0.3s ease;
+        z-index: 2;
+    }
+
+    .favorite-btn:hover {
+        background: white;
+        color: var(--sky-blue);
+        transform: scale(1.1);
+    }
+
+    .favorite-btn.active {
+        color: #ef4444;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: var(--spacing-12);
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 2px 8px rgba(30, 41, 59, 0.08);
+    }
+
+    .empty-state-icon {
+        font-size: 3.5rem;
+        color: #cbd5e1;
+        margin-bottom: var(--spacing-4);
+    }
+
+    .empty-state h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--deep-slate);
+        margin: 0 0 var(--spacing-2) 0;
+    }
+
+    .empty-state p {
+        color: #64748b;
+        margin: 0 0 var(--spacing-6) 0;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .empty-state .btn-create-schedule {
+        margin: 0 auto;
+    }
+
+    /* Modal */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        animation: fadeIn 0.3s ease;
+    }
+
+    .modal.show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background-color: white;
+        padding: var(--spacing-8);
+        border-radius: 16px;
+        max-width: 400px;
+        width: 90%;
+        box-shadow: 0 20px 60px rgba(30, 41, 59, 0.3);
+        animation: slideIn 0.3s ease;
+    }
+
+    @@keyframes slideIn {
+        from {
+            transform: translateY(-50px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .modal-header {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--deep-slate);
+        margin: 0 0 var(--spacing-4) 0;
+        text-align: center;
+    }
+
+    .modal-body {
+        color: #64748b;
+        margin-bottom: var(--spacing-8);
+        text-align: center;
+        line-height: 1.6;
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: var(--spacing-3);
+        justify-content: center;
+    }
+
+    .modal-btn {
+        flex: 1;
+        padding: var(--spacing-3) var(--spacing-4);
+        border: 2px solid transparent;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .modal-btn-cancel {
+        background: var(--slate-200);
+        color: var(--deep-slate);
+    }
+
+    .modal-btn-cancel:hover {
+        background: #cbd5e1;
+    }
+
+    .modal-btn-confirm {
+        background: #ef4444;
+        color: white;
+        border-color: #ef4444;
+    }
+
+    .modal-btn-confirm:hover {
+        background: #dc2626;
+    }
+
+    /* Toast Notification */
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 2000;
+        max-width: 400px;
+    }
+
+    .toast {
+        background: white;
+        padding: var(--spacing-4) var(--spacing-6);
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(30, 41, 59, 0.15);
+        margin-bottom: var(--spacing-3);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-3);
+        animation: slideInRight 0.3s ease;
+        border-left: 4px solid var(--sky-blue);
+    }
+
+    .toast.success {
+        border-left-color: #10b981;
+    }
+
+    .toast.error {
+        border-left-color: #ef4444;
+    }
+
+    .toast-icon {
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+
+    .toast-message {
+        color: var(--deep-slate);
+        font-weight: 500;
+    }
+
+    @@keyframes slideInRight {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .schedule-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .schedule-header-content h1 {
+            font-size: 2rem;
+        }
+
+        .toolbar-section {
+            flex-direction: column;
+        }
+
+        .search-box {
+            min-width: 100%;
+        }
+
+        .filter-group {
+            min-width: 100%;
+        }
+
+        .itinerary-grid {
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: var(--spacing-4);
+        }
+
+        .tabs-container {
+            gap: var(--spacing-4);
+        }
+
+        .tab-button {
+            padding: var(--spacing-3);
+            font-size: 1rem;
+        }
+    }
+</style>
+
+<div class="container-fluid schedule-page">
+    <div class="container">
+        <!-- Page Header -->
+        <div class="schedule-header">
+            <div class="schedule-header-content">
+                <h1>Lịch trình du lịch</h1>
+                <p>Quản lý những chuyến đi tuyệt vời của bạn hoặc tìm kiếm cảm hứng từ cộng đồng du lịch toàn cầu.</p>
+            </div>
+            <div class="schedule-header-action">
+                <a href="/Home/Createschedule" class="btn-create-schedule">
+                    <i class="bi bi-plus-lg"></i> Tạo lịch trình mới
+                </a>
+            </div>
+        </div>
+
+        <!-- Search & Filter Toolbar -->
+        <div class="toolbar-section">
+            <div class="search-box">
+                <i class="bi bi-search"></i>
+                <input type="text" id="searchInput" placeholder="Tìm kiếm tên lịch trình..." style="margin-left: 20px;">
+            </div>
+            <div class="filter-group">
+                <button class="filter-btn active" data-filter="all">Tất cả</button>
+                <button class="filter-btn" data-filter="3days">3 ngày</button>
+                <button class="filter-btn" data-filter="5days">5 ngày</button>
+                <button class="filter-btn" data-filter="7days">7 ngày</button>
+                <button class="filter-btn" data-filter="popular">Phổ biến</button>
+            </div>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <div class="tabs-container">
+            <button class="tab-button active" data-tab="my-schedules">
+                <i class="bi bi-bookmark-fill"></i> Lịch trình của tôi
+            </button>
+            <button class="tab-button" data-tab="discover-schedules">
+                <i class="bi bi-globe"></i> Khám phá lịch trình
+            </button>
+        </div>
+
+        <!-- Tab: My Schedules -->
+        <div id="my-schedules" class="tab-content active">
+            <div id="my-schedules-content"></div>
+        </div>
+
+        <!-- Tab: Discover Schedules -->
+        <div id="discover-schedules" class="tab-content">
+            <div id="discover-schedules-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">Xóa lịch trình?</div>
+        <div class="modal-body">Bạn có chắc chắn muốn xóa lịch trình này không? Hành động này không thể hoàn tác.</div>
+        <div class="modal-actions">
+            <button class="modal-btn modal-btn-cancel" onclick="closeDeleteModal()">Hủy</button>
+            <button class="modal-btn modal-btn-confirm" onclick="confirmDelete()">Xóa</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toastContainer" class="toast-container"></div>
+
+<script>
+    // Sample Data
+    const mySchedules = [
+        {
+            id: 1,
+            title: "Hà Nội - Hạ Long 3 ngày",
+            days: 3,
+            description: "Khám phá vẻ đẹp của thủ đô và vịnh Hạ Long huyền thoại với các hoạt động thú vị.",
+            image: "https://images.unsplash.com/photo-1528127269322-539801943592?w=600",
+            category: "3days"
+        },
+        {
+            id: 2,
+            title: "Đà Lạt - Thiên đường mây",
+            days: 3,
+            description: "Thành phố sương mù với những con đường đẹp lãng mạn và khí hậu mát mẻ.",
+            image: "https://images.unsplash.com/photo-1578895101408-1a36b834405b?w=600",
+            category: "3days"
+        }
+    ];
+
+    const discoverSchedules = [
+        {
+            id: 101,
+            title: "Phú Quốc - Thiên đường biển",
+            days: 5,
+            description: "Trải nghiệm những bãi biển đẹp nhất với hoạt động lặn, chèo thuyền và spa trên biển.",
+            image: "https://images.unsplash.com/photo-1540611025311-01df3cef54b5?w=600",
+            category: "5days",
+            author: "Trương Minh",
+            authorInitial: "TM",
+            likes: 234
+        },
+        {
+            id: 102,
+            title: "Sa Pa - Ruộng bậc thang",
+            days: 3,
+            description: "Những bậc thang nông nghiệp tinh tế và văn hóa dân tộc Hmong tại Sa Pa.",
+            image: "https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=600",
+            category: "3days",
+            author: "Hà Nội Traveler",
+            authorInitial: "HT",
+            likes: 456
+        },
+        {
+            id: 103,
+            title: "Hội An - Phố cổ 5 ngày",
+            days: 5,
+            description: "Khám phá phố cổ Hội An với những con đèn lồng lộng lẫy và ẩm thực đặc sắc.",
+            image: "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=600",
+            category: "5days",
+            author: "Ngọc Anh",
+            authorInitial: "NA",
+            likes: 567
+        },
+        {
+            id: 104,
+            title: "TP. Hồ Chí Minh - 3 ngày sôi động",
+            days: 3,
+            description: "Khám phá thành phố xinh đẹp với ẩm thực đường phố, di tích lịch sử và cuộc sống ban đêm.",
+            image: "https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=600",
+            category: "3days",
+            author: "Saigon Explorer",
+            authorInitial: "SE",
+            likes: 789
+        }
+    ];
+
+    let currentFilter = 'all';
+    let currentTab = 'my-schedules';
+    let scheduleToDelete = null;
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        renderSchedules();
+        setupEventListeners();
+    });
+
+    // Setup Event Listeners
+    function setupEventListeners() {
+        // Tab buttons
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                switchTab(this.dataset.tab);
+            });
+        });
+
+        // Filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentFilter = this.dataset.filter;
+                renderSchedules();
+            });
+        });
+
+        // Search input
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', function(e) {
+            renderSchedules();
+        });
+    }
+
+    // Switch Tab
+    function switchTab(tabName) {
+        currentTab = tabName;
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+        event.target.closest('.tab-button').classList.add('active');
+        document.getElementById(tabName).classList.add('active');
+    }
+
+    // Render Schedules
+    function renderSchedules() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        let schedules = currentTab === 'my-schedules' ? mySchedules : discoverSchedules;
+
+        // Filter by search term
+        if (searchTerm) {
+            schedules = schedules.filter(s => s.title.toLowerCase().includes(searchTerm));
+        }
+
+        // Filter by category
+        if (currentFilter !== 'all') {
+            schedules = schedules.filter(s => s.category === currentFilter);
+        }
+
+        const container = document.getElementById(`${currentTab}-content`);
+
+        if (schedules.length === 0) {
+            renderEmptyState(container);
+        } else {
+            container.innerHTML = `<div class="itinerary-grid">${schedules.map(s => 
+                currentTab === 'my-schedules' ? renderMyScheduleCard(s) : renderDiscoverCard(s)
+            ).join('')}</div>`;
+        }
+    }
+
+    // Render Empty State
+    function renderEmptyState(container) {
+        if (currentTab === 'my-schedules') {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon"><i class="bi bi-bookmark"></i></div>
+                    <h3>Chưa có lịch trình nào</h3>
+                    <p>Bắt đầu tạo lịch trình du lịch đầu tiên của bạn để lên kế hoạch cho chuyến đi tuyệt vời.</p>
+                    <a href="/Home/Createschedule" class="btn-create-schedule">
+                        <i class="bi bi-plus-lg"></i> Tạo lịch trình mới
+                    </a>
+                </div>
+            `;
+        } else {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon"><i class="bi bi-search"></i></div>
+                    <h3>Không tìm thấy lịch trình</h3>
+                    <p>Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm để khám phá các lịch trình từ cộng đồng.</p>
+                </div>
+            `;
+        }
+    }
+
+    // Render My Schedule Card
+    function renderMyScheduleCard(schedule) {
+        return `
+            <div class="itinerary-card">
+                <img src="${schedule.image}" alt="${schedule.title}" class="itinerary-image">
+                <button class="favorite-btn" onclick="toggleFavorite(event)">
+                    <i class="bi bi-heart"></i>
+                </button>
+                <div class="itinerary-content">
+                    <div class="itinerary-meta">
+                        <i class="bi bi-calendar-event"></i>
+                        <span>${schedule.days} ngày</span>
+                    </div>
+                    <h3 class="itinerary-title">${schedule.title}</h3>
+                    <p class="itinerary-description">${schedule.description}</p>
+                </div>
+                <div class="card-actions">
+                    <a href="/Home/DetailSchedule?id=${schedule.id}" class="action-btn primary">
+                        <i class="bi bi-eye"></i> Xem chi tiết
+                    </a>
+                    <a href="/Home/Createschedule?id=${schedule.id}&edit=1" class="action-btn primary">
+                        <i class="bi bi-pencil"></i> Chỉnh sửa
+                    </a>
+                    <button class="action-btn danger" onclick="openDeleteModal(${schedule.id})">
+                        <i class="bi bi-trash"></i> Xóa
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    // Render Discover Card
+    function renderDiscoverCard(schedule) {
+        return `
+            <div class="itinerary-card">
+                <img src="${schedule.image}" alt="${schedule.title}" class="itinerary-image">
+                <button class="favorite-btn" onclick="toggleFavorite(event)">
+                    <i class="bi bi-heart"></i>
+                </button>
+                <div class="itinerary-content">
+                    <div class="itinerary-meta">
+                        <i class="bi bi-calendar-event"></i>
+                        <span>${schedule.days} ngày</span>
+                    </div>
+                    <h3 class="itinerary-title">${schedule.title}</h3>
+                    <p class="itinerary-description">${schedule.description}</p>
+                    <div class="author-info">
+                        <div class="author-avatar">${schedule.authorInitial}</div>
+                        <div>
+                            <strong>${schedule.author}</strong>
+                            <br><small>${schedule.likes} lượt yêu thích</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <a href="/Home/Createschedule?id=${schedule.id}&preview=1" class="action-btn primary">
+                        <i class="bi bi-eye"></i> Xem hành trình
+                    </a>
+                    <button class="action-btn primary" onclick="saveToMySchedules(${schedule.id})">
+                        <i class="bi bi-download"></i> Lưu về của tôi
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    // Toggle Favorite
+    function toggleFavorite(event) {
+        const btn = event.currentTarget;
+        btn.classList.toggle('active');
+        showToast(btn.classList.contains('active') ? 'Đã thêm vào yêu thích!' : 'Đã bỏ yêu thích!', 'success');
+    }
+
+    // Save to My Schedules
+    function saveToMySchedules(scheduleId) {
+        showToast('Lịch trình đã được lưu vào danh sách của bạn!', 'success');
+    }
+
+    // Open Delete Modal
+    function openDeleteModal(scheduleId) {
+        scheduleToDelete = scheduleId;
+        document.getElementById('deleteModal').classList.add('show');
+    }
+
+    // Close Delete Modal
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.remove('show');
+        scheduleToDelete = null;
+    }
+
+    // Confirm Delete
+    function confirmDelete() {
+        showToast('Lịch trình đã được xóa!', 'success');
+        closeDeleteModal();
+        mySchedules = mySchedules.filter(s => s.id !== scheduleToDelete);
+        renderSchedules();
+    }
+
+    // Show Toast Notification
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `
+            <i class="toast-icon bi ${type === 'success' ? 'bi-check-circle' : 'bi-exclamation-circle'}"></i>
+            <span class="toast-message">${message}</span>
+        `;
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.style.animation = 'slideInRight 0.3s ease reverse';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    // Close modal on outside click
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('deleteModal');
+        if (event.target === modal) {
+            closeDeleteModal();
+        }
+    });
+</script>

@@ -1,0 +1,696 @@
+﻿@{
+    ViewBag.Title = "Blog - Du lịch, Văn hóa và Ẩm thực Việt Nam";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    :root {
+        --deep-slate: #1e293b;
+        --slate: #334155;
+        --sky-blue: #0EA5E9;
+        --sky-light: #38BDF8;
+        --slate-light: #cbd5e1;
+        --slate-200: #e2e8f0;
+        --white: #ffffff;
+        --spacing-2: 0.5rem;
+        --spacing-3: 0.75rem;
+        --spacing-4: 1rem;
+        --spacing-6: 1.5rem;
+        --spacing-8: 2rem;
+        --spacing-12: 3rem;
+        --spacing-16: 4rem;
+    }
+
+    .blog-page {
+        background: #f8fafc;
+        padding: var(--spacing-12) 0;
+    }
+
+    /* Blog Header Section */
+    .blog-header {
+        text-align: center;
+        margin-bottom: var(--spacing-16);
+        padding: var(--spacing-12);
+        background: linear-gradient(135deg, rgba(14, 165, 233, 0.08), rgba(56, 189, 248, 0.08));
+        border-radius: 20px;
+        border: 1px solid rgba(14, 165, 233, 0.1);
+    }
+
+    .blog-header h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--deep-slate);
+        margin: 0 0 var(--spacing-4) 0;
+        line-height: 1.2;
+    }
+
+    .blog-header p {
+        font-size: 1.125rem;
+        color: #64748b;
+        margin: 0;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+        line-height: 1.8;
+    }
+
+    /* Search & Filter Toolbar */
+    .blog-toolbar {
+        display: flex;
+        gap: var(--spacing-3);
+        margin-bottom: var(--spacing-12);
+        flex-wrap: wrap;
+    }
+
+    .search-box {
+        flex: 1;
+        min-width: 250px;
+        background: white;
+        border-radius: 12px;
+        padding: var(--spacing-3) var(--spacing-4);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-3);
+        border: 2px solid var(--slate-200);
+        box-shadow: 0 2px 8px rgba(30, 41, 59, 0.08);
+        transition: all 0.3s ease;
+    }
+
+    .search-box:focus-within {
+        border-color: var(--sky-blue);
+        box-shadow: 0 4px 16px rgba(14, 165, 233, 0.15);
+    }
+
+    .search-box input {
+        flex: 1;
+        border: none;
+        background: transparent;
+        outline: none;
+        font-size: 0.9375rem;
+        color: var(--deep-slate);
+    }
+
+    .search-box input::placeholder {
+        color: #94a3b8;
+    }
+
+    .search-box i {
+        color: #94a3b8;
+        font-size: 1.1rem;
+    }
+
+    .filter-group {
+        display: flex;
+        gap: var(--spacing-2);
+        background: white;
+        border-radius: 12px;
+        padding: var(--spacing-2);
+        box-shadow: 0 2px 8px rgba(30, 41, 59, 0.08);
+        overflow-x: auto;
+        border: 2px solid var(--slate-200);
+    }
+
+    .filter-btn {
+        padding: var(--spacing-3) var(--spacing-4);
+        border: 2px solid transparent;
+        background: transparent;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: var(--slate);
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .filter-btn:hover {
+        background: rgba(14, 165, 233, 0.08);
+        color: var(--sky-blue);
+    }
+
+    .filter-btn.active {
+        background: rgba(14, 165, 233, 0.1);
+        border-color: var(--sky-blue);
+        color: var(--sky-blue);
+        font-weight: 700;
+    }
+
+    /* Featured Post */
+    .featured-post {
+        margin-bottom: var(--spacing-16);
+        border-radius: 20px;
+        overflow: hidden;
+        position: relative;
+        height: 450px;
+        background: var(--slate-200);
+        box-shadow: 0 12px 40px rgba(30, 41, 59, 0.15);
+    }
+
+    .featured-post-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+
+    .featured-post:hover .featured-post-image {
+        transform: scale(1.05);
+    }
+
+    .featured-post-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.4), rgba(14, 165, 233, 0.3));
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: var(--spacing-12);
+        transition: all 0.4s ease;
+        z-index: 1;
+    }
+
+    .featured-post:hover .featured-post-overlay {
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.5), rgba(14, 165, 233, 0.4));
+    }
+
+    .featured-post-content {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-3);
+    }
+
+    .featured-post-category {
+        display: inline-block;
+        width: fit-content;
+        padding: var(--spacing-2) var(--spacing-4);
+        background: rgba(14, 165, 233, 0.9);
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: white;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .featured-post-title {
+        font-size: 2rem;
+        font-weight: 800;
+        color: white;
+        margin: 0;
+        line-height: 1.3;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .featured-post-excerpt {
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.95);
+        line-height: 1.6;
+        margin: 0;
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .featured-post-link {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        margin-top: var(--spacing-4);
+        color: white;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        width: fit-content;
+    }
+
+    .featured-post-link:hover {
+        transform: translateX(4px);
+        color: var(--sky-light);
+    }
+
+    /* Blog Grid */
+    .blog-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: var(--spacing-6);
+        margin-bottom: var(--spacing-12);
+    }
+
+    /* Blog Card */
+    .blog-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(30, 41, 59, 0.08);
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .blog-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 32px rgba(30, 41, 59, 0.15);
+    }
+
+    .blog-card-image {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+        background: linear-gradient(135deg, #e0e7ff, #f3e8ff);
+        transition: transform 0.4s ease;
+    }
+
+    .blog-card:hover .blog-card-image {
+        transform: scale(1.05);
+    }
+
+    .blog-card-content {
+        padding: var(--spacing-6);
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-3);
+        flex: 1;
+    }
+
+    .blog-card-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.8125rem;
+        color: #94a3b8;
+    }
+
+    .blog-card-category {
+        display: inline-block;
+        padding: var(--spacing-2) var(--spacing-3);
+        background: rgba(14, 165, 233, 0.1);
+        border-radius: 6px;
+        color: var(--sky-blue);
+        font-weight: 600;
+        font-size: 0.75rem;
+    }
+
+    .blog-card-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--deep-slate);
+        margin: 0;
+        line-height: 1.4;
+    }
+
+    .blog-card-excerpt {
+        font-size: 0.9375rem;
+        color: #64748b;
+        line-height: 1.6;
+        margin: 0;
+        flex: 1;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .blog-card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: var(--spacing-4);
+        border-top: 1px solid var(--slate-200);
+    }
+
+    .blog-card-date {
+        font-size: 0.8125rem;
+        color: #94a3b8;
+    }
+
+    .blog-card-link {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        color: var(--sky-blue);
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .blog-card-link:hover {
+        color: var(--sky-light);
+        transform: translateX(4px);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: var(--spacing-12);
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 2px 8px rgba(30, 41, 59, 0.08);
+    }
+
+    .empty-state-icon {
+        font-size: 3.5rem;
+        color: #cbd5e1;
+        margin-bottom: var(--spacing-4);
+    }
+
+    .empty-state h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--deep-slate);
+        margin: 0 0 var(--spacing-2) 0;
+    }
+
+    .empty-state p {
+        color: #64748b;
+        margin: 0;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* Animation */
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .blog-grid {
+        animation: fadeIn 0.3s ease;
+    }
+
+    /* Responsive */
+    @@media (max-width: 1024px) {
+        .blog-grid {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        }
+
+        .featured-post {
+            height: 350px;
+        }
+
+        .featured-post-title {
+            font-size: 1.75rem;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .blog-header h1 {
+            font-size: 2rem;
+        }
+
+        .blog-toolbar {
+            flex-direction: column;
+        }
+
+        .search-box {
+            min-width: 100%;
+        }
+
+        .filter-group {
+            min-width: 100%;
+        }
+
+        .blog-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .featured-post {
+            height: 300px;
+        }
+
+        .featured-post-title {
+            font-size: 1.5rem;
+        }
+
+        .featured-post-content {
+            padding: var(--spacing-6);
+        }
+
+        .featured-post-overlay {
+            padding: var(--spacing-6);
+        }
+    }
+</style>
+
+<div class="blog-page">
+    <div class="container">
+        <!-- Blog Header -->
+        <div class="blog-header">
+            <h1>Blog Du Lịch</h1>
+            <p>Khám phá những câu chuyện truyền cảm hứng về du lịch, văn hóa phong phú và ẩm thực tuyệt vời của Việt Nam. Từ những con phố cổ đến những bãi biển tươi mới, mỗi bài viết là một hành trình khám phá mới.</p>
+        </div>
+
+        <!-- Search & Filter Toolbar -->
+        <div class="blog-toolbar">
+            <div class="search-box">
+                <i class="bi bi-search"></i>
+                <input type="text" id="searchInput" placeholder="Tìm kiếm bài viết...">
+            </div>
+            <div class="filter-group">
+                <button class="filter-btn active" data-category="all">Tất cả</button>
+                <button class="filter-btn" data-category="food">Ẩm thực</button>
+                <button class="filter-btn" data-category="culture">Văn hóa</button>
+                <button class="filter-btn" data-category="nature">Thiên nhiên</button>
+            </div>
+        </div>
+
+        <!-- Featured Post -->
+        <div id="featured-post-container"></div>
+
+        <!-- Blog Grid -->
+        <div id="blog-grid-container"></div>
+    </div>
+</div>
+
+<script>
+    // Blog data
+    const blogPosts = [
+        {
+            id: 1,
+            title: "Hạ Long - Kỳ quan thiên nhiên thế giới",
+            excerpt: "Khám phá vẻ đẹp kỳ vĩ của Vịnh Hạ Long với hàng nghìn đảo đá vôi và những cung hang quanh đó...",
+            content: "Vịnh Hạ Long là một trong những địa điểm du lịch nổi tiếng nhất của Việt Nam. Được UNESCO công nhận là di sản thiên nhiên thế giới, Hạ Long thu hút hàng triệu du khách mỗi năm...",
+            image: "https://images.unsplash.com/photo-1528127269322-539801943592?w=800",
+            category: "nature",
+            date: "15 Tháng 12, 2024",
+            featured: true
+        },
+        {
+            id: 2,
+            title: "Phở Hà Nội - Linh hồn ẩm thực đường phố",
+            excerpt: "Tìm hiểu về lịch sử hơn 100 năm của phở Hà Nội và bí quyết nấu nước dùng hoàn hảo...",
+            content: "Phở là một trong những biểu tượng ẩm thực Việt Nam nổi tiếng trên thế giới. Mỗi tô phở là kết quả của quá trình nấu chảy đặc biệt...",
+            image: "https://images.unsplash.com/photo-1617093767537-c0b0b76e7a18?w=800",
+            category: "food",
+            date: "12 Tháng 12, 2024",
+            featured: false
+        },
+        {
+            id: 3,
+            title: "Hội An - Phố cổ rực rỡ đèn lồng",
+            excerpt: "Bước vào thế giới hoài cổ với những chiếc cầu gỗ, ông đồ viết thư pháp và những con đèn lồng lấp lánh...",
+            content: "Phố cổ Hội An là một trong những điểm đến văn hóa thú vị nhất ở miền Trung Việt Nam...",
+            image: "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=800",
+            category: "culture",
+            date: "10 Tháng 12, 2024",
+            featured: false
+        },
+        {
+            id: 4,
+            title: "Đà Lạt - Thành phố sương mù",
+            excerpt: "Khám phá những đồi thông lãng mạn, những con đường dạo lên núi và nhiệt độ lạnh mát quanh năm...",
+            content: "Đà Lạt là một thành phố đặc biệt với khí hậu ôn hòa và cảnh quan tuyệt đẹp...",
+            image: "https://images.unsplash.com/photo-1578895101408-1a36b834405b?w=800",
+            category: "nature",
+            date: "08 Tháng 12, 2024",
+            featured: false
+        },
+        {
+            id: 5,
+            title: "Cơm tấm Sài Gòn - Bữa sáng tuyệt vời",
+            excerpt: "Khám phá những quán cơm tấm nổi tiếng nhất ở TPHCM và cách chọn một chén cơm ngon...",
+            content: "Cơm tấm là một trong những món ăn truyền thống yêu thích của người Sài Gòn...",
+            image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800",
+            category: "food",
+            date: "05 Tháng 12, 2024",
+            featured: false
+        },
+        {
+            id: 6,
+            title: "Văn hóa Tết Việt - Những phong tục lâu đời",
+            excerpt: "Tìm hiểu về những phong tục truyền thống và ý nghĩa sâu sắc của Tết Nguyên Đán trong đời sống Việt...",
+            content: "Tết Nguyên Đán là dịp lễ quan trọng nhất trong năm của người Việt Nam...",
+            image: "https://images.unsplash.com/photo-1577720643272-265b66cc5c16?w=800",
+            category: "culture",
+            date: "02 Tháng 12, 2024",
+            featured: false
+        },
+        {
+            id: 7,
+            title: "Sa Pa - Ruộng bậc thang trên mây",
+            excerpt: "Chứng kiến vẻ đẹp của những bậc thang nông nghiệp và đời sống của người dân tộc Hmong ở Sa Pa...",
+            content: "Sa Pa là một điểm đến thiên nhiên tuyệt đẹp ở miền Bắc Việt Nam...",
+            image: "https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=800",
+            category: "nature",
+            date: "29 Tháng 11, 2024",
+            featured: false
+        },
+        {
+            id: 8,
+            title: "Bánh mì Việt Nam - Fusion ẩm thực độc đáo",
+            excerpt: "Khám phá sự kết hợp độc đáo giữa bánh mì Pháp và ẩm thực Việt Nam qua bánh mì Sài Gòn...",
+            content: "Bánh mì là một sản phẩm ẩm thực độc đáo phản ánh lịch sử của Việt Nam...",
+            image: "https://images.unsplash.com/photo-1589985633215-c39b2e0c5d46?w=800",
+            category: "food",
+            date: "25 Tháng 11, 2024",
+            featured: false
+        }
+    ];
+
+    let currentCategory = 'all';
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        renderBlog();
+        setupEventListeners();
+    });
+
+    // Setup Event Listeners
+    function setupEventListeners() {
+        // Filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentCategory = this.dataset.category;
+                renderBlog();
+            });
+        });
+
+        // Search input
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', function() {
+            renderBlog();
+        });
+    }
+
+    // Render Blog
+    function renderBlog() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        let posts = blogPosts;
+
+        // Filter by search term
+        if (searchTerm) {
+            posts = posts.filter(p => 
+                p.title.toLowerCase().includes(searchTerm) ||
+                p.excerpt.toLowerCase().includes(searchTerm)
+            );
+        }
+
+        // Filter by category
+        if (currentCategory !== 'all') {
+            posts = posts.filter(p => p.category === currentCategory);
+        }
+
+        // Render featured post
+        const featuredContainer = document.getElementById('featured-post-container');
+        const featured = posts.find(p => p.featured);
+        if (featured) {
+            featuredContainer.innerHTML = renderFeaturedPost(featured);
+        } else {
+            featuredContainer.innerHTML = '';
+        }
+
+        // Render blog grid (exclude featured)
+        const gridPosts = posts.filter(p => !p.featured);
+        const gridContainer = document.getElementById('blog-grid-container');
+
+        if (gridPosts.length === 0) {
+            gridContainer.innerHTML = renderEmptyState();
+        } else {
+            gridContainer.innerHTML = `
+                <div class="blog-grid">
+                    ${gridPosts.map(p => renderBlogCard(p)).join('')}
+                </div>
+            `;
+        }
+    }
+
+    // Render Featured Post
+    function renderFeaturedPost(post) {
+        return `
+            <a href="/Home/DetailBlog?id=${post.id}" style="text-decoration: none; color: inherit;">
+                <div class="featured-post">
+                    <img src="${post.image}" alt="${post.title}" class="featured-post-image">
+                    <div class="featured-post-overlay">
+                        <div class="featured-post-content">
+                            <span class="featured-post-category">${getCategoryLabel(post.category)}</span>
+                            <h2 class="featured-post-title">${post.title}</h2>
+                            <p class="featured-post-excerpt">${post.excerpt}</p>
+                            <span class="featured-post-link">
+                                <i class="bi bi-arrow-right"></i> Đọc tiếp
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        `;
+    }
+
+    // Render Blog Card
+    function renderBlogCard(post) {
+        return `
+            <div class="blog-card">
+                <a href="/Home/DetailBlog?id=${post.id}" style="text-decoration: none; color: inherit;">
+                    <img src="${post.image}" alt="${post.title}" class="blog-card-image">
+                </a>
+                <div class="blog-card-content">
+                    <div class="blog-card-meta">
+                        <span class="blog-card-category">${getCategoryLabel(post.category)}</span>
+                    </div>
+                    <h3 class="blog-card-title">${post.title}</h3>
+                    <p class="blog-card-excerpt">${post.excerpt}</p>
+                    <div class="blog-card-footer">
+                        <span class="blog-card-date">${post.date}</span>
+                        <a href="/Home/DetailBlog?id=${post.id}" class="blog-card-link">
+                            Đọc tiếp <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Get Category Label
+    function getCategoryLabel(category) {
+        const labels = {
+            'food': 'Ẩm thực',
+            'culture': 'Văn hóa',
+            'nature': 'Thiên nhiên'
+        };
+        return labels[category] || category;
+    }
+
+    // Render Empty State
+    function renderEmptyState() {
+        return `
+            <div class="empty-state">
+                <div class="empty-state-icon"><i class="bi bi-search"></i></div>
+                <h3>Không tìm thấy bài viết</h3>
+                <p>Thử thay đổi từ khóa hoặc bộ lọc để khám phá những bài viết khác.</p>
+            </div>
+        `;
+    }
+</script>

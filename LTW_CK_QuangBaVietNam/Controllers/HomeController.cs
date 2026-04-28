@@ -150,5 +150,66 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             return View();
         }
 
+        public ActionResult Schedule()
+        {
+            // Set breadcrumbs for Schedule page
+            var breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem("Lịch trình du lịch", "/Home/Schedule", isActive: true)
+            };
+            this.SetBreadcrumbs(breadcrumbs);
+
+            return View();
+        }
+
+        public ActionResult Blog()
+        {
+            // Set breadcrumbs for Blog page
+            var breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem("Blog", "/Home/Blog", isActive: true)
+            };
+            this.SetBreadcrumbs(breadcrumbs);
+
+            return View();
+        }
+
+        public ActionResult DetailBlog()
+        {
+            // Set breadcrumbs for Blog page
+            var breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem("Blog", "/Home/DetailBlog", isActive: true)
+            };
+            this.SetBreadcrumbs(breadcrumbs);
+
+            return View();
+        }
+
+        public ActionResult DetailSchedule()
+        {
+            // Set breadcrumbs for Schedule page
+            var breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem("Lịch trình du lịch", "/Home/DetailSchedule", isActive: true)
+            };
+            this.SetBreadcrumbs(breadcrumbs);
+
+            return View();
+        }
+
+        public ActionResult DetailPlace()
+        {
+            // Set breadcrumbs for Place detail page
+            var breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem("Bản đồ", "/Home/Map"),
+                new BreadcrumbItem("Chi tiết địa điểm", "/Home/DetailPlace", isActive: true)
+            };
+            this.SetBreadcrumbs(breadcrumbs);
+
+            return View();
+        }
+
     }
 }
