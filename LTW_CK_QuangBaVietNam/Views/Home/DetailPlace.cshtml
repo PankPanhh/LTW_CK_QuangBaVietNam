@@ -701,13 +701,13 @@
 <div class="place-detail-page">
     <!-- Hero Section -->
     <section class="place-hero">
-        <img src="https://images.unsplash.com/photo-1528127269322-539801943592?w=1200&h=600&fit=crop" alt="Vịnh Hạ Long" class="place-hero-image">
+        <img id="heroImage" src="https://images.unsplash.com/photo-1528127269322-539801943592?w=1200&h=600&fit=crop" alt="Địa điểm" class="place-hero-image">
         <div class="place-hero-overlay">
             <div class="place-hero-content">
-                <h1 class="place-hero-title">Vịnh Hạ Long</h1>
+                <h1 class="place-hero-title" id="heroTitle">Đang tải...</h1>
                 <div class="place-hero-location">
                     <i class="bi bi-geo-alt-fill"></i>
-                    <span>Quảng Ninh, Việt Nam</span>
+                    <span id="heroLocation">Việt Nam</span>
                 </div>
                 <div class="place-hero-actions">
                     <button class="place-action-btn" onclick="toggleFavorite()">
@@ -730,129 +730,32 @@
             <main class="place-main">
                 <!-- Info Section -->
                 <section class="place-info-section">
-                    <div class="place-description">
-                        <p><strong>Vịnh Hạ Long</strong> là một trong những di sản thế giới được UNESCO công nhận, nổi tiếng với những hòn đảo đá vôi và cảnh quan biển tuyệt đẹp.</p>
-
-                        <p>Với hơn 3,000 hòn đảo được tạo thành bởi các tảng đá vôi hùng vĩ mọc lên từ vùng biển xanh ngọc, Vịnh Hạ Long mang đến trải nghiệm thiên nhiên tuyệt vời. Du khách có thể khám phá các hang động bí ẩn như Hang Múa, tham gia các hoạt động như chèo thuyền kayak, lặn biển, hay đơn giản là ngắm cảnh hoàng hôn trên boong tàu.</p>
-
-                        <p>Mỗi góc của vịnh đều có một câu chuyện, từ các bãi biển hoang sơ đến những ngôi làng chài truyền thống nơi người dân vẫn giữ lối sống truyền thống trong hàng thế kỷ.</p>
+                    <div class="place-description" id="placeDescription">
+                        <p>Đang tải mô tả...</p>
                     </div>
                 </section>
 
                 <!-- Gallery Section -->
                 <section class="gallery-section">
-                    <h2>Khám phá Vịnh Hạ Long</h2>
-                    <div class="gallery-grid">
-                        <div class="gallery-item" onclick="openGallery(0)">
-                            <img src="https://images.unsplash.com/photo-1528127269322-539801943592?w=400&h=300&fit=crop" alt="Vịnh Hạ Long" class="gallery-image">
-                            <div class="gallery-overlay">
-                                <i class="bi bi-zoom-in"></i>
-                            </div>
-                            <div class="gallery-badge">1/8</div>
-                        </div>
-                        <div class="gallery-item" onclick="openGallery(1)">
-                            <img src="https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=400&h=300&fit=crop" alt="Hang động" class="gallery-image">
-                            <div class="gallery-overlay">
-                                <i class="bi bi-zoom-in"></i>
-                            </div>
-                            <div class="gallery-badge">2/8</div>
-                        </div>
-                        <div class="gallery-item" onclick="openGallery(2)">
-                            <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&h=300&fit=crop" alt="Hoàng hôn" class="gallery-image">
-                            <div class="gallery-overlay">
-                                <i class="bi bi-zoom-in"></i>
-                            </div>
-                            <div class="gallery-badge">3/8</div>
-                        </div>
-                        <div class="gallery-item" onclick="openGallery(3)">
-                            <img src="https://images.unsplash.com/photo-1519046904884-53103b34b206?w=400&h=300&fit=crop" alt="Kayak" class="gallery-image">
-                            <div class="gallery-overlay">
-                                <i class="bi bi-zoom-in"></i>
-                            </div>
-                            <div class="gallery-badge">4/8</div>
-                        </div>
+                    <h2 id="galleryTitle">Khám phá</h2>
+                    <div class="gallery-grid" id="galleryContainer">
+                        <p>Đang tải ảnh...</p>
                     </div>
                 </section>
 
                 <!-- Experience Section -->
                 <section class="experience-section">
                     <h2>Trải nghiệm tại đây</h2>
-                    <div class="experience-grid">
-                        <div class="experience-card">
-                            <div class="experience-icon">
-                                <i class="bi bi-cup-hot"></i>
-                            </div>
-                            <h3 class="experience-title">Ăn gì</h3>
-                            <p class="experience-description">Hải sản tươi ngon, cơm chiên hải sản, bánh mỳ cáy, và các đặc sản địa phương.</p>
-                            <button class="experience-btn" onclick="expandExperience('eat')">Xem thêm</button>
-                        </div>
-                        <div class="experience-card">
-                            <div class="experience-icon">
-                                <i class="bi bi-gamepad"></i>
-                            </div>
-                            <h3 class="experience-title">Chơi gì</h3>
-                            <p class="experience-description">Chèo kayak, lặn biển, tham quan hang động, tour thuyền, cắm trại trên đảo.</p>
-                            <button class="experience-btn" onclick="expandExperience('play')">Xem thêm</button>
-                        </div>
-                        <div class="experience-card">
-                            <div class="experience-icon">
-                                <i class="bi bi-camera"></i>
-                            </div>
-                            <h3 class="experience-title">Check-in</h3>
-                            <p class="experience-description">Điểm check-in nổi tiếng: Hang Múa, Đảo Tuần Châu, Vạn Hạ resort.</p>
-                            <button class="experience-btn" onclick="expandExperience('checkin')">Xem thêm</button>
-                        </div>
+                    <div class="experience-grid" id="experienceContainer">
+                        <p>Đang tải trải nghiệm...</p>
                     </div>
                 </section>
 
                 <!-- Related Places Section -->
                 <section class="related-section">
                     <h2>Địa điểm gần đó</h2>
-                    <div class="related-grid">
-                        <div class="related-card" onclick="goToPlace(1)">
-                            <img src="https://images.unsplash.com/photo-1464207687429-7505649dae38?w=300&h=200&fit=crop" alt="Hang Múa" class="related-image">
-                            <div class="related-content">
-                                <h3 class="related-title">Hang Múa</h3>
-                                <div class="related-location">
-                                    <i class="bi bi-geo-alt"></i>
-                                    <span>Ninh Bình</span>
-                                </div>
-                                <div class="related-distance">5 km</div>
-                            </div>
-                        </div>
-                        <div class="related-card" onclick="goToPlace(2)">
-                            <img src="https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=300&h=200&fit=crop" alt="Đảo Cát Bà" class="related-image">
-                            <div class="related-content">
-                                <h3 class="related-title">Đảo Cát Bà</h3>
-                                <div class="related-location">
-                                    <i class="bi bi-geo-alt"></i>
-                                    <span>Hải Phòng</span>
-                                </div>
-                                <div class="related-distance">12 km</div>
-                            </div>
-                        </div>
-                        <div class="related-card" onclick="goToPlace(3)">
-                            <img src="https://images.unsplash.com/photo-1518256578533-c90d3e85d77f?w=300&h=200&fit=crop" alt="Vạn Hạ Resort" class="related-image">
-                            <div class="related-content">
-                                <h3 class="related-title">Vạn Hạ Resort</h3>
-                                <div class="related-location">
-                                    <i class="bi bi-geo-alt"></i>
-                                    <span>Quảng Ninh</span>
-                                </div>
-                                <div class="related-distance">8 km</div>
-                            </div>
-                        </div>
-                        <div class="related-card" onclick="goToPlace(4)">
-                            <img src="https://images.unsplash.com/photo-1519452575417-564c1401ecc0?w=300&h=200&fit=crop" alt="Đảo Tuần Châu" class="related-image">
-                            <div class="related-content">
-                                <h3 class="related-title">Đảo Tuần Châu</h3>
-                                <div class="related-location">
-                                    <i class="bi bi-geo-alt"></i>
-                                    <span>Quảng Ninh</span>
-                                </div>
-                                <div class="related-distance">3 km</div>
-                            </div>
-                        </div>
+                    <div class="related-grid" id="relatedContainer">
+                        <p>Đang tải địa điểm liên quan...</p>
                     </div>
                 </section>
             </main>
@@ -864,16 +767,15 @@
                         <div class="info-label">
                             <i class="bi bi-geo-alt"></i> Địa chỉ
                         </div>
-                        <div class="info-value">Vịnh Hạ Long, Quảng Ninh, Việt Nam</div>
+                        <div class="info-value" id="infoAddress">Đang tải...</div>
                     </div>
 
                     <div class="info-item">
                         <div class="info-label">
                             <i class="bi bi-clock"></i> Giờ mở cửa
                         </div>
-                        <div class="info-value">
-                            Từ 7:30 - 17:30<br>
-                            <small style="color: #94a3b8; font-weight: 400;">Hàng ngày</small>
+                        <div class="info-value" id="infoHours">
+                            <small style="color: #94a3b8; font-weight: 400;">Đang tải...</small>
                         </div>
                     </div>
 
@@ -881,10 +783,21 @@
                         <div class="info-label">
                             <i class="bi bi-tag"></i> Giá vé
                         </div>
-                        <div class="info-value">
-                            Người lớn: 250,000 VND<br>
-                            <small style="color: #94a3b8; font-weight: 400;">Trẻ em: 125,000 VND</small>
+                        <div class="info-value" id="infoPrices">Đang tải...</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="bi bi-star"></i> Đánh giá
                         </div>
+                        <div class="info-value" id="infoRating">Đang tải...</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="bi bi-telephone"></i> Liên hệ
+                        </div>
+                        <div class="info-value" id="infoContact">Đang tải...</div>
                     </div>
 
                     <button class="info-card-btn" onclick="scrollToMap()">
@@ -897,7 +810,7 @@
         <!-- CTA Section -->
         <section class="cta-section">
             <h2 class="cta-title">Sẵn sàng khám phá?</h2>
-            <p class="cta-subtitle">Thêm Vịnh Hạ Long vào lịch trình du lịch của bạn và tạo ra những kỷ niệm không quên.</p>
+            <p class="cta-subtitle" id="ctaSubtitle">Thêm địa điểm này vào lịch trình du lịch của bạn và tạo ra những kỷ niệm không quên.</p>
             <div class="cta-buttons">
                 <button class="cta-btn primary" onclick="addToSchedule()">
                     <i class="bi bi-plus-lg"></i> Thêm vào lịch trình
@@ -933,39 +846,214 @@
 </div>
 
 <script>
-    // Gallery Data
-    const galleryImages = [
-        'https://images.unsplash.com/photo-1528127269322-539801943592?w=1200&h=800&fit=crop',
-        'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=1200&h=800&fit=crop',
-        'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&h=800&fit=crop',
-        'https://images.unsplash.com/photo-1519046904884-53103b34b206?w=1200&h=800&fit=crop',
-        'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1200&h=800&fit=crop',
-        'https://images.unsplash.com/photo-1511522713356-e6b8bfd4a5f4?w=1200&h=800&fit=crop',
-        'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1200&h=800&fit=crop',
-        'https://images.unsplash.com/photo-1520852741943-47f3b76e0a72?w=1200&h=800&fit=crop'
-    ];
-
+    let placeData = null;
+    let galleryImages = [];
     let currentImageIndex = 0;
 
-    // Open Gallery Modal
+    // Lấy slug từ URL
+    function getSlugFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('slug') || 'vinh-ha-long';
+    }
+
+    // Load chi tiết địa điểm
+    function loadPlaceDetail() {
+        const slug = getSlugFromUrl();
+        
+        fetch(`/DiaDiem/GetPlaceDetail?slug=${slug}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    placeData = data.data;
+                    renderPlaceDetail();
+                    loadNearbyPlaces();
+                } else {
+                    showError('Không thể tải dữ liệu: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showError('Lỗi khi tải dữ liệu: ' + error.message);
+            });
+    }
+
+    // Render chi tiết địa điểm
+    function renderPlaceDetail() {
+        if (!placeData) return;
+
+        const place = placeData.place;
+        const images = placeData.images || [];
+        const prices = placeData.prices || [];
+        const experiences = placeData.experiences || {};
+
+        // Fix: Handle both PascalCase and camelCase
+        const tenDiaDiem = place.TenDiaDiem || place.tenDiaDiem || 'Địa điểm';
+        const moTaChiTiet = place.MoTaChiTiet || place.moTaChiTiet || place.MoTaNgan || place.moTaNgan || '';
+        const moTaNgan = place.MoTaNgan || place.moTaNgan || '';
+        const diaChiChiTiet = place.DiaChiChiTiet || place.diaChiChiTiet || 'Không có thông tin';
+        const gioMoCua = place.GioMoCua || place.gioMoCua || 'Cả ngày';
+        const vungMien = place.VungMien || place.vungMien || 'Việt Nam';
+        const soDienThoai = place.SoDienThoai || place.soDienThoai || '';
+        const email = place.Email || place.email || '';
+        const website = place.Website || place.website || '';
+        const giaVe = place.GiaVe || place.giaVe || 0;
+        const diemDanhGiaTB = place.DiemDanhGiaTB || place.diemDanhGiaTB || 5.0;
+
+        // Hero
+        document.getElementById('heroImage').src = images[0] || 'https://images.unsplash.com/photo-1528127269322-539801943592?w=1200';
+        document.getElementById('heroTitle').textContent = tenDiaDiem;
+        document.getElementById('heroLocation').textContent = vungMien + ', Việt Nam';
+        document.getElementById('galleryTitle').textContent = `Khám phá ${tenDiaDiem}`;
+        document.getElementById('ctaSubtitle').textContent = `Thêm ${tenDiaDiem} vào lịch trình du lịch của bạn và tạo ra những kỷ niệm không quên.`;
+
+        // Description
+        document.getElementById('placeDescription').innerHTML = `<p>${moTaChiTiet || moTaNgan}</p>`;
+
+        // Sidebar Info
+        document.getElementById('infoAddress').textContent = diaChiChiTiet;
+        document.getElementById('infoHours').innerHTML = gioMoCua + '<br><small style="color: #94a3b8; font-weight: 400;">Hàng ngày</small>';
+        
+        let pricesHtml = '';
+        if (prices.length > 0) {
+            prices.forEach(p => {
+                const loaiKhach = p.LoaiKhach || p.loaiKhach || 'Vé';
+                const gia = p.Gia || p.gia || 0;
+                pricesHtml += `<div>${loaiKhach}: ${gia.toLocaleString('vi-VN')} VND</div>`;
+            });
+        } else {
+            pricesHtml = giaVe > 0 ? `${giaVe.toLocaleString('vi-VN')} VND` : 'Miễn phí';
+        }
+        document.getElementById('infoPrices').innerHTML = pricesHtml;
+
+        const rating = diemDanhGiaTB ? parseFloat(diemDanhGiaTB).toFixed(1) : '5.0';
+        document.getElementById('infoRating').textContent = rating + ' / 5.0 ⭐';
+
+        let contactHtml = '';
+        if (soDienThoai) contactHtml += `<div>☎️ ${soDienThoai}</div>`;
+        if (email) contactHtml += `<div>📧 ${email}</div>`;
+        if (website) contactHtml += `<div>🌐 <a href="${website}" target="_blank">Website</a></div>`;
+        document.getElementById('infoContact').innerHTML = contactHtml || 'Không có thông tin';
+
+        // Gallery
+        renderGallery(images);
+
+        // Experiences
+        renderExperiences(experiences);
+    }
+
+    // Render Gallery
+    function renderGallery(images) {
+        galleryImages = images.length > 0 ? images : [
+            'https://images.unsplash.com/photo-1528127269322-539801943592?w=400',
+            'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=400'
+        ];
+
+        let html = '';
+        galleryImages.forEach((img, idx) => {
+            html += `
+            <div class="gallery-item" onclick="openGallery(${idx})">
+                <img src="${img}" alt="Gallery ${idx + 1}" class="gallery-image">
+                <div class="gallery-overlay">
+                    <i class="bi bi-zoom-in"></i>
+                </div>
+                <div class="gallery-badge">${idx + 1}/${galleryImages.length}</div>
+            </div>
+            `;
+        });
+
+        document.getElementById('galleryContainer').innerHTML = html;
+        document.getElementById('totalImages').textContent = galleryImages.length;
+    }
+
+    // Render Experiences
+    function renderExperiences(experiences) {
+        const types = ['eat', 'play', 'checkin'];
+        const typeNames = { eat: 'Ăn gì', play: 'Chơi gì', checkin: 'Check-in' };
+        
+        let html = '';
+        types.forEach(type => {
+            // Handle both PascalCase and camelCase
+            const exp = experiences[type] && experiences[type].length > 0 ? experiences[type][0] : null;
+            if (exp) {
+                const tieuDe = exp.TieuDe || exp.tieuDe || typeNames[type];
+                const moTa = exp.MoTa || exp.moTa || '';
+                const icon = exp.Icon || exp.icon || 'bi-info-circle';
+                
+                html += `
+                <div class="experience-card">
+                    <div class="experience-icon">
+                        <i class="bi ${icon}"></i>
+                    </div>
+                    <h3 class="experience-title">${tieuDe}</h3>
+                    <p class="experience-description">${moTa}</p>
+                    <button class="experience-btn" onclick="expandExperience('${type}')">Xem thêm</button>
+                </div>
+                `;
+            }
+        });
+
+        document.getElementById('experienceContainer').innerHTML = html || '<p>Không có thông tin trải nghiệm</p>';
+    }
+
+    // Load Nearby Places
+    function loadNearbyPlaces() {
+        if (!placeData) return;
+
+        const maDiaDiem = placeData.place.maDiaDiem;
+
+        fetch(`/DiaDiem/GetNearbyPlaces?maDiaDiem=${maDiaDiem}&soKetQua=4`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    renderNearbyPlaces(data.data);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    // Render Nearby Places
+    function renderNearbyPlaces(places) {
+        let html = '';
+        places.forEach(place => {
+            // Handle both PascalCase and camelCase
+            const tenDiaDiem = place.TenDiaDiem || place.tenDiaDiem || 'Địa điểm';
+            const slug = place.Slug || place.slug || '';
+            const vungMien = place.VungMien || place.vungMien || 'Việt Nam';
+            const anhChinh = place.AnhChinh || place.anhChinh || 'https://images.unsplash.com/photo-1464207687429-7505649dae38?w=300';
+            const diemDanhGiaTB = place.DiemDanhGiaTB || place.diemDanhGiaTB || 5.0;
+            
+            html += `
+            <div class="related-card" onclick="goToPlace('${slug}')">
+                <img src="${anhChinh}" alt="${tenDiaDiem}" class="related-image">
+                <div class="related-content">
+                    <h3 class="related-title">${tenDiaDiem}</h3>
+                    <div class="related-location">
+                        <i class="bi bi-geo-alt"></i>
+                        <span>${vungMien}</span>
+                    </div>
+                    <div class="related-distance">⭐ ${parseFloat(diemDanhGiaTB).toFixed(1)}/5.0</div>
+                </div>
+            </div>
+            `;
+        });
+
+        document.getElementById('relatedContainer').innerHTML = html || '<p>Không có địa điểm liên quan</p>';
+    }
+
+    // Gallery Functions
     function openGallery(index) {
         currentImageIndex = index;
         const modal = document.getElementById('imageModal');
         const img = document.getElementById('modalImage');
-
         img.src = galleryImages[currentImageIndex];
         document.getElementById('imageCounter').textContent = currentImageIndex + 1;
-        document.getElementById('totalImages').textContent = galleryImages.length;
-
         modal.classList.add('show');
     }
 
-    // Close Gallery Modal
     function closeGallery() {
         document.getElementById('imageModal').classList.remove('show');
     }
 
-    // Navigate Gallery
     function prevImage() {
         currentImageIndex = (currentImageIndex - 1 + galleryImages.length) % galleryImages.length;
         updateModalImage();
@@ -981,64 +1069,53 @@
         document.getElementById('imageCounter').textContent = currentImageIndex + 1;
     }
 
-    // Toggle Favorite
+    // Action Functions
     function toggleFavorite() {
-        showToast('Yêu thích', 'Đã thêm Vịnh Hạ Long vào danh sách yêu thích!', 'success');
+        showToast('Yêu thích', 'Đã thêm vào danh sách yêu thích!', 'success');
     }
 
-    // Add to Schedule
     function addToSchedule() {
-        showToast('Thêm lịch trình', 'Vịnh Hạ Long đã được thêm vào lịch trình!', 'success');
+        showToast('Thêm lịch trình', 'Đã thêm vào lịch trình!', 'success');
     }
 
-    // View on Map
     function viewOnMap() {
-        showToast('Chuyển hướng', 'Đang chuyển đến trang bản đồ...', 'info');
-        setTimeout(() => {
-            window.location.href = '/Home/Map#halong-bay';
-        }, 800);
-    }
-
-    // Expand Experience
-    function expandExperience(type) {
-        const experiences = {
-            'eat': 'Cơm chiên hải sản, bánh mỳ cáy, gỏi cua, mực nướng, canh chua tôm...',
-            'play': 'Chèo kayak giữa hòn đảo, lặn biển khám phá san hô, tour thuyền Sunrise/Sunset...',
-            'checkin': 'Hang Múa, Đảo Tuần Châu, Vạn Hạ Resort, Ngũ Cát Bà...'
-        };
-
-        showToast('Chi tiết', experiences[type], 'info');
-    }
-
-    // Go to Related Place
-    function goToPlace(placeId) {
-        showToast('Chuyển hướng', 'Đang tải trang chi tiết địa điểm...', 'info');
-        setTimeout(() => {
-            window.location.href = '/Home/DetailPlace?id=' + placeId;
-        }, 800);
-    }
-
-    // Scroll to Map
-    function scrollToMap() {
         showToast('Chuyển hướng', 'Đang mở bản đồ...', 'info');
         setTimeout(() => {
-            window.location.href = '/Home/Map';
+            if (placeData && placeData.place.kinhDo && placeData.place.viDo) {
+                window.location.href = `/Home/Map#${placeData.place.slug}`;
+            }
         }, 800);
     }
 
-    // Explore More
+    function expandExperience(type) {
+        showToast('Chi tiết', 'Xem thêm thông tin trải nghiệm', 'info');
+    }
+
+    function goToPlace(slug) {
+        window.location.href = `/Home/DetailPlace?slug=${slug}`;
+    }
+
+    function scrollToMap() {
+        viewOnMap();
+    }
+
     function exploreMore() {
-        showToast('Khám phá', 'Đang tải các địa điểm khác...', 'info');
-        setTimeout(() => {
-            window.location.href = '/Home/Map';
-        }, 800);
+        window.location.href = '/Home/AllPlaces';
     }
 
-    // Keyboard Navigation for Gallery
+    function showError(message) {
+        document.body.innerHTML = `<div class="container mt-5"><div class="alert alert-danger">${message}</div></div>`;
+    }
+
+    function showToast(title, message, type) {
+        // Nếu có toast library, dùng nó. Nếu không, dùng alert
+        alert(title + ': ' + message);
+    }
+
+    // Keyboard Navigation
     document.addEventListener('keydown', function(event) {
         const modal = document.getElementById('imageModal');
         if (!modal.classList.contains('show')) return;
-
         if (event.key === 'ArrowLeft') prevImage();
         if (event.key === 'ArrowRight') nextImage();
         if (event.key === 'Escape') closeGallery();
@@ -1050,4 +1127,7 @@
             closeGallery();
         }
     });
+
+    // Load data khi page mở
+    document.addEventListener('DOMContentLoaded', loadPlaceDetail);
 </script>

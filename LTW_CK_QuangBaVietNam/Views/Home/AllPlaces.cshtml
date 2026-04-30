@@ -9,8 +9,7 @@
         --slate: #334155;
         --sky-blue: #0EA5E9;
         --sky-light: #38BDF8;
-        --slate-light: #cbd5e1;
-        --white: #ffffff;
+        --slate-light: #cbd5e1apiUrl --white: #ffffff;
         --spacing-2: 0.5rem;
         --spacing-3: 0.75rem;
         --spacing-4: 1rem;
@@ -234,6 +233,12 @@
         font-style: italic;
         transition: color 0.3s ease;
         quotes: "\201C""\201D";
+        max-height: 3.2em; /* 2 lines max */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
     }
 
     .destination-card:hover .card-description {
@@ -330,219 +335,182 @@
 
 <!-- ALL PLACES LIST -->
 <section class="container mb-5">
-    <div class="row g-4">
-        <!-- Card 1 -->
-        <div class="col-md-4 mb-4">
-            <div class="destination-card">
-                <div class="card-img-wrapper">
-                    <img src="https://images.unsplash.com/photo-1528127269322-539801943592?w=800" alt="Vịnh Hạ Long">
-                    <button class="favorite-btn" aria-label="Thêm vào danh sách yêu thích">
-                        <i class="bi bi-heart"></i>
-                    </button>
+    <div class="row g-4" id="placesContainer">
+        <!-- Placeholder loading -->
+        <div class="col-12">
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
                 </div>
-                <div class="card-body">
-                    <h5 class="card-title">Vịnh Hạ Long</h5>
-                    <div class="card-location">
-                        <i class="bi bi-geo-alt"></i>
-                        <span>Quảng Ninh - Việt Nam</span>
-                    </div>
-                    <p class="card-description">Di sản thiên nhiên thế giới với hàng nghìn đảo đá vôi và kì vĩ giữa làn nước xanh ngọc</p>
-                    <div class="experience-badge">Di sản thế giới</div>
-                </div>
-            </div>
-        </div>
-        <!-- Card 2 -->
-        <div class="col-md-4 mb-4">
-            <div class="destination-card">
-                <div class="card-img-wrapper">
-                    <img src="https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=800" alt="Hội An">
-                    <button class="favorite-btn" aria-label="Thêm vào danh sách yêu thích">
-                        <i class="bi bi-heart"></i>
-                    </button>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">Phố cổ Hội An</h5>
-                    <div class="card-location">
-                        <i class="bi bi-geo-alt"></i>
-                        <span>Quảng Nam - Việt Nam</span>
-                    </div>
-                    <p class="card-description">Phố đèn lồng rực rỡ, nơi thời gian lặng đứng trong từng mái nhà cổ</p>
-                    <div class="experience-badge">Văn hóa</div>
-                </div>
-            </div>
-        </div>
-        <!-- Card 3 -->
-        <div class="col-md-4 mb-4">
-            <div class="destination-card">
-                <div class="card-img-wrapper">
-                    <img src="https://images.unsplash.com/photo-1578895101408-1a36b834405b?w=800" alt="Đà Lạt">
-                    <button class="favorite-btn" aria-label="Thêm vào danh sách yêu thích">
-                        <i class="bi bi-heart"></i>
-                    </button>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">Đà Lạt</h5>
-                    <div class="card-location">
-                        <i class="bi bi-geo-alt"></i>
-                        <span>Lâm Đồng - Việt Nam</span>
-                    </div>
-                    <p class="card-description">Thành phố sương mù với khí hậu ôn hòa và những đồi thông lãng mạn</p>
-                    <div class="experience-badge">Thành phố nghỉ dưỡng</div>
-                </div>
-            </div>
-        </div>
-        <!-- Card 4 -->
-        <div class="col-md-4 mb-4">
-            <div class="destination-card">
-                <div class="card-img-wrapper">
-                    <img src="https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=800" alt="Sapa">
-                    <button class="favorite-btn" aria-label="Thêm vào danh sách yêu thích">
-                        <i class="bi bi-heart"></i>
-                    </button>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">Ruộng bậc thang Sa Pa</h5>
-                    <div class="card-location">
-                        <i class="bi bi-geo-alt"></i>
-                        <span>Lào Cai - Việt Nam</span>
-                    </div>
-                    <p class="card-description">Những bậc thang nông nghiệp tinh tế, tạo nên cảnh quan kì diệu trên núi cao</p>
-                    <div class="experience-badge">Thiên nhiên tươi mát</div>
-                </div>
-            </div>
-        </div>
-        <!-- Card 5 -->
-        <div class="col-md-4 mb-4">
-            <div class="destination-card">
-                <div class="card-img-wrapper">
-                    <img src="https://images.unsplash.com/photo-1540611025311-01df3cef54b5?w=800" alt="Phú Quốc">
-                    <button class="favorite-btn" aria-label="Thêm vào danh sách yêu thích">
-                        <i class="bi bi-heart"></i>
-                    </button>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">Đảo Phú Quốc</h5>
-                    <div class="card-location">
-                        <i class="bi bi-geo-alt"></i>
-                        <span>Kiên Giang - Việt Nam</span>
-                    </div>
-                    <p class="card-description">Thiên đường biển nhiệt đới với bãi cát trắng và hoàng hôn rực rỡ trên mặt nước</p>
-                    <div class="experience-badge">Biển đảo</div>
-                </div>
-            </div>
-        </div>
-        <!-- Card 6 -->
-        <div class="col-md-4 mb-4">
-            <div class="destination-card">
-                <div class="card-img-wrapper">
-                    <img src="https://images.unsplash.com/photo-1557750255-c76072a7aad1?w=800" alt="Ninh Bình">
-                    <button class="favorite-btn" aria-label="Thêm vào danh sách yêu thích">
-                        <i class="bi bi-heart"></i>
-                    </button>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">Tràng An - Ninh Bình</h5>
-                    <div class="card-location">
-                        <i class="bi bi-geo-alt"></i>
-                        <span>Ninh Bình - Việt Nam</span>
-                    </div>
-                    <p class="card-description">Kì quan thiên nhiên với núi đá vôi và hệ hang động xuyên sông, tựa bức tranh lưu động</p>
-                    <div class="experience-badge">Kì quan thiên nhiên</div>
-                </div>
-            </div>
-        </div>
-        <!-- Card 7 - Huế -->
-        <div class="col-md-4 mb-4">
-            <div class="destination-card">
-                <div class="card-img-wrapper">
-                    <img src="https://images.unsplash.com/photo-1598462005470-34346eb4a05f?w=800" alt="Huế">
-                    <button class="favorite-btn" aria-label="Thêm vào danh sách yêu thích">
-                        <i class="bi bi-heart"></i>
-                    </button>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">Cố đô Huế</h5>
-                    <div class="card-location">
-                        <i class="bi bi-geo-alt"></i>
-                        <span>Thừa Thiên Huế - Việt Nam</span>
-                    </div>
-                    <p class="card-description">Dấu ấn thời gian qua những cung điện và lăng tẩm mang đậm nét hoàng gia</p>
-                    <div class="experience-badge">Di sản văn hóa</div>
-                </div>
-            </div>
-        </div>
-        <!-- Card 8 - Đà Nẵng -->
-        <div class="col-md-4 mb-4">
-            <div class="destination-card">
-                <div class="card-img-wrapper">
-                    <img src="https://images.unsplash.com/photo-1555562722-e421a179c3f4?w=800" alt="Đà Nẵng">
-                    <button class="favorite-btn" aria-label="Thêm vào danh sách yêu thích">
-                        <i class="bi bi-heart"></i>
-                    </button>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">Đà Nẵng</h5>
-                    <div class="card-location">
-                        <i class="bi bi-geo-alt"></i>
-                        <span>Đà Nẵng - Việt Nam</span>
-                    </div>
-                    <p class="card-description">Thành phố năng động với bán đảo Sơn Trà và những bãi biển thơ mộng</p>
-                    <div class="experience-badge">Thành phố biển</div>
-                </div>
-            </div>
-        </div>
-        <!-- Card 9 - Phong Nha Kẻ Bàng -->
-        <div class="col-md-4 mb-4">
-            <div class="destination-card">
-                <div class="card-img-wrapper">
-                    <img src="https://images.unsplash.com/photo-1517409029986-7a1a0dcff6ba?w=800" alt="Phong Nha Kẻ Bàng">
-                    <button class="favorite-btn" aria-label="Thêm vào danh sách yêu thích">
-                        <i class="bi bi-heart"></i>
-                    </button>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">Phong Nha Kẻ Bàng</h5>
-                    <div class="card-location">
-                        <i class="bi bi-geo-alt"></i>
-                        <span>Quảng Bình - Việt Nam</span>
-                    </div>
-                    <p class="card-description">Vương quốc hang động với những dòng sông ngầm và thạch nhũ tráng lệ</p>
-                    <div class="experience-badge">Khám phá thiên nhiên</div>
-                </div>
+                <p class="mt-3">Đang tải dữ liệu...</p>
             </div>
         </div>
     </div>
 </section>
 
 <script>
+    let allPlaces = [];
+    let currentPage = 1;
+    let selectedRegion = '';
+
+    // Load tất cả địa điểm khi trang mở
+    document.addEventListener('DOMContentLoaded', function() {
+        loadPlaces(1, '');
+    });
+
+    // Load địa điểm từ API
+    function loadPlaces(page = 1, vungMien = '') {
+        const container = document.getElementById('placesContainer');
+        container.innerHTML = '<div class="col-12 text-center py-5"><div class="spinner-border text-primary"></div><p class="mt-3">Đang tải dữ liệu...</p></div>';
+
+        fetch(`/DiaDiem/GetAllPlaces?page=${page}&pageSize=9&vungMien=${vungMien}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    renderPlaces(data.data);
+                    allPlaces = data.data;
+                } else {
+                    container.innerHTML = '<div class="col-12"><div class="alert alert-danger">Không thể tải dữ liệu. ' + data.message + '</div></div>';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                container.innerHTML = '<div class="col-12"><div class="alert alert-danger">Lỗi khi tải dữ liệu: ' + error.message + '</div></div>';
+            });
+    }
+
+    // Render các card địa điểm
+    function renderPlaces(places) {
+        const container = document.getElementById('placesContainer');
+        
+        if (places.length === 0) {
+            container.innerHTML = '<div class="col-12"><div class="alert alert-info">Không tìm thấy địa điểm nào.</div></div>';
+            return;
+        }
+
+        let html = '';
+        places.forEach(place => {
+            // Fix: API trả về PascalCase, không phải camelCase
+            const tenDiaDiem = place.TenDiaDiem || place.tenDiaDiem || 'Địa điểm';
+            const slug = place.Slug || place.slug || '';
+            const moTaNgan = place.MoTaNgan || place.moTaNgan || 'Khám phá địa điểm du lịch tuyệt vời';
+            const anhChinh = place.AnhChinh || place.anhChinh || 'https://images.unsplash.com/photo-1528127269322-539801943592?w=800';
+            const diemDanhGiaTB = place.DiemDanhGiaTB || place.diemDanhGiaTB || 5.0;
+            
+            // Hiển thị vị trí địa điểm thay vì danh mục
+            const locationBase = place.DiaChiChiTiet || place.diaChiChiTiet || place.VungMien || place.vungMien || 'Việt Nam';
+            const locationText = locationBase.toLowerCase().includes('việt nam') || locationBase.toLowerCase().includes('vietnam')
+                ? locationBase
+                : `${locationBase} - Việt Nam`;
+            
+            // Truncate description to max 120 characters
+            const maxLength = 120;
+            const truncatedDescription = moTaNgan.length > maxLength 
+                ? moTaNgan.substring(0, maxLength) + '...' 
+                : moTaNgan;
+            
+            const rating = diemDanhGiaTB ? parseFloat(diemDanhGiaTB).toFixed(1) : '5.0';
+
+            html += `
+            <div class="col-md-4 mb-4">
+                <div class="destination-card" onclick="goToDetailPlace('${slug}')" style="cursor: pointer;">
+                    <div class="card-img-wrapper">
+                        <img src="${anhChinh}" alt="${tenDiaDiem}" class="img-fluid">
+                        <button class="favorite-btn" aria-label="Thêm vào danh sách yêu thích" onclick="event.stopPropagation(); toggleFavorite(event)">
+                            <i class="bi bi-heart"></i>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">${tenDiaDiem}</h5>
+                        <div class="card-location">
+                            <i class="bi bi-geo-alt"></i>
+                            <span>${locationText}</span>
+                        </div>
+                        <p class="card-description">${truncatedDescription}</p>
+                        <div class="experience-badge">⭐ ${rating}/5.0</div>
+                    </div>
+                </div>
+            </div>
+            `;
+        });
+
+        container.innerHTML = html;
+
+        // Thêm event listener cho favorite buttons
+        document.querySelectorAll('.favorite-btn').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const icon = this.querySelector('i');
+                if (!icon) return;
+
+                const isAdding = icon.classList.contains('bi-heart');
+                if (isAdding) {
+                    icon.classList.remove('bi-heart');
+                    icon.classList.add('bi-heart-fill');
+                    this.style.color = '#ef4444';
+                    this.style.borderColor = '#ef4444';
+                } else {
+                    icon.classList.remove('bi-heart-fill');
+                    icon.classList.add('bi-heart');
+                    this.style.color = 'var(--white)';
+                    this.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+                }
+            });
+        });
+    }
+
     // Filter buttons interaction
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', function () {
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
-        });
-    });
 
-    // Favorite button logic
-    document.querySelectorAll('.favorite-btn').forEach(btn => {
-        btn.addEventListener('click', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            const icon = this.querySelector('i');
-            if (!icon) return;
-
-            const isAdding = icon.classList.contains('bi-heart');
-            if (isAdding) {
-                icon.classList.remove('bi-heart');
-                icon.classList.add('bi-heart-fill');
-                this.style.color = '#ef4444';
-                this.style.borderColor = '#ef4444';
-            } else {
-                icon.classList.remove('bi-heart-fill');
-                icon.classList.add('bi-heart');
-                this.style.color = 'var(--white)';
-                this.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+            // Lấy region từ button text
+            let region = this.textContent.trim();
+            
+            if (region === 'Tất cả') {
+                selectedRegion = '';
+            } else if (region === 'Miền Bắc') {
+                selectedRegion = 'Bắc';
+            } else if (region === 'Miền Trung') {
+                selectedRegion = 'Trung';
+            } else if (region === 'Miền Nam') {
+                selectedRegion = 'Nam';
+            } else if (region === 'Đảo & Biển') {
+                selectedRegion = 'Biển';
+            } else if (region === 'Núi rừng') {
+                selectedRegion = 'Núi';
             }
+
+            loadPlaces(1, selectedRegion);
         });
     });
+
+    // Navigate to detail place page
+    function goToDetailPlace(placeSlug) {
+        window.location.href = '/Home/DetailPlace?slug=' + placeSlug;
+    }
+
+    // Toggle favorite function
+    function toggleFavorite(event) {
+        const btn = event.target.closest('.favorite-btn');
+        if (!btn) return;
+
+        const icon = btn.querySelector('i');
+        if (!icon) return;
+
+        const isAdding = icon.classList.contains('bi-heart');
+        if (isAdding) {
+            icon.classList.remove('bi-heart');
+            icon.classList.add('bi-heart-fill');
+            btn.style.color = '#ef4444';
+            btn.style.borderColor = '#ef4444';
+        } else {
+            icon.classList.remove('bi-heart-fill');
+            icon.classList.add('bi-heart');
+            btn.style.color = 'var(--white)';
+            btn.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+        }
+    }
 </script>
