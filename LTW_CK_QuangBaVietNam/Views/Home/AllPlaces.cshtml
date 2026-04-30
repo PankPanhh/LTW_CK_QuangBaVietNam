@@ -1,0 +1,548 @@
+﻿@{
+    ViewBag.Title = "Tất cả địa điểm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    :root {
+        --deep-slate: #1e293b;
+        --slate: #334155;
+        --sky-blue: #0EA5E9;
+        --sky-light: #38BDF8;
+        --slate-light: #cbd5e1;
+        --white: #ffffff;
+        --spacing-2: 0.5rem;
+        --spacing-3: 0.75rem;
+        --spacing-4: 1rem;
+        --spacing-6: 1.5rem;
+        --spacing-8: 2rem;
+        --spacing-12: 3rem;
+        --spacing-16: 4rem;
+        --spacing-24: 6rem;
+    }
+
+    /* ALL PLACES HEADER BANNER */
+    .places-banner {
+        position: relative;
+        height: 300px;
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.85), rgba(14, 165, 233, 0.75)), url('https://images.unsplash.com/photo-1528127269322-539801943592?w=1920&q=80') center/cover;
+        background-attachment: fixed;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--white);
+        text-align: center;
+        overflow: hidden;
+    }
+
+        .places-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(14, 165, 233, 0.2), transparent 70%);
+        }
+
+    .places-content {
+        position: relative;
+        z-index: 2;
+        padding: 0 var(--spacing-6);
+    }
+
+        .places-content h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: var(--spacing-4);
+            text-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+            line-height: 1.15;
+        }
+
+        .places-content p {
+            font-size: 1.25rem;
+            opacity: 0.95;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+        }
+
+    /* STICKY FILTER BAR */
+    .filter-bar {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(20px);
+        padding: var(--spacing-6) 0;
+        box-shadow: 0 4px 28px rgba(30, 41, 59, 0.08);
+        position: sticky;
+        top: 111px;
+        z-index: 1020;
+        margin-bottom: var(--spacing-12);
+        border-bottom: 1px solid rgba(14, 165, 233, 0.15);
+    }
+
+        .filter-bar .filter-btn {
+            padding: var(--spacing-3) var(--spacing-6);
+            border: 2px solid rgba(14, 165, 233, 0.25);
+            border-radius: 999px;
+            background: white;
+            color: var(--slate);
+            margin-right: var(--spacing-3);
+            margin-bottom: var(--spacing-2);
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            box-shadow: 0 2px 8px rgba(30, 41, 59, 0.06);
+        }
+
+            .filter-bar .filter-btn:hover {
+                border-color: var(--sky-blue);
+                background: rgba(14, 165, 233, 0.08);
+                color: var(--deep-slate);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 16px rgba(14, 165, 233, 0.2);
+            }
+
+            .filter-bar .filter-btn.active {
+                border-color: transparent;
+                background: linear-gradient(135deg, var(--sky-blue), var(--sky-light));
+                color: var(--white);
+                box-shadow: 0 4px 20px rgba(14, 165, 233, 0.35);
+            }
+
+    /* DESTINATION CARDS */
+    .destination-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(12px);
+        border-radius: 28px;
+        overflow: hidden;
+        box-shadow: 0 12px 40px rgba(30, 41, 59, 0.08);
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        border: 1.5px solid rgba(255, 255, 255, 0.4);
+    }
+
+        .destination-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 24px 56px rgba(14, 165, 233, 0.15);
+            border-color: rgba(14, 165, 233, 0.3);
+        }
+
+        .destination-card .card-img-wrapper {
+            position: relative;
+            height: 280px;
+            overflow: hidden;
+            border-radius: 28px;
+            margin: 6px;
+            isolation: isolate;
+        }
+
+            .destination-card .card-img-wrapper img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            }
+
+        .destination-card:hover .card-img-wrapper img {
+            transform: scale(1.1);
+        }
+
+        .destination-card .card-img-wrapper::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40%;
+            background: linear-gradient(to top, rgba(15, 23, 42, 0.5), transparent);
+            z-index: 1;
+        }
+
+        .destination-card .favorite-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 10;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+            .destination-card .favorite-btn:hover {
+                transform: scale(1.1);
+                background: rgba(255, 255, 255, 0.95);
+                color: #ef4444;
+                border-color: #ef4444;
+                box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3);
+            }
+
+            .destination-card .favorite-btn i {
+                transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            }
+
+    .destination-card .card-body {
+        padding: var(--spacing-6);
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        position: relative;
+        z-index: 2;
+    }
+
+    .destination-card .card-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin-bottom: var(--spacing-2);
+        color: var(--deep-slate);
+        line-height: 1.2;
+        letter-spacing: -0.5px;
+    }
+
+    .destination-card .card-location {
+        font-size: 0.875rem;
+        color: #94a3b8;
+        font-weight: 500;
+        margin-bottom: var(--spacing-4);
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+
+        .destination-card .card-location i {
+            font-size: 1rem;
+            color: var(--sky-blue);
+        }
+
+    .destination-card .card-description {
+        color: #64748b;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: auto;
+        font-weight: 400;
+        font-style: italic;
+        transition: color 0.3s ease;
+        quotes: "\201C""\201D";
+    }
+
+    .destination-card:hover .card-description {
+        color: var(--sky-blue);
+    }
+
+    .destination-card .card-description::before {
+        content: open-quote;
+        margin-right: 0.25rem;
+        opacity: 0.5;
+    }
+
+    .destination-card .card-description::after {
+        content: close-quote;
+        margin-left: 0.25rem;
+        opacity: 0.5;
+    }
+
+    .destination-card .experience-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: var(--spacing-4);
+        padding: 0.5rem 1rem;
+        background: rgba(14, 165, 233, 0.08);
+        backdrop-filter: blur(12px);
+        border: 1.5px solid rgba(14, 165, 233, 0.25);
+        border-radius: 999px;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: var(--sky-blue);
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        transition: all 0.3s ease;
+        width: fit-content;
+    }
+
+    .destination-card:hover .experience-badge {
+        background: rgba(14, 165, 233, 0.15);
+        border-color: rgba(14, 165, 233, 0.4);
+        box-shadow: 0 4px 12px rgba(14, 165, 233, 0.15);
+    }
+
+    .destination-card .experience-badge::before {
+        content: "✦";
+        font-size: 0.7rem;
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: var(--spacing-12);
+        color: var(--deep-slate);
+        position: relative;
+        padding-bottom: var(--spacing-4);
+    }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            border-radius: 2px;
+            background: var(--sky-blue);
+        }
+
+    .text-center .section-title::after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+</style>
+
+<!-- HEADER BANNER -->
+<section class="places-banner">
+    <div class="places-content container">
+        <h1>Tất Cả Địa Điểm</h1>
+        <p>Hàng nghìn địa danh tuyệt đẹp trên khắp Việt Nam đang chờ bạn</p>
+    </div>
+</section>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+    <div class="container">
+        <button class="filter-btn active">Tất cả</button>
+        <button class="filter-btn">Miền Bắc</button>
+        <button class="filter-btn">Miền Trung</button>
+        <button class="filter-btn">Miền Nam</button>
+        <button class="filter-btn">Đảo & Biển</button>
+        <button class="filter-btn">Núi rừng</button>
+    </div>
+</div>
+
+<!-- ALL PLACES LIST -->
+<section class="container mb-5">
+    <div class="row g-4">
+        <!-- Card 1 -->
+        <div class="col-md-4 mb-4">
+            <div class="destination-card">
+                <div class="card-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1528127269322-539801943592?w=800" alt="Vịnh Hạ Long">
+                    <button class="favorite-btn" aria-label="Thêm vào danh sách yêu thích">
+                        <i class="bi bi-heart"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Vịnh Hạ Long</h5>
+                    <div class="card-location">
+                        <i class="bi bi-geo-alt"></i>
+                        <span>Quảng Ninh - Việt Nam</span>
+                    </div>
+                    <p class="card-description">Di sản thiên nhiên thế giới với hàng nghìn đảo đá vôi và kì vĩ giữa làn nước xanh ngọc</p>
+                    <div class="experience-badge">Di sản thế giới</div>
+                </div>
+            </div>
+        </div>
+        <!-- Card 2 -->
+        <div class="col-md-4 mb-4">
+            <div class="destination-card">
+                <div class="card-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=800" alt="Hội An">
+                    <button class="favorite-btn" aria-label="Thêm vào danh sách yêu thích">
+                        <i class="bi bi-heart"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Phố cổ Hội An</h5>
+                    <div class="card-location">
+                        <i class="bi bi-geo-alt"></i>
+                        <span>Quảng Nam - Việt Nam</span>
+                    </div>
+                    <p class="card-description">Phố đèn lồng rực rỡ, nơi thời gian lặng đứng trong từng mái nhà cổ</p>
+                    <div class="experience-badge">Văn hóa</div>
+                </div>
+            </div>
+        </div>
+        <!-- Card 3 -->
+        <div class="col-md-4 mb-4">
+            <div class="destination-card">
+                <div class="card-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1578895101408-1a36b834405b?w=800" alt="Đà Lạt">
+                    <button class="favorite-btn" aria-label="Thêm vào danh sách yêu thích">
+                        <i class="bi bi-heart"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Đà Lạt</h5>
+                    <div class="card-location">
+                        <i class="bi bi-geo-alt"></i>
+                        <span>Lâm Đồng - Việt Nam</span>
+                    </div>
+                    <p class="card-description">Thành phố sương mù với khí hậu ôn hòa và những đồi thông lãng mạn</p>
+                    <div class="experience-badge">Thành phố nghỉ dưỡng</div>
+                </div>
+            </div>
+        </div>
+        <!-- Card 4 -->
+        <div class="col-md-4 mb-4">
+            <div class="destination-card">
+                <div class="card-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=800" alt="Sapa">
+                    <button class="favorite-btn" aria-label="Thêm vào danh sách yêu thích">
+                        <i class="bi bi-heart"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Ruộng bậc thang Sa Pa</h5>
+                    <div class="card-location">
+                        <i class="bi bi-geo-alt"></i>
+                        <span>Lào Cai - Việt Nam</span>
+                    </div>
+                    <p class="card-description">Những bậc thang nông nghiệp tinh tế, tạo nên cảnh quan kì diệu trên núi cao</p>
+                    <div class="experience-badge">Thiên nhiên tươi mát</div>
+                </div>
+            </div>
+        </div>
+        <!-- Card 5 -->
+        <div class="col-md-4 mb-4">
+            <div class="destination-card">
+                <div class="card-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1540611025311-01df3cef54b5?w=800" alt="Phú Quốc">
+                    <button class="favorite-btn" aria-label="Thêm vào danh sách yêu thích">
+                        <i class="bi bi-heart"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Đảo Phú Quốc</h5>
+                    <div class="card-location">
+                        <i class="bi bi-geo-alt"></i>
+                        <span>Kiên Giang - Việt Nam</span>
+                    </div>
+                    <p class="card-description">Thiên đường biển nhiệt đới với bãi cát trắng và hoàng hôn rực rỡ trên mặt nước</p>
+                    <div class="experience-badge">Biển đảo</div>
+                </div>
+            </div>
+        </div>
+        <!-- Card 6 -->
+        <div class="col-md-4 mb-4">
+            <div class="destination-card">
+                <div class="card-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1557750255-c76072a7aad1?w=800" alt="Ninh Bình">
+                    <button class="favorite-btn" aria-label="Thêm vào danh sách yêu thích">
+                        <i class="bi bi-heart"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Tràng An - Ninh Bình</h5>
+                    <div class="card-location">
+                        <i class="bi bi-geo-alt"></i>
+                        <span>Ninh Bình - Việt Nam</span>
+                    </div>
+                    <p class="card-description">Kì quan thiên nhiên với núi đá vôi và hệ hang động xuyên sông, tựa bức tranh lưu động</p>
+                    <div class="experience-badge">Kì quan thiên nhiên</div>
+                </div>
+            </div>
+        </div>
+        <!-- Card 7 - Huế -->
+        <div class="col-md-4 mb-4">
+            <div class="destination-card">
+                <div class="card-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1598462005470-34346eb4a05f?w=800" alt="Huế">
+                    <button class="favorite-btn" aria-label="Thêm vào danh sách yêu thích">
+                        <i class="bi bi-heart"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Cố đô Huế</h5>
+                    <div class="card-location">
+                        <i class="bi bi-geo-alt"></i>
+                        <span>Thừa Thiên Huế - Việt Nam</span>
+                    </div>
+                    <p class="card-description">Dấu ấn thời gian qua những cung điện và lăng tẩm mang đậm nét hoàng gia</p>
+                    <div class="experience-badge">Di sản văn hóa</div>
+                </div>
+            </div>
+        </div>
+        <!-- Card 8 - Đà Nẵng -->
+        <div class="col-md-4 mb-4">
+            <div class="destination-card">
+                <div class="card-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1555562722-e421a179c3f4?w=800" alt="Đà Nẵng">
+                    <button class="favorite-btn" aria-label="Thêm vào danh sách yêu thích">
+                        <i class="bi bi-heart"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Đà Nẵng</h5>
+                    <div class="card-location">
+                        <i class="bi bi-geo-alt"></i>
+                        <span>Đà Nẵng - Việt Nam</span>
+                    </div>
+                    <p class="card-description">Thành phố năng động với bán đảo Sơn Trà và những bãi biển thơ mộng</p>
+                    <div class="experience-badge">Thành phố biển</div>
+                </div>
+            </div>
+        </div>
+        <!-- Card 9 - Phong Nha Kẻ Bàng -->
+        <div class="col-md-4 mb-4">
+            <div class="destination-card">
+                <div class="card-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1517409029986-7a1a0dcff6ba?w=800" alt="Phong Nha Kẻ Bàng">
+                    <button class="favorite-btn" aria-label="Thêm vào danh sách yêu thích">
+                        <i class="bi bi-heart"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Phong Nha Kẻ Bàng</h5>
+                    <div class="card-location">
+                        <i class="bi bi-geo-alt"></i>
+                        <span>Quảng Bình - Việt Nam</span>
+                    </div>
+                    <p class="card-description">Vương quốc hang động với những dòng sông ngầm và thạch nhũ tráng lệ</p>
+                    <div class="experience-badge">Khám phá thiên nhiên</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Filter buttons interaction
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+
+    // Favorite button logic
+    document.querySelectorAll('.favorite-btn').forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const icon = this.querySelector('i');
+            if (!icon) return;
+
+            const isAdding = icon.classList.contains('bi-heart');
+            if (isAdding) {
+                icon.classList.remove('bi-heart');
+                icon.classList.add('bi-heart-fill');
+                this.style.color = '#ef4444';
+                this.style.borderColor = '#ef4444';
+            } else {
+                icon.classList.remove('bi-heart-fill');
+                icon.classList.add('bi-heart');
+                this.style.color = 'var(--white)';
+                this.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+            }
+        });
+    });
+</script>
