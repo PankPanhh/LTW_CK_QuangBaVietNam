@@ -160,6 +160,13 @@
     <Content Include="Content\images\Places\sapa.jpg" />
     <Content Include="Content\images\Places\trangan.jpg" />
     <Content Include="Content\images\Places\vinhhalong.jpg" />
+    <Content Include="Content\images\Places\vinhhalong1.jpg" />
+    <Content Include="Content\images\Places\vinhhalong2.jpg" />
+    <Content Include="Content\images\Places\vinhhalong3.jpg" />
+    <Content Include="Content\images\Places\vinhhalong4.jpg" />
+    <Content Include="Content\images\Places\vinhhalong5.jpg" />
+    <Content Include="Content\images\Places\vinhhalong6.jpg" />
+    <Content Include="Content\images\Places\vinhhalong7.jpg" />
     <Content Include="Content\images\trangan.jpg" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />

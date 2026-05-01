@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -1215,6 +1214,7 @@
     }
 
     // 3. Hàm Render HTML (Mapping đúng các thuộc tính Viết Hoa từ C#)
+   // 3. Hàm Render HTML (Cập nhật để hiển thị Tên Danh Mục)
     function renderPlaces(places) {
         const container = document.getElementById('featured-destinations-container');
 
@@ -1225,16 +1225,18 @@
 
         container.innerHTML = places.map(place => {
             const ten = place.TenDiaDiem;
-            const anh = place.AnhChinh || 'https://images.unsplash.com/photo-1528127269322-539801943592?w=800';
+            const anh = place.AnhChinh || '/Content/images/Places/vinhhalong.jpg';
+            const danhMuc = place.DanhMuc || "KHÁM PHÁ"; // Lấy tên danh mục từ API
 
-            // --- LOGIC GIỚI HẠN CHỮ GIỐNG TRANG ALLPLACES ---
+            // Giới hạn chữ mô tả
             const moTaGoc = place.MoTaNgan || "";
-            const maxLength = 120; // Giới hạn 120 ký tự
+            const maxLength = 100; 
             const motaRutGon = moTaGoc.length > maxLength
                 ? moTaGoc.substring(0, maxLength).trim() + "..."
                 : moTaGoc;
-            // -----------------------------------------------
 
+            // Xử lý địa chỉ
+            const locationText = place.VungMien ? `${place.VungMien} - Việt Nam` : 'Việt Nam';
             const isFav = localStorage.getItem(`favorite_${ten}`);
 
             return `
@@ -1250,11 +1252,14 @@
                         <h5 class="card-title text-truncate">${ten}</h5>
                         <div class="card-location">
                             <i class="bi bi-geo-alt"></i>
-                            <span>${place.VungMien} · Việt Nam</span>
+                            <span>${locationText}</span>
                         </div>
-                        <!-- Sử dụng biến motaRutGon đã xử lý ở trên -->
                         <p class="card-description">${motaRutGon}</p>
-                        <div class="experience-badge">${place.DanhMuc || 'Địa danh'}</div>
+                        
+                        <!-- THAY ĐỔI TẠI ĐÂY: Hiển thị Tên Danh Mục thay vì Sao -->
+                        <div class="experience-badge">
+                            <i class="bi"></i> ${danhMuc.toUpperCase()}
+                        </div>
                     </div>
                 </div>
             </div>
