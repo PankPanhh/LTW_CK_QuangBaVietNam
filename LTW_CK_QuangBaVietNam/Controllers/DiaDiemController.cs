@@ -429,7 +429,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                 return Json(new
                 {
                     success = true,
-                    message = "C?p nh?t l??t xem thành công",
+                    message = "Cập nhật thành công",
                     views = place.LuotXem
                 }, JsonRequestBehavior.AllowGet);
             }
