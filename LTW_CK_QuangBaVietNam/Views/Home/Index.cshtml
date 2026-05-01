@@ -688,6 +688,37 @@
         }
     }
 
+    /* Leaflet marker pulse (match Map page) */
+    .marker-pulse {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: rgba(255, 61, 0, 0.5);
+        z-index: 1;
+        animation: pulse 2s infinite;
+    }
+
+    @@keyframes pulse {
+        0% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0.8;
+        }
+
+        70% {
+            transform: translate(-50%, -50%) scale(2);
+            opacity: 0;
+        }
+
+        100% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0;
+        }
+    }
+
     /* Card content - NEW STRUCTURE */
     .destination-card .card-body {
         padding: var(--spacing-6);
@@ -1072,10 +1103,7 @@
 <section class="container mb-5">
     <h2 class="section-title text-center">Khám phá trên bản đồ</h2>
     <div class="map-preview">
-        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15676998.988131916!2d96.34424779999999!3d15.809313!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31157a4d736a1e5f%3A0xb03bb0c9e2fe62be!2zVmnhu4d0IE5hbQ!5e0!3m2!1svi!2s!4v1234567890"
-                allowfullscreen=""
-                loading="lazy">
-        </iframe>
+        <div id="home-map-preview" style="width:100%;height:100%;"></div>
     </div>
     <div class="text-center">
         <a href="/Home/Map" class="btn-primary-custom">
@@ -1083,6 +1111,10 @@
         </a>
     </div>
 </section>
+
+<!-- Leaflet + OpenStreetMap (no Google Maps) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
 <!-- BLOG SECTION -->
 <section class="container mb-5">
@@ -1297,6 +1329,7 @@
     // 5. Khởi động
     document.addEventListener('DOMContentLoaded', () => {
         loadFeaturedPlaces(); // Load mặc định 4 cái
+        initHomeMapPreview();
 
         // Xử lý bộ lọc
         document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -1314,4 +1347,111 @@
             });
         });
     });
+
+    async function initHomeMapPreview() {
+        const mapEl = document.getElementById('home-map-preview');
+        if (!mapEl || typeof L === 'undefined') return;
+
+        const map = L.map('home-map-preview', {
+            zoomControl: true,
+            scrollWheelZoom: false
+        }).setView([15.5, 108.0], 5);
+
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors',
+            maxZoom: 19
+        }).addTo(map);
+
+        const bounds = [];
+        const norm = (s) => (s || '').toString().trim().toLowerCase();
+
+        const makeMarkerIcon = ({ highlightLabel }) => {
+            const isIsland = !!highlightLabel;
+            const markerColor = isIsland
+                ? 'linear-gradient(135deg, #FF3D00, #FF8A00)'
+                : 'linear-gradient(135deg, #0EA5E9, #38BDF8)';
+            const markerSize = isIsland ? '56px' : '40px';
+            const iconSize = isIsland ? '28px' : '20px';
+            const pulseEffect = isIsland ? '<div class="marker-pulse"></div>' : '';
+
+            return L.divIcon({
+                html: `
+                <div style="position: relative;">
+                    ${pulseEffect}
+                    <div style="background: ${markerColor}; color: white; width: ${markerSize}; height: ${markerSize}; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: ${iconSize}; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border: 3px solid white; position: relative; z-index: 2;">
+                        <i class="bi bi-geo-alt-fill" style="font-size: ${iconSize};"></i>
+                    </div>
+                    ${isIsland ? `<div style="position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%); background: white; padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; color: #FF3D00; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,0.2); border: 1px solid #FF3D00;">${highlightLabel}</div>` : ''}
+                </div>
+                `,
+                className: 'location-marker',
+                iconSize: [parseInt(markerSize), parseInt(markerSize)],
+                iconAnchor: [parseInt(markerSize) / 2, parseInt(markerSize)],
+                popupAnchor: [0, -parseInt(markerSize)]
+            });
+        };
+
+        const addMarker = ({ lat, lng, title, subtitle, slug, highlightLabel }) => {
+            if (lat == null || lng == null) return;
+            const popupHtml = `
+                <div style="min-width:180px">
+                    <div style="font-weight:800;margin-bottom:4px">${title || 'Địa điểm'}</div>
+                    ${subtitle ? `<div style="color:#64748b;margin-bottom:8px">${subtitle}</div>` : ''}
+                    ${slug ? `<a href="/Home/DetailPlace?slug=${slug}">Xem chi tiết</a>` : ''}
+                </div>
+            `;
+
+            const marker = L.marker([lat, lng], { icon: makeMarkerIcon({ highlightLabel }) })
+                .addTo(map)
+                .bindPopup(popupHtml);
+
+            bounds.push([lat, lng]);
+            return marker;
+        };
+
+        // 1) Pin Hoàng Sa / Trường Sa (cố định)
+        addMarker({
+            lat: 16.5333,
+            lng: 112.0333,
+            title: 'Quần đảo Hoàng Sa',
+            subtitle: 'Việt Nam',
+            highlightLabel: 'VN Quần đảo Hoàng Sa'
+        });
+        addMarker({
+            lat: 8.6333,
+            lng: 111.9667,
+            title: 'Quần đảo Trường Sa',
+            subtitle: 'Việt Nam',
+            highlightLabel: 'VN Quần đảo Trường Sa'
+        });
+
+        // 2) Đổ thêm marker từ DB (bảng DiaDiem)
+        const apiUrl = '@Url.Action("GetAllPlaces", "DiaDiem")' + `?page=1&pageSize=500`;
+        try {
+            const res = await fetch(apiUrl);
+            if (!res.ok) throw new Error('Network response was not ok');
+            const result = await res.json();
+            if (result.success && Array.isArray(result.data)) {
+                result.data.forEach(p => {
+                    const lat = p.ViDo;
+                    const lng = p.KinhDo;
+                    if (lat == null || lng == null) return;
+
+                    const title = p.TenDiaDiem || 'Địa điểm';
+                    // tránh trùng marker cho Hoàng Sa/Trường Sa nếu DB có
+                    const t = norm(title);
+                    if (t.includes('hoàng sa') || t.includes('hoang sa') || t.includes('trường sa') || t.includes('truong sa')) return;
+
+                    const slug = p.Slug;
+                    const region = p.VungMien ? `${p.VungMien} - Việt Nam` : 'Việt Nam';
+                    addMarker({ lat, lng, title, subtitle: region, slug, highlightLabel: null });
+                });
+            }
+        } catch (e) {
+            console.warn('Home map preview load failed:', e);
+        }
+
+        if (bounds.length >= 2) map.fitBounds(bounds, { padding: [24, 24] });
+        else if (bounds.length === 1) map.setView(bounds[0], 8);
+    }
 </script>
