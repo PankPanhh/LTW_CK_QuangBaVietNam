@@ -53,6 +53,19 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             return View();
         }
 
+        public ActionResult AllPlaces()
+        {
+            // Set breadcrumbs for All Places page
+            var breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem("Khám phá", "/Home/Index"),
+                new BreadcrumbItem("Tất cả địa điểm", "/Home/AllPlaces", isActive: true)
+            };
+            this.SetBreadcrumbs(breadcrumbs);
+
+            return View();
+        }
+
         public ActionResult Intro()
         {
             // Intro page doesn't need breadcrumbs
