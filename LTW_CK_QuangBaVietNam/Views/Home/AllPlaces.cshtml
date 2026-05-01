@@ -380,9 +380,10 @@
     }
 
     // Render các card địa điểm
+    // Render các card địa điểm
     function renderPlaces(places) {
         const container = document.getElementById('placesContainer');
-        
+
         if (places.length === 0) {
             container.innerHTML = '<div class="col-12"><div class="alert alert-info">Không tìm thấy địa điểm nào.</div></div>';
             return;
@@ -390,26 +391,24 @@
 
         let html = '';
         places.forEach(place => {
-            // Fix: API trả về PascalCase, không phải camelCase
-            const tenDiaDiem = place.TenDiaDiem || place.tenDiaDiem || 'Địa điểm';
-            const slug = place.Slug || place.slug || '';
-            const moTaNgan = place.MoTaNgan || place.moTaNgan || 'Khám phá địa điểm du lịch tuyệt vời';
-            const anhChinh = place.AnhChinh || place.anhChinh || 'https://images.unsplash.com/photo-1528127269322-539801943592?w=800';
-            const diemDanhGiaTB = place.DiemDanhGiaTB || place.diemDanhGiaTB || 5.0;
-            
-            // Hiển thị vị trí địa điểm thay vì danh mục
-            const locationBase = place.DiaChiChiTiet || place.diaChiChiTiet || place.VungMien || place.vungMien || 'Việt Nam';
-            const locationText = locationBase.toLowerCase().includes('việt nam') || locationBase.toLowerCase().includes('vietnam')
+            // Mapping dữ liệu từ API
+            const tenDiaDiem = place.TenDiaDiem || 'Địa điểm';
+            const slug = place.Slug || '';
+            const moTaNgan = place.MoTaNgan || 'Khám phá địa điểm du lịch tuyệt vời';
+            const anhChinh = place.AnhChinh || '/Content/images/Places/vinhhalong.jpg';
+            const tenDanhMuc = place.DanhMuc || 'KHÁM PHÁ'; // Lấy tên danh mục
+
+            // Xử lý vị trí
+            const locationBase = place.DiaChiChiTiet || place.VungMien || 'Việt Nam';
+            const locationText = locationBase.toLowerCase().includes('việt nam')
                 ? locationBase
                 : `${locationBase} - Việt Nam`;
-            
-            // Truncate description to max 120 characters
+
+            // Cắt ngắn mô tả (120 ký tự)
             const maxLength = 120;
-            const truncatedDescription = moTaNgan.length > maxLength 
-                ? moTaNgan.substring(0, maxLength) + '...' 
+            const truncatedDescription = moTaNgan.length > maxLength
+                ? moTaNgan.substring(0, maxLength).trim() + '...'
                 : moTaNgan;
-            
-            const rating = diemDanhGiaTB ? parseFloat(diemDanhGiaTB).toFixed(1) : '5.0';
 
             html += `
             <div class="col-md-4 mb-4">
@@ -421,13 +420,17 @@
                         </button>
                     </div>
                     <div class="card-body">
-                        <h5 class="card-title">${tenDiaDiem}</h5>
+                        <h5 class="card-title text-truncate">${tenDiaDiem}</h5>
                         <div class="card-location">
                             <i class="bi bi-geo-alt"></i>
                             <span>${locationText}</span>
                         </div>
                         <p class="card-description">${truncatedDescription}</p>
-                        <div class="experience-badge">⭐ ${rating}/5.0</div>
+                        
+                        <!-- CHỈNH SỬA TẠI ĐÂY: Hiển thị Tên Danh Mục (không có dấu +) -->
+                        <div class="experience-badge">
+                             ${tenDanhMuc.toUpperCase()}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -435,31 +438,8 @@
         });
 
         container.innerHTML = html;
-
-        // Thêm event listener cho favorite buttons
-        document.querySelectorAll('.favorite-btn').forEach(btn => {
-            btn.addEventListener('click', function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-                const icon = this.querySelector('i');
-                if (!icon) return;
-
-                const isAdding = icon.classList.contains('bi-heart');
-                if (isAdding) {
-                    icon.classList.remove('bi-heart');
-                    icon.classList.add('bi-heart-fill');
-                    this.style.color = '#ef4444';
-                    this.style.borderColor = '#ef4444';
-                } else {
-                    icon.classList.remove('bi-heart-fill');
-                    icon.classList.add('bi-heart');
-                    this.style.color = 'var(--white)';
-                    this.style.borderColor = 'rgba(255, 255, 255, 0.4)';
-                }
-            });
-        });
+        // ... (Giữ nguyên phần attach event phía sau)
     }
-
     // Filter buttons interaction
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', function () {

@@ -163,3 +163,141 @@ WHERE Slug = 'da-nang';
 UPDATE DiaDiem 
 SET MoTaNgan = N'Ẩn mình giữa vùng đất cố đô Hoa Lư, Tràng An hiện lên như một tuyệt tác "Vịnh Hạ Long trên cạn", nơi thiên nhiên và các giá trị văn hóa tâm linh hòa quyện sâu sắc. Được UNESCO vinh danh là Di sản thế giới kép, Tràng An mê hoặc lòng người bằng hệ thống núi đá vôi muôn hình vạn trạng đứng sừng sững soi bóng xuống làn nước xanh trong vắt tận đáy. Ngồi trên thuyền nan mộc mạc lướt nhẹ trên dòng sông Sào Khê, du khách bắt đầu hành trình ngoạn thủy đầy mê hoặc, xuyên qua những hang động thạch nhũ kỳ bí để mở ra thung lũng bí ẩn, cô lập hoàn toàn với thế giới bên ngoài. Tràng An không chỉ là thắng cảnh mà còn là không gian linh thiêng với những mái đền cổ kính nép mình bên vách đá, kể lại trang sử oai hùng của dân tộc. Lắng nghe tiếng mái chèo khua nước giữa không gian tĩnh mịch, hít thở bầu không khí tinh khiết, lòng người bỗng trở nên nhẹ tênh, rũ bỏ mọi ưu phiền để đắm mình vào vẻ đẹp thoát tục của vùng đất địa linh nhân kiệt này.'
 WHERE Slug = 'trang-an';
+
+
+-- =============================================
+-- 1. VỊNH HẠ LONG (MaDiaDiem = 1)
+-- =============================================
+DELETE FROM AnhDiaDiem WHERE MaDiaDiem = 1;
+INSERT INTO AnhDiaDiem (MaDiaDiem, DuongDanAnh, LaAnhChinh) VALUES 
+(1, '/Content/images/Places/vinhhalong.jpg', 1), -- Ảnh chính
+(1, '/Content/images/Places/vinhhalong1.jpg', 0),
+(1, '/Content/images/Places/vinhhalong2.jpg', 0),
+(1, '/Content/images/Places/vinhhalong3.jpg', 0),
+(1, '/Content/images/Places/vinhhalong4.jpg', 0),
+(1, '/Content/images/Places/vinhhalong5.jpg', 0),
+(1, '/Content/images/Places/vinhhalong6.jpg', 0),
+(1, '/Content/images/Places/vinhhalong7.jpg', 0),
+(1, '/Content/images/Places/vinhhalong8.jpg', 0),
+(1, '/Content/images/Places/vinhhalong9.jpg', 0),
+(1, '/Content/images/Places/vinhhalong10.jpg', 0),
+(1, '/Content/images/Places/vinhhalong11.jpg', 0);
+
+
+-- =============================================
+-- 2. PHỐ CỔ HỘI AN (MaDiaDiem = 2)
+-- =============================================
+DELETE FROM AnhDiaDiem WHERE MaDiaDiem = 2;
+
+INSERT INTO AnhDiaDiem (MaDiaDiem, DuongDanAnh, LaAnhChinh) VALUES 
+(2, '/Content/images/Places/hoian.jpg', 1),  -- Ảnh chính (Hiển thị ở Card AllPlaces)
+(2, '/Content/images/Places/hoian1.jpg', 0), -- Các ảnh phụ cho Gallery trang Detail
+(2, '/Content/images/Places/hoian2.jpg', 0),
+(2, '/Content/images/Places/hoian3.jpg', 0),
+(2, '/Content/images/Places/hoian4.jpg', 0),
+(2, '/Content/images/Places/hoian5.jpg', 0),
+(2, '/Content/images/Places/hoian6.jpg', 0),
+(2, '/Content/images/Places/hoian7.jpg', 0);
+
+-- =============================================
+-- 3. ĐÀ LẠT (MaDiaDiem = 3)
+-- =============================================
+DELETE FROM AnhDiaDiem WHERE MaDiaDiem = 3;
+
+INSERT INTO AnhDiaDiem (MaDiaDiem, DuongDanAnh, LaAnhChinh) VALUES 
+(3, '/Content/images/Places/dalat.jpg', 1),  -- Ảnh chính (tấm ảnh dọc đẹp nhất)
+(3, '/Content/images/Places/dalat1.jpg', 0),
+(3, '/Content/images/Places/dalat2.jpg', 0),
+(3, '/Content/images/Places/dalat3.jpg', 0),
+(3, '/Content/images/Places/dalat4.jpg', 0),
+(3, '/Content/images/Places/dalat5.jpg', 0),
+(3, '/Content/images/Places/dalat6.jpg', 0),
+(3, '/Content/images/Places/dalat7.jpg', 0);
+
+
+-- =============================================
+-- 4. ĐẢO PHÚ QUỐC (MaDiaDiem = 4)
+-- =============================================
+DELETE FROM AnhDiaDiem WHERE MaDiaDiem = 4;
+INSERT INTO AnhDiaDiem (MaDiaDiem, DuongDanAnh, LaAnhChinh) VALUES 
+(4, '/Content/images/Places/phuquoc1.jpg', 0),
+(4, '/Content/images/Places/phuquoc2.jpg', 1),
+(4, '/Content/images/Places/phuquoc3.jpg', 0),
+(4, '/Content/images/Places/phuquoc4.jpg', 0),
+(4, '/Content/images/Places/phuquoc5.jpg', 0),
+(4, '/Content/images/Places/phuquoc6.jpg', 0),
+(4, '/Content/images/Places/phuquoc7.jpg', 0),
+(4, '/Content/images/Places/phuquoc8.jpg', 0),
+(4, '/Content/images/Places/phuquoc9.jpg', 0),
+(4, '/Content/images/Places/phuquoc10.jpg', 0),
+(4, '/Content/images/Places/phuquoc11.jpg', 0),
+(4, '/Content/images/Places/phuquoc12.jpg', 0);
+
+-- =============================================
+-- 5. CỐ ĐÔ HUẾ (MaDiaDiem = 5)
+-- =============================================
+DELETE FROM AnhDiaDiem WHERE MaDiaDiem = 5;
+INSERT INTO AnhDiaDiem (MaDiaDiem, DuongDanAnh, LaAnhChinh) VALUES 
+(5, '/Content/images/Places/hue.jpg', 1), -- Ảnh chính
+(5, '/Content/images/Places/hue1.jpg', 0),
+(5, '/Content/images/Places/hue2.jpg', 0),
+(5, '/Content/images/Places/hue3.jpg', 0),
+(5, '/Content/images/Places/hue4.jpg', 0),
+(5, '/Content/images/Places/hue5.jpg', 0),
+(5, '/Content/images/Places/hue6.jpg', 0),
+(5, '/Content/images/Places/hue7.jpg', 0);
+
+-- =============================================
+-- 6. SAPA (MaDiaDiem = 6)
+-- =============================================
+DELETE FROM AnhDiaDiem WHERE MaDiaDiem = 6;
+INSERT INTO AnhDiaDiem (MaDiaDiem, DuongDanAnh, LaAnhChinh) VALUES 
+(6, '/Content/images/Places/sapa.jpg', 1), -- Ảnh chính
+(6, '/Content/images/Places/sapa1.jpg', 0),
+(6, '/Content/images/Places/sapa2.jpg', 0),
+(6, '/Content/images/Places/sapa3.jpg', 0),
+(6, '/Content/images/Places/sapa4.jpg', 0),
+(6, '/Content/images/Places/sapa5.jpg', 0),
+(6, '/Content/images/Places/sapa6.jpg', 0),
+(6, '/Content/images/Places/sapa7.jpg', 0),
+(6, '/Content/images/Places/sapa8.jpg', 0),
+(6, '/Content/images/Places/sapa9.jpg', 0),
+(6, '/Content/images/Places/sapa10.jpg', 0),
+(6, '/Content/images/Places/sapa11.jpg', 0);
+
+-- =============================================
+-- 7. ĐÀ NẴNG (MaDiaDiem = 7)
+-- =============================================
+DELETE FROM AnhDiaDiem WHERE MaDiaDiem = 7;
+INSERT INTO AnhDiaDiem (MaDiaDiem, DuongDanAnh, LaAnhChinh) VALUES 
+(7, '/Content/images/Places/danang.jpg', 1), -- Ảnh chính
+(7, '/Content/images/Places/danang1.jpg', 0),
+(7, '/Content/images/Places/danang2.jpg', 0),
+(7, '/Content/images/Places/danang3.jpg', 0),
+(7, '/Content/images/Places/danang4.jpg', 0),
+(7, '/Content/images/Places/danang5.jpg', 0),
+(7, '/Content/images/Places/danang6.jpg', 0),
+(7, '/Content/images/Places/danang7.jpg', 0),
+(7, '/Content/images/Places/danang8.jpg', 0),
+(7, '/Content/images/Places/danang9.jpg', 0),
+(7, '/Content/images/Places/danang10.jpg', 0),
+(7, '/Content/images/Places/danang11.jpg', 0);
+
+-- =============================================
+-- 8. TRÀNG AN (MaDiaDiem = 8)
+-- =============================================
+DELETE FROM AnhDiaDiem WHERE MaDiaDiem = 8;
+INSERT INTO AnhDiaDiem (MaDiaDiem, DuongDanAnh, LaAnhChinh) VALUES 
+(8, '/Content/images/Places/trangan.jpg', 1), -- Ảnh chính
+(8, '/Content/images/Places/trangan1.jpg', 0),
+(8, '/Content/images/Places/trangan2.jpg', 0),
+(8, '/Content/images/Places/trangan3.jpg', 0),
+(8, '/Content/images/Places/trangan4.jpg', 0),
+(8, '/Content/images/Places/trangan5.jpg', 0),
+(8, '/Content/images/Places/trangan6.jpg', 0),
+(8, '/Content/images/Places/trangan7.jpg', 0);
+
+-- =============================================
+-- KIỂM TRA LẠI KẾT QUẢ
+-- =============================================
+SELECT * FROM AnhDiaDiem ORDER BY MaDiaDiem, LaAnhChinh DESC;
