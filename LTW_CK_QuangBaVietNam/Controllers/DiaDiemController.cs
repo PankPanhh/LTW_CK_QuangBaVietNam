@@ -57,6 +57,8 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                         d.MoTaNgan,
                         d.DiaChiChiTiet,
                         d.VungMien,
+                        d.KinhDo,
+                        d.ViDo,
                         d.GiaVe,
                         AnhChinh = db.AnhDiaDiems
                             .Where(a => a.MaDiaDiem == d.MaDiaDiem && a.LaAnhChinh == true)
