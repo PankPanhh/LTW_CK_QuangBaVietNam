@@ -1,4 +1,4 @@
-using System;
+Ôªøusing System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
@@ -29,7 +29,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
         }
 
         /// <summary>
-        /// L?y danh s·ch t?t c? ??a ?i?m (cho trang AllPlaces)
+        /// L?y danh s√°ch t?t c? ??a ?i?m (cho trang AllPlaces)
         /// </summary>
         public ActionResult GetAllPlaces(string vungMien = "", int page = 1, int pageSize = 9)
         {
@@ -37,7 +37,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             {
                 var query = db.DiaDiems.Where(d => d.TrangThai == true);
 
-                // Filter theo v˘ng mi?n n?u cÛ
+                // Filter theo v√πng mi?n n?u c√≥
                 if (!string.IsNullOrEmpty(vungMien))
                 {
                     query = query.Where(d => d.VungMien.Contains(vungMien));
@@ -94,7 +94,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
 
                 if (place == null)
                 {
-                    return Json(new { success = false, message = "KhÙng tÏm th?y ??a ?i?m" }, JsonRequestBehavior.AllowGet);
+                    return Json(new { success = false, message = "Kh√¥ng t√¨m th·∫•y ƒë·ªãa ƒëi·ªÉm" }, JsonRequestBehavior.AllowGet);
                 }
 
                 // T?ng l??t xem
@@ -107,7 +107,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                     .Select(a => a.DuongDanAnh)
                     .ToList();
 
-                // L?y gi· vÈ chi ti?t
+                // L?y gi√° v√© chi ti?t
                 var prices = db.GiaVeChiTiets
                     .Where(g => g.MaDiaDiem == place.MaDiaDiem)
                     .Select(g => new
@@ -171,7 +171,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
         }
 
         /// <summary>
-        /// L?y danh s·ch ??a ?i?m g?n ?Û
+        /// L?y danh s√°ch ??a ?i?m g?n ?√≥
         /// </summary>
         public ActionResult GetNearbyPlaces(int maDiaDiem, int soKetQua = 4)
         {
@@ -181,10 +181,10 @@ namespace LTW_CK_QuangBaVietNam.Controllers
 
                 if (currentPlace == null)
                 {
-                    return Json(new { success = false, message = "KhÙng tÏm th?y ??a ?i?m" }, JsonRequestBehavior.AllowGet);
+                    return Json(new { success = false, message = "Kh√¥ng t√¨m th·∫•y ƒë·ªãa ƒëi·ªÉm" }, JsonRequestBehavior.AllowGet);
                 }
 
-                // L?y c·c ??a ?i?m c˘ng danh m?c
+                // L?y c√°c ??a ?i?m c√πng danh m?c
                 var nearbyPlaces = db.DiaDiems
                     .Where(d => d.MaDanhMuc == currentPlace.MaDanhMuc && d.MaDiaDiem != maDiaDiem && d.TrangThai == true)
                     .Take(soKetQua)
@@ -215,7 +215,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
         }
 
         /// <summary>
-        /// L?y danh s·ch ??a ?i?m theo danh m?c
+        /// L?y danh s√°ch ??a ?i?m theo danh m?c
         /// </summary>
         public ActionResult GetPlacesByCategory(int maDanhMuc, int soKetQua = 9)
         {
@@ -253,7 +253,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
         }
 
         /// <summary>
-        /// TÏm ki?m ??a ?i?m
+        /// T√¨m ki?m ??a ?i?m
         /// </summary>
         public ActionResult SearchPlaces(string keyword, int soKetQua = 10)
         {
@@ -261,7 +261,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             {
                 if (string.IsNullOrEmpty(keyword))
                 {
-                    return Json(new { success = false, message = "Vui lÚng nh?p t? khÛa" }, JsonRequestBehavior.AllowGet);
+                    return Json(new { success = false, message = "Vui l√≤ng nh·∫≠p t·ª´ kh√≥a" }, JsonRequestBehavior.AllowGet);
                 }
 
                 var places = db.DiaDiems
@@ -299,7 +299,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
         }
 
         /// <summary>
-        /// L?y danh s·ch ??a ?i?m ph? bi?n (nhi?u l??t xem)
+        /// L?y danh s√°ch ??a ?i?m ph? bi?n (nhi?u l??t xem)
         /// </summary>
         public ActionResult GetPopularPlaces(int soKetQua = 6)
         {
@@ -336,7 +336,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
         }
 
         /// <summary>
-        /// L?y danh s·ch t?t c? danh m?c
+        /// L?y danh s√°ch t?t c? danh m?c
         /// </summary>
         public ActionResult GetAllCategories()
         {
@@ -365,7 +365,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
         }
 
         /// <summary>
-        /// L?y danh s·ch ??a ?i?m theo v˘ng mi?n (B?c/Trung/Nam)
+        /// L?y danh s√°ch ??a ?i?m theo v√πng mi?n (B?c/Trung/Nam)
         /// </summary>
         public ActionResult GetPlacesByRegion(string vungMien, int soKetQua = 9)
         {
@@ -373,7 +373,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             {
                 if (string.IsNullOrEmpty(vungMien))
                 {
-                    return Json(new { success = false, message = "Vui lÚng ch? ??nh v˘ng mi?n" }, JsonRequestBehavior.AllowGet);
+                    return Json(new { success = false, message = "Vui l√≤ng ch·ªçn v√πng mi·ªÅn" }, JsonRequestBehavior.AllowGet);
                 }
 
                 var places = db.DiaDiems
@@ -420,7 +420,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
 
                 if (place == null)
                 {
-                    return Json(new { success = false, message = "KhÙng tÏm th?y ??a ?i?m" }, JsonRequestBehavior.AllowGet);
+                    return Json(new { success = false, message = "Kh√¥ng t√¨m th·∫•y ƒë·ªãa ƒëi·ªÉm" }, JsonRequestBehavior.AllowGet);
                 }
 
                 place.LuotXem = (place.LuotXem ?? 0) + 1;
@@ -429,7 +429,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                 return Json(new
                 {
                     success = true,
-                    message = "C?p nh?t l??t xem th‡nh cÙng",
+                    message = "C?p nh?t l??t xem th√†nh c√¥ng",
                     views = place.LuotXem
                 }, JsonRequestBehavior.AllowGet);
             }

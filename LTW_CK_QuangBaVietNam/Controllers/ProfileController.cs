@@ -1,4 +1,4 @@
-using LTW_CK_QuangBaVietNam.Models;
+﻿using LTW_CK_QuangBaVietNam.Models;
 using System;
 using System.Configuration;
 using System.Globalization;
@@ -33,20 +33,21 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                 return defaultConnection.ConnectionString;
             }
 
-            throw new ConfigurationErrorsException("Missing connection string. Please add 'QL_DL_LTWConnectionString' (or 'DefaultConnection') in Web.config.");
+            throw new ConfigurationErrorsException("Thiếu chuỗi kết nối. Vui lòng thêm 'QL_DL_LTWConnectionString' (hoặc 'DefaultConnection') trong Web.config.");
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult Update(string fullName, string email, string phone, string avatarUrl, string birthDate, string bio, string city, string country)
         {
+            // Đảm bảo encoding là UTF-8 để hiển thị tiếng Việt
             Response.ContentEncoding = System.Text.Encoding.UTF8;
 
             var sessionUser = Session["nguoiDung"] as NguoiDung;
             if (sessionUser == null)
             {
                 Response.StatusCode = 401;
-                return Json(new { success = false, message = "Phi�n ??ng nh?p ?� h?t h?n. Vui l�ng ??ng nh?p l?i." });
+                return Json(new { success = false, message = "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại." });
             }
 
             string normalizedName = (fullName ?? string.Empty).Trim();
@@ -64,7 +65,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                 if (!DateTime.TryParseExact(birthDate.Trim(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedBirthDate))
                 {
                     Response.StatusCode = 400;
-                    return Json(new { success = false, message = "Ng�y sinh kh�ng h?p l?." });
+                    return Json(new { success = false, message = "Ngày sinh không hợp lệ." });
                 }
                 normalizedBirthDate = parsedBirthDate.Date;
             }
@@ -72,7 +73,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             if (string.IsNullOrWhiteSpace(normalizedName) || string.IsNullOrWhiteSpace(normalizedEmail))
             {
                 Response.StatusCode = 400;
-                return Json(new { success = false, message = "H? t�n v� email l� b?t bu?c." });
+                return Json(new { success = false, message = "Họ tên và email là bắt buộc." });
             }
 
             try
@@ -81,27 +82,27 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                 if (!string.Equals(mailAddress.Address, normalizedEmail, StringComparison.OrdinalIgnoreCase))
                 {
                     Response.StatusCode = 400;
-                    return Json(new { success = false, message = "Email kh�ng h?p l?." });
+                    return Json(new { success = false, message = "Email không hợp lệ." });
                 }
             }
             catch
             {
                 Response.StatusCode = 400;
-                return Json(new { success = false, message = "Email kh�ng h?p l?." });
+                return Json(new { success = false, message = "Email không hợp lệ." });
             }
 
             var user = db.NguoiDungs.FirstOrDefault(x => x.MaNguoiDung == sessionUser.MaNguoiDung && x.TrangThai);
             if (user == null)
             {
                 Response.StatusCode = 404;
-                return Json(new { success = false, message = "Kh�ng t�m th?y ng??i d�ng." });
+                return Json(new { success = false, message = "Không tìm thấy người dùng." });
             }
 
             bool emailExists = db.NguoiDungs.Any(x => x.Email == normalizedEmail && x.MaNguoiDung != user.MaNguoiDung);
             if (emailExists)
             {
                 Response.StatusCode = 409;
-                return Json(new { success = false, message = "Email ?� ???c s? d?ng." });
+                return Json(new { success = false, message = "Email này đã được sử dụng bởi người dùng khác." });
             }
 
             user.HoTen = normalizedName;
@@ -129,7 +130,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                 return Json(new
                 {
                     success = false,
-                    message = "C? s? d? li?u ch?a c� c�c c?t h? s? m? r?ng. H�y ch?y script c?p nh?t schema r?i th? l?i."
+                    message = "Cơ sở dữ liệu chưa có các cột hồ sơ mở rộng. Hãy chạy script cập nhật schema rồi thử lại."
                 });
             }
 
@@ -143,7 +144,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             return Json(new
             {
                 success = true,
-                message = "C\u1EADp nh\u1EADt th\u00F4ng tin th\u00E0nh c\u00F4ng.",
+                message = "Cập nhật thông tin thành công.",
                 data = new
                 {
                     fullName = user.HoTen,
