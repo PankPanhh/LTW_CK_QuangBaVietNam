@@ -301,3 +301,28 @@ INSERT INTO AnhDiaDiem (MaDiaDiem, DuongDanAnh, LaAnhChinh) VALUES
 -- KIỂM TRA LẠI KẾT QUẢ
 -- =============================================
 SELECT * FROM AnhDiaDiem ORDER BY MaDiaDiem, LaAnhChinh DESC;
+
+-- ==========================================
+-- BƯỚC 1: THÊM CỘT TỈNH THÀNH
+-- ==========================================
+ALTER TABLE DiaDiem ADD TinhThanh NVARCHAR(100);
+GO
+
+-- ==========================================
+-- BƯỚC 2: CẬP NHẬT DỮ LIỆU CHO 8 ĐIỂM GỐC
+-- ==========================================
+UPDATE DiaDiem SET TinhThanh = N'Quảng Ninh' WHERE Slug = 'vinh-ha-long';
+UPDATE DiaDiem SET TinhThanh = N'Quảng Nam' WHERE Slug = 'pho-co-hoi-an';
+UPDATE DiaDiem SET TinhThanh = N'Lâm Đồng' WHERE Slug = 'da-lat';
+UPDATE DiaDiem SET TinhThanh = N'Kiên Giang' WHERE Slug = 'dao-phu-quoc';
+UPDATE DiaDiem SET TinhThanh = N'Thừa Thiên Huế' WHERE Slug = 'co-do-hue';
+UPDATE DiaDiem SET TinhThanh = N'Lào Cai' WHERE Slug = 'sapa';
+UPDATE DiaDiem SET TinhThanh = N'Đà Nẵng' WHERE Slug = 'da-nang';
+UPDATE DiaDiem SET TinhThanh = N'Ninh Bình' WHERE Slug = 'trang-an';
+
+-- 1. Thêm cột mới
+ALTER TABLE DiaDiem ADD LaDiemChinh BIT DEFAULT 0;
+GO
+
+-- 2. Cập nhật 8 địa điểm tiêu biểu hiện có làm Điểm Chính
+UPDATE DiaDiem SET LaDiemChinh = 1 WHERE MaDiaDiem <= 8;

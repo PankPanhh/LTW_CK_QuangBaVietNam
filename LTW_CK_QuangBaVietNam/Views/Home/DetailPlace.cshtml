@@ -1,4 +1,4 @@
-﻿@{
+﻿    @{
     ViewBag.Title = "Vịnh Hạ Long - Chi tiết địa điểm";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -887,6 +887,7 @@
         const experiences = placeData.experiences || {};
 
         // Fix: Handle both PascalCase and camelCase
+        const maDiaDiem = place.MaDiaDiem || place.maDiaDiem;
         const tenDiaDiem = place.TenDiaDiem || place.tenDiaDiem || 'Địa điểm';
         const moTaChiTiet = place.MoTaChiTiet || place.moTaChiTiet || place.MoTaNgan || place.moTaNgan || '';
         const moTaNgan = place.MoTaNgan || place.moTaNgan || '';
@@ -999,13 +1000,20 @@
     function loadNearbyPlaces() {
         if (!placeData) return;
 
-        const maDiaDiem = placeData.place.maDiaDiem;
+        const maDiaDiem = placeData.place.MaDiaDiem || placeData.place.maDiaDiem;
+        
+        if (!maDiaDiem) {
+            console.warn('MaDiaDiem not found');
+            return;
+        }
 
-        fetch(`/DiaDiem/GetNearbyPlaces?maDiaDiem=${maDiaDiem}&soKetQua=4`)
+        fetch(`/DiaDiem/GetNearbyPlaces?maDiaDiem=${maDiaDiem}&soKetQua=12`)
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     renderNearbyPlaces(data.data);
+                } else {
+                    console.error('Error loading nearby places:', data.message);
                 }
             })
             .catch(error => console.error('Error:', error));
