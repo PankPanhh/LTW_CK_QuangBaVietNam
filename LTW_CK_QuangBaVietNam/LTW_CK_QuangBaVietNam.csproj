@@ -126,6 +126,7 @@
     <Compile Include="Controllers\DiaDiemController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\YeuThichController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -138,6 +139,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DataClasses1.dbml</DependentUpon>
     </Compile>
+    <Compile Include="Models\FavoritePlaceVM.cs" />
     <Compile Include="obj\Debug\.NETFramework,Version=v4.8.AssemblyAttributes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -351,6 +353,9 @@
     <Content Include="Views\Home\DetailSchedule.cshtml" />
     <Content Include="Views\Home\DetailPlace.cshtml" />
     <Content Include="Views\Home\AllPlaces.cshtml" />
+    <Content Include="Views\Home\YeuThich.cshtml" />
+    <Content Include="Views\YeuThich\BoSuuTap.cshtml" />
+    <Content Include="Views\YeuThich\ChiTietBoSuuTap.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

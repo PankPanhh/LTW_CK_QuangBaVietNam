@@ -31,5 +31,14 @@ namespace LTW_CK_QuangBaVietNam.Models
             Url = url;
             IsActive = isActive;
         }
+
+        public class FavoritePlaceVM
+        {
+            public int MaDiaDiem { get; set; }
+            public string TenDiaDiem { get; set; }
+            public string VungMien { get; set; }
+            public string AnhChinh { get; set; }
+            public DateTime NgayLuu { get; set; }
+        }
     }
 }
