@@ -132,10 +132,12 @@
     <Compile Include="Controllers\DiaDiemController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\MapController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\BreadcrumbHelper.cs" />
+    <Compile Include="Helpers\GeoSpatialHelper.cs" />
     <Compile Include="Helpers\PasswordHasher.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
     <Compile Include="Models\BreadcrumbItem.cs" />
@@ -146,6 +148,7 @@
     </Compile>
     <Compile Include="obj\Debug\.NETFramework,Version=v4.8.AssemblyAttributes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Content Include="Schema\tao-bang-blog.sql" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="bin\Newtonsoft.Json.dll" />
@@ -282,6 +285,7 @@
     <Content Include="Views\Home\DetailSchedule.cshtml" />
     <Content Include="Views\Home\DetailPlace.cshtml" />
     <Content Include="Views\Home\AllPlaces.cshtml" />
+    <Content Include="Views\Home\Map_New.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

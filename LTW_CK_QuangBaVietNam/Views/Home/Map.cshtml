@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Map";
+    ViewBag.Title = "Bản Đồ - Khám Phá Du Lịch";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -19,6 +19,17 @@
         --spacing-8: 2rem;
         --spacing-12: 3rem;
         --spacing-16: 4rem;
+    }
+
+    @@keyframes slideIn {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
     }
 
     /* Map Container - works within layout */
@@ -265,10 +276,208 @@
         margin-bottom: var(--spacing-4);
     }
 
-    .action-buttons {
+    /* Tour Mode Specific Styles */
+    .tour-mode-badges {
         display: flex;
         gap: var(--spacing-3);
+        margin: var(--spacing-4) 0;
+        flex-wrap: wrap;
+    }
+
+    .badge-distance {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: var(--spacing-3) var(--spacing-4);
+        background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(56, 189, 248, 0.05));
+        border: 2px solid var(--sky-blue);
+        border-radius: 12px;
+        font-weight: 700;
+        color: var(--deep-slate);
+        font-size: 0.9375rem;
+    }
+
+    .badge-distance .distance-value {
+        color: var(--sky-blue);
+        font-size: 1.1rem;
+    }
+
+    .badge-transport {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: var(--spacing-3) var(--spacing-4);
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(52, 211, 153, 0.05));
+        border: 2px solid #10b981;
+        border-radius: 12px;
+        font-weight: 700;
+        color: var(--deep-slate);
+        font-size: 0.9375rem;
+    }
+
+    .badge-transport .transport-icon {
+        font-size: 1.3rem;
+    }
+
+    .badge-transport .transport-label {
+        color: #10b981;
+        font-weight: 800;
+    }
+
+    /* Tour Mode List */
+    .tour-locations-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-3);
+        margin-bottom: var(--spacing-4);
+    }
+
+    .tour-location-item {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-4);
+        padding: var(--spacing-4);
+        background: white;
+        border: 2px solid rgba(14, 165, 233, 0.2);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-left: 4px solid var(--sky-blue);
+    }
+
+    .tour-location-item:hover {
+        background: rgba(14, 165, 233, 0.05);
+        border-color: var(--sky-blue);
+        transform: translateX(4px);
+        box-shadow: 0 4px 12px rgba(14, 165, 233, 0.15);
+    }
+
+    .tour-location-item.active {
+        background: linear-gradient(135deg, rgba(14, 165, 233, 0.08), rgba(56, 189, 248, 0.03));
+        border-color: var(--sky-blue);
+        box-shadow: 0 6px 20px rgba(14, 165, 233, 0.2);
+    }
+
+    .tour-location-number {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        background: linear-gradient(135deg, var(--sky-blue), var(--sky-light));
+        color: white;
+        border-radius: 50%;
+        font-weight: 800;
+        font-size: 1rem;
+    }
+
+    .tour-location-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .tour-location-name {
+        font-weight: 700;
+        color: var(--deep-slate);
+        margin: 0 0 var(--spacing-2) 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 1rem;
+    }
+
+    .tour-location-region {
+        font-size: 0.8125rem;
+        color: #94a3b8;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .tour-location-info {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-3);
+        flex-wrap: wrap;
+    }
+
+    .tour-distance-info {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-weight: 700;
+        color: var(--sky-blue);
+        font-size: 0.875rem;
+    }
+
+    .tour-transport-info {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-weight: 700;
+        color: #10b981;
+        font-size: 0.875rem;
+    }
+
+    .tour-transport-icon {
+        font-size: 1.1rem;
+    }
+
+    /* Info Panel Tour Header */
+    .info-panel-tour-header {
+        background: linear-gradient(135deg, var(--sky-blue), var(--sky-light));
+        color: white;
+        padding: var(--spacing-6);
+        margin: -var(--spacing-6) -var(--spacing-6) var(--spacing-4) -var(--spacing-6);
+        border-radius: 24px 24px 0 0;
+        text-align: center;
+    }
+
+    .info-panel-tour-header h2 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin: 0 0 var(--spacing-2) 0;
+    }
+
+    .info-panel-tour-header p {
+        margin: 0;
+        opacity: 0.95;
+        font-size: 0.9375rem;
+    }
+
+    /* Mode Indicator */
+    .mode-indicator {
+        position: absolute;
+        top: var(--spacing-4);
+        right: var(--spacing-4);
+        background: white;
+        padding: var(--spacing-2) var(--spacing-4);
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--deep-slate);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .mode-indicator.tour {
+        background: linear-gradient(135deg, var(--sky-blue), var(--sky-light));
+        color: white;
+    }
+
+    .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-3);
         margin-top: auto;
+    }
+
+    .action-buttons-row {
+        display: flex;
+        gap: var(--spacing-3);
     }
 
     .btn-view-details {
@@ -316,7 +525,355 @@
         transform: translateY(-3px);
     }
 
+    .btn-view-route {
+        width: 100%;
+        padding: var(--spacing-4) var(--spacing-6);
+        background: linear-gradient(135deg, #10b981, #34d399);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--spacing-3);
+        font-size: 0.9375rem;
+    }
+
+    .btn-view-route:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-view-route:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* Directions Panel */
+    .directions-panel {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 35%;
+        height: 0;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 24px 24px 0 0;
+        box-shadow: 0 -8px 40px rgba(30, 41, 59, 0.15);
+        z-index: 400;
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .directions-panel.active {
+        height: 60vh;
+        bottom: 0;
+    }
+
+    .directions-panel.collapsed {
+        height: 60px;
+    }
+
+    .directions-header {
+        padding: var(--spacing-4);
+        border-bottom: 2px solid rgba(14, 165, 233, 0.1);
+        background: linear-gradient(135deg, rgba(14, 165, 233, 0.05), rgba(56, 189, 248, 0.02));
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-3);
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .directions-header:hover {
+        background: linear-gradient(135deg, rgba(14, 165, 233, 0.08), rgba(56, 189, 248, 0.05));
+    }
+
+    .directions-header-top {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-3);
+        justify-content: space-between;
+    }
+
+    .btn-back-to-browse {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        background: rgba(14, 165, 233, 0.1);
+        color: var(--sky-blue);
+        border: 1px solid rgba(14, 165, 233, 0.2);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+        padding: 0;
+        flex-shrink: 0;
+        position: relative;
+        z-index: 10;
+    }
+
+    .btn-back-to-browse:hover {
+        background: rgba(14, 165, 233, 0.2);
+        border-color: var(--sky-blue);
+        transform: translateX(-3px);
+    }
+
+    .btn-back-to-browse:active {
+        transform: translateX(-1px);
+    }
+
+    .directions-destination {
+        margin: 0;
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: var(--deep-slate);
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .directions-summary {
+        display: flex;
+        gap: var(--spacing-4);
+        align-items: center;
+        flex: 1;
+    }
+
+    .summary-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .summary-label {
+        font-size: 0.75rem;
+        color: #94a3b8;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .summary-value {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--deep-slate);
+    }
+
+    .summary-transport {
+        font-size: 2rem;
+    }
+
+    .directions-toggle {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--sky-blue), var(--sky-light));
+        color: white;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        font-size: 1.1rem;
+    }
+
+    .directions-toggle:hover {
+        transform: scale(1.08);
+        box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+    }
+
+    .directions-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: var(--spacing-6);
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-4);
+    }
+
+    .directions-content::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .directions-content::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .directions-content::-webkit-scrollbar-thumb {
+        background: rgba(14, 165, 233, 0.3);
+        border-radius: 3px;
+    }
+
+    .directions-content::-webkit-scrollbar-thumb:hover {
+        background: rgba(14, 165, 233, 0.5);
+    }
+
+    .direction-step {
+        display: flex;
+        gap: var(--spacing-4);
+        padding: var(--spacing-4);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.5);
+        border: 1px solid rgba(14, 165, 233, 0.1);
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .direction-step:hover {
+        background: rgba(14, 165, 233, 0.05);
+        border-color: rgba(14, 165, 233, 0.2);
+        transform: translateX(4px);
+    }
+
+    .direction-step.current {
+        background: linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(56, 189, 248, 0.08));
+        border-color: var(--sky-blue);
+        box-shadow: 0 4px 16px rgba(14, 165, 233, 0.2);
+    }
+
+    .direction-step.completed {
+        opacity: 0.6;
+    }
+
+    .step-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        background: linear-gradient(135deg, var(--sky-blue), var(--sky-light));
+        color: white;
+        border-radius: 50%;
+        font-size: 1.25rem;
+        font-weight: 700;
+    }
+
+    .direction-step.current .step-icon {
+        animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @@keyframes pulse {
+        0%, 100% {
+            box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.7);
+        }
+        50% {
+            box-shadow: 0 0 0 8px rgba(14, 165, 233, 0);
+        }
+    }
+
+    .step-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .step-instruction {
+        font-weight: 700;
+        color: var(--deep-slate);
+        font-size: 0.9375rem;
+        line-height: 1.4;
+    }
+
+    .step-distance {
+        font-size: 0.8125rem;
+        color: #94a3b8;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .step-distance-value {
+        font-weight: 600;
+        color: var(--sky-blue);
+    }
+
+    /* Map adjustments for sidebar */
+    .map-wrapper.with-directions {
+        margin-right: auto;
+    }
+
+    #map.with-directions {
+        width: 100%;
+        height: 100%;
+    }
+
+    /* Responsive directions */
+    @@media (max-width: 1200px) {
+        .directions-panel {
+            width: 100%;
+            height: 0 !important;
+        }
+
+        .directions-panel.active {
+            height: 50vh !important;
+        }
+
+        .directions-panel.collapsed {
+            height: 50px !important;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .directions-panel {
+            width: 100%;
+        }
+
+        .directions-panel.active {
+            height: 60vh !important;
+        }
+
+        .directions-summary {
+            gap: var(--spacing-2);
+        }
+
+        .summary-value {
+            font-size: 1rem;
+        }
+
+        .summary-transport {
+            font-size: 1.5rem;
+        }
+
+        .directions-content {
+            padding: var(--spacing-4);
+            gap: var(--spacing-3);
+        }
+
+        .direction-step {
+            padding: var(--spacing-3);
+            gap: var(--spacing-3);
+        }
+
+        .step-icon {
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            font-size: 1rem;
+        }
+    }
+
     /* Leaflet Overrides */
+    
+    /* Ẩn UI mặc định của Leaflet Routing Machine */
+    .leaflet-routing-container,
+    .leaflet-routing-alternatives-container {
+        display: none !important;
+    }
+
     .leaflet-control-zoom {
         border-radius: 12px;
         box-shadow: 0 4px 12px rgba(30, 41, 59, 0.15) !important;
@@ -354,6 +911,68 @@
     .leaflet-popup-content {
         padding: var(--spacing-4) !important;
         font-size: 0.9375rem !important;
+    }
+
+    /* Radius Control Styles */
+    .radius-control {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-3);
+        padding: var(--spacing-3);
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
+        border-radius: 12px;
+        border: 2px solid rgba(14, 165, 233, 0.25);
+        box-shadow: 0 4px 12px rgba(30, 41, 59, 0.1);
+        margin-top: var(--spacing-3);
+    }
+
+    .radius-control label {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--deep-slate);
+        white-space: nowrap;
+        margin: 0;
+    }
+
+    .radius-control input[type="range"] {
+        flex: 1;
+        height: 6px;
+        border-radius: 5px;
+        background: #e2e8f0;
+        outline: none;
+        -webkit-appearance: none;
+        cursor: pointer;
+    }
+
+    .radius-control input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--sky-blue), var(--sky-light));
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        border: 2px solid white;
+    }
+
+    .radius-control input[type="range"]::-moz-range-thumb {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--sky-blue), var(--sky-light));
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        border: 2px solid white;
+    }
+
+    .radius-value {
+        font-weight: 700;
+        color: var(--sky-blue);
+        font-size: 1rem;
+        min-width: 40px;
+        text-align: right;
     }
 
     /* Map Controls Responsive */
@@ -397,14 +1016,10 @@
     }
 </style>
 
-<!-- Map Section wrapped in Bootstrap Container -->
 <div class="container-fluid">
     <section class="map-container">
-        <!-- Map -->
         <div class="map-wrapper">
             
-
-            <!-- Search & Filter Group -->
             <div class="map-toolbar" style="top: 20px;">
                 <div class="map-search-box">
                     <i class="bi bi-search" style="color: #94a3b8; font-size: 1.1rem;"></i>
@@ -413,20 +1028,51 @@
                         <i class="bi bi-arrow-right"></i>
                     </button>
                 </div>
-                <div class="filter-group">
-                    <button class="filter-btn active" data-filter="all">Tất cả</button>
-                    <button class="filter-btn" data-filter="nature">Thiên Nhiên</button>
-                    <button class="filter-btn" data-filter="culture">Văn Hóa</button>
-                    <button class="filter-btn" data-filter="beach">Biển Đảo</button>
-                    <button class="filter-btn" data-filter="cuisine">Ẩm Thực</button>
+                <div class="filter-group" id="filterGroup">
+                    <button class="filter-btn active" data-filter="all" data-id="0">Tất cả</button>
+                    <button class="filter-btn" data-filter="nearby" data-id="-1">📍 Gần bạn</button>
+                    <button class="filter-btn" data-filter="tour" data-id="-2" id="suggestRouteBtn">🗺️ Gợi ý tuyến</button>
+                </div>
+
+                <div class="radius-control" id="radiusControl" style="display: none;">
+                    <label for="radiusSlider">Bán kính:</label>
+                    <input type="range" id="radiusSlider" min="5" max="100" value="20" step="5">
+                    <span class="radius-value"><span id="radiusValue">20</span> km</span>
                 </div>
             </div>
 
-            <!-- Leaflet Map -->
             <div id="map"></div>
+
+            <div class="directions-panel" id="directionsPanel">
+                <div class="directions-header" onclick="toggleDirectionsPanel()">
+                    <div class="directions-header-top">
+                        <button class="btn-back-to-browse" onclick="exitRoutingMode()" title="Quay lại danh sách">
+                            <i class="bi bi-arrow-left"></i>
+                        </button>
+                        <h3 class="directions-destination" id="directionsDestination">-</h3>
+                    </div>
+                    <div class="directions-summary">
+                        <div class="summary-item">
+                            <span class="summary-label">Khoảng cách</span>
+                            <span class="summary-value" id="summaryDistance">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Thời gian</span>
+                            <span class="summary-value" id="summaryTime">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-transport" id="summaryTransport">-</span>
+                        </div>
+                    </div>
+                    <button class="directions-toggle" id="directionsToggle">
+                        <i class="bi bi-chevron-up"></i>
+                    </button>
+                </div>
+                <div class="directions-content" id="directionsContent">
+                    </div>
+            </div>
         </div>
 
-        <!-- Info Panel -->
         <div class="info-panel">
             <div class="info-panel-empty">
                 <div>
@@ -438,205 +1084,441 @@
     </section>
 </div>
 
-<!-- Leaflet CSS & JS - KHÔNG CẦN API KEY, HIỂN THỊ RÕ ĐẢO -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.min.js"></script>
+
 <script>
-    // Vietnam locations data - INCLUDES HOÀNG SA & TRƯỜNG SA
-    const locations = [
-        {
-            id: 1,
-            name: "Vịnh Hạ Long",
-            region: "Quảng Ninh",
-            coordinates: [20.8554, 107.1804],
-            category: "nature",
-            image: "https://images.unsplash.com/photo-1528127269322-539801943592?w=600",
-            description: "Di sản thiên nhiên thế giới với hàng nghìn đảo đá vôi kỳ vĩ giữa làn nước xanh ngọc. Vịnh Hạ Long là một trong những kỳ quan thiên nhiên nổi tiếng nhất của Việt Nam.",
-            badge: "Di sản thế giới"
+    // ============================================================
+    // CENTRALIZED STATE MANAGEMENT
+    // ============================================================
+    const MapState = {
+        // Current operation mode: 'all', 'category', 'nearby', 'tour', 'routing'
+        mode: 'all',
+        currentCategoryId: null,    // MaDanhMuc từ DB
+
+        // Data
+        locations: [],
+        categories: [],             // Cache categories từ DB
+        currentLocation: null,
+        userLocation: null,
+
+        // Nearby settings
+        nearbyRadius: 20,
+
+        // Map & UI elements
+        map: null,
+        markers: [],
+        userMarker: null,
+        routingControl: null,       // Routing control
+        currentRoute: null,         // Current route info
+        infoPopup: null,           // Currently open popup
+        stepMarker: null,           // Biến mới để lưu marker khi zoom từng đoạn đường
+
+        // Debounce timer
+        debounceTimer: null,
+
+        // ========== 3-STEP MODE TRANSITION ==========
+        // Step 1: Reset Map (clear all layers)
+        resetMap() {
+            // Remove all data markers
+            this.markers.forEach(m => {
+                try {
+                    this.map.removeLayer(m);
+                } catch (e) {
+                    console.warn('Error removing marker:', e);
+                }
+            });
+            this.markers = [];
+            // Close any open popups
+            if (this.infoPopup) {
+                this.map.closePopup(this.infoPopup);
+                this.infoPopup = null;
+            }
+
+            // Clear routing
+            this.clearRoute();
         },
-        {
-            id: 2,
-            name: "Phố cổ Hội An",
-            region: "Quảng Nam",
-            coordinates: [15.8801, 108.3261],
-            category: "culture",
-            image: "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=600",
-            description: "Phố đèn lồng rực rỡ, nơi thời gian lắng đọng trong từng mái ngói cổ. Phố cổ Hội An là một địa điểm du lịch được yêu thích với kiến trúc độc đáo.",
-            badge: "Văn hóa cổ"
+
+        // Step 2: Reset UI Panel
+        resetUIPanel() {
+            // Clear info panel
+            const infoPanel = document.querySelector('.info-panel');
+            if (infoPanel) {
+                infoPanel.innerHTML = `
+                    <div class="info-panel-empty">
+                        <div>
+                            <i class="bi bi-map"></i>
+                            <p>Nhấp vào một địa điểm để xem thông tin chi tiết</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Clear directions panel
+            const dirPanel = document.getElementById('directionsPanel');
+            if (dirPanel) {
+                dirPanel.classList.remove('active', 'collapsed');
+                const dirContent = document.getElementById('directionsContent');
+                if (dirContent) {
+                    dirContent.innerHTML = '';
+                }
+            }
+
+            // Clear tour list if exists
+            const tourList = document.querySelector('.tour-locations-list');
+            if (tourList) {
+                tourList.innerHTML = '';
+            }
+
+            this.currentLocation = null;
         },
-        {
-            id: 3,
-            name: "Đà Lạt",
-            region: "Lâm Đồng",
-            coordinates: [11.9388, 108.4453],
-            category: "nature",
-            image: "https://images.unsplash.com/photo-1578895101408-1a36b834405b?w=600",
-            description: "Thành phố sương mù với khí hậu ôn hòa và những đồi thông lãng mạn. Đà Lạt là điểm đến lý tưởng cho những ai muốn thoát khỏi nắng nóng của thành phố.",
-            badge: "Thành phố nghỉ dưỡng"
+
+        // Step 3: Set New Mode
+        setMode(newMode, categoryId = null) {
+            // Only update if mode actually changed
+            if (this.mode === newMode && this.currentCategoryId === categoryId) {
+                return;
+            }
+
+            console.log(`🔄 Transitioning from '${this.mode}' to '${newMode}'`);
+            // 3-STEP CLEANUP:
+            // 1. Clear all map layers
+            this.resetMap();
+            // 2. Clear UI panels
+            this.resetUIPanel();
+            // 3. Update mode
+            this.mode = newMode;
+            this.currentCategoryId = categoryId;
+            this.updateUI();
+
+            console.log(`✅ Mode transition complete. Current mode: ${this.mode}`);
         },
-        {
-            id: 4,
-            name: "Ruộng bậc thang Sa Pa",
-            region: "Lào Cai",
-            coordinates: [22.3372, 103.8426],
-            category: "nature",
-            image: "https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=600",
-            description: "Những bậc thang nông nghiệp tinh tế, tạo nên cảnh quan kỳ diệu trên núi cao. Sa Pa nổi tiếng với khí hậu mát mẻ và các bậc ruộng đẹp như tranh.",
-            badge: "Thiên nhiên tươi mới"
+
+        // Clear route display
+        clearRoute() {
+            if (this.routingControl) {
+                try {
+                    this.map.removeControl(this.routingControl);
+                } catch (e) {
+                    console.warn('Error removing routing control:', e);
+                }
+                this.routingControl = null;
+            }
+            this.currentRoute = null;
+
+            // Xóa điểm đánh dấu của step nếu đang hiển thị
+            if (this.stepMarker) {
+                this.map.removeLayer(this.stepMarker);
+                this.stepMarker = null;
+            }
+
+            // Hide directions panel
+            const panel = document.getElementById('directionsPanel');
+            if (panel) {
+                panel.classList.remove('active', 'collapsed');
+                const dirContent = document.getElementById('directionsContent');
+                if (dirContent) {
+                    dirContent.innerHTML = '';
+                }
+            }
         },
-        {
-            id: 5,
-            name: "Đảo Phú Quốc",
-            region: "Kiên Giang",
-            coordinates: [10.1865, 103.9542],
-            category: "beach",
-            image: "https://images.unsplash.com/photo-1540611025311-01df3cef54b5?w=600",
-            description: "Thiên đường biển nhiệt đới với bãi cát trắng và hoàng hôn rực rỡ trên mặt nước. Phú Quốc là hòn đảo lớn nhất Việt Nam với nhiều bãi biển đẹp.",
-            badge: "Biển đảo"
-        },
-        {
-            id: 6,
-            name: "Thành phố Hồ Chí Minh",
-            region: "TP HCM",
-            coordinates: [10.7769, 106.6869],
-            category: "culture",
-            image: "https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=600",
-            description: "Nhịp sống không bao giờ ngủ, nơi hòa quyện giữa truyền thống và hiện đại. TPHCM là thành phố sôi động nhất của Việt Nam với nền văn hóa phong phú.",
-            badge: "Đô thị"
-        },
-        {
-            id: 7,
-            name: "Hà Nội",
-            region: "Hà Nội",
-            coordinates: [21.0285, 105.8542],
-            category: "culture",
-            image: "https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=600",
-            description: "Thủ đô xinh đẹp với những con hẻm cổ kính và hồ Hoàn Kiếm yên bình. Hà Nội mang đậm nét của lịch sử và văn hóa truyền thống.",
-            badge: "Thủ đô"
-        },
-        {
-            id: 8,
-            name: "Bãi biển Nha Trang",
-            region: "Khánh Hòa",
-            coordinates: [12.2388, 109.1967],
-            category: "beach",
-            image: "https://images.unsplash.com/photo-1540611025311-01df3cef54b5?w=600",
-            description: "Bãi biển xinh đẹp với cát trắng mịn và nước biển trong xanh. Nha Trang là một trong những điểm đến biển nổi tiếng nhất của Việt Nam.",
-            badge: "Biển nắng"
-        },
-        {
-            id: 9,
-            name: "🇻🇳 Quần đảo Hoàng Sa",
-            region: "Đà Nẵng",
-            coordinates: [16.5333, 112.0333],
-            category: "beach",
-            image: "https://images.unsplash.com/photo-1539391913033-6461ffad8d80?w=600",
-            description: "Quần đảo Hoàng Sa là một phần lãnh thổ vững chắc của Việt Nam tại Biển Đông. Đây là vùng biển quan trọng có giá trị chiến lược và kinh tế cao.",
-            badge: "🇻🇳 Thiên thiêng"
-        },
-        {
-            id: 10,
-            name: "🇻🇳 Quần đảo Trường Sa",
-            region: "Khánh Hòa",
-            coordinates: [8.6333, 111.9667],
-            category: "beach",
-            image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600",
-            description: "Quần đảo Trường Sa là một phần máu thịt của tổ quốc Việt Nam, nằm ở phía đông nam Biển Đông, là điểm giao thoa của các tuyến đường hàng hải quốc tế.",
-            badge: "🇻🇳 Cột mốc chủ quyền"
+
+        // Update UI elements based on mode
+        updateUI() {
+            const radiusControl = document.getElementById('radiusControl');
+            const filterBtns = document.querySelectorAll('.filter-btn');
+
+            // Hide radius control except in nearby mode
+            if (radiusControl) {
+                radiusControl.style.display = this.mode === 'nearby' ?
+                    'flex' : 'none';
+            }
+
+            // Update filter button states
+            filterBtns.forEach(btn => {
+                const filter = btn.getAttribute('data-filter');
+                const id = btn.getAttribute('data-id');
+                btn.classList.remove('active');
+
+                if (this.mode === 'all' && filter === 'all') {
+                    btn.classList.add('active');
+                } else if (this.mode === 'category' && parseInt(id) === this.currentCategoryId) {
+                    btn.classList.add('active');
+                } else if (this.mode === 'nearby' && filter === 'nearby') {
+                    btn.classList.add('active');
+                } else if (this.mode === 'tour' && filter === 'tour') {
+                    btn.classList.add('active');
+                }
+            });
         }
-    ];
+    };
 
-    let map;
-    let markers = [];
-    let currentLocation = null;
-    let currentFilter = 'all';
+    // ============================================================
+    // API CALLS
+    // ============================================================
 
-    // Initialize Map
-    function initMap() {
-        if (!document.getElementById('map')) return;
+    // API: Load categories from DB and populate filter buttons
+    async function loadCategories() {
+        try {
+            const response = await fetch('/Map/GetCategories');
+            const data = await response.json();
 
-        // Set view focusing on center of Vietnam to clearly show both mainland and islands
-        map = L.map('map').setView([15.5007, 108.869], 5);
-
-        // OpenStreetMap TileLayer (100% Free, No API Key, Shows Islands)
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            maxZoom: 19,
-            minZoom: 5
-        }).addTo(map);
-
-        displayMarkers(locations);
-        setupEventListeners();
+            if (data.success && data.data) {
+                MapState.categories = data.data;
+                populateCategoryButtons(data.data);
+            } else {
+                console.error('Error loading categories:', data.message);
+            }
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+        }
     }
 
-    // Display markers on map
-    function displayMarkers(locationsToShow) {
-        // Clear existing markers
-        markers.forEach(marker => map.removeLayer(marker));
-        markers = [];
+    // Populate category buttons dynamically
+    function populateCategoryButtons(categories) {
+        const filterGroup = document.getElementById('filterGroup');
+        const nearbyBtn = filterGroup.querySelector('[data-filter="nearby"]');
+
+        // Remove old category buttons (keep "Tất cả", "Gần bạn")
+        filterGroup.querySelectorAll('.filter-btn').forEach(btn => {
+            const filter = btn.getAttribute('data-filter');
+            if (filter !== 'all' && filter !== 'nearby') {
+                btn.remove();
+            }
+        });
+        // Insert category buttons before "Gần bạn"
+        categories.forEach(cat => {
+            const btn = document.createElement('button');
+            btn.className = 'filter-btn';
+            btn.setAttribute('data-filter', 'category');
+            btn.setAttribute('data-id', cat.id.toString());
+            btn.textContent = cat.name;
+            btn.addEventListener('click', function () {
+                handleFilterClick('category', parseInt(this.getAttribute('data-id')));
+            });
+            filterGroup.insertBefore(btn, nearbyBtn);
+        });
+        // Re-attach event listeners to special buttons
+        setupNearbyEventListener();
+    }
+
+    // Setup event listener for nearby button
+    function setupNearbyEventListener() {
+        const nearbyBtn = document.querySelector('[data-filter="nearby"]');
+        if (nearbyBtn) {
+            nearbyBtn.removeEventListener('click', handleNearbyClick);
+            nearbyBtn.addEventListener('click', handleNearbyClick);
+        }
+    }
+
+    // API: Get all locations or by category ID
+    async function fetchLocations(maDanhMuc = null) {
+        try {
+            const url = maDanhMuc 
+                ? `/Map/GetLocations?maDanhMuc=${maDanhMuc}`
+                : `/Map/GetLocations`;
+            const response = await fetch(url);
+            const data = await response.json();
+            if (data.success && data.data) {
+                MapState.locations = data.data;
+                displayLocations(data.data);
+                showToast(`Tìm thấy ${data.data.length} địa điểm`);
+            } else {
+                showToast(data.message || 'Lỗi tải dữ liệu', 'error');
+            }
+        } catch (error) {
+            console.error('Error fetching locations:', error);
+            showToast('Lỗi kết nối tới server', 'error');
+        }
+    }
+
+    // API: Get nearby locations
+    async function fetchNearbyLocations(radiusKm = 20) {
+        if (!MapState.userLocation) {
+            showToast('Không thể lấy vị trí hiện tại', 'error');
+            return;
+        }
+
+        try {
+            const url = `/Map/GetNearbyLocations?latitude=${MapState.userLocation.lat}&longitude=${MapState.userLocation.lon}&radiusKm=${radiusKm}&limit=20`;
+            const response = await fetch(url);
+            const data = await response.json();
+            if (data.success && data.data && data.data.length > 0) {
+                MapState.locations = data.data;
+                displayLocations(data.data);
+                showToast(`Tìm thấy ${data.data.length} địa điểm`);
+
+                // Fit bounds to results
+                if (data.data.length > 0) {
+                    const bounds = L.latLngBounds(data.data.map(loc => loc.coordinates));
+                    MapState.map.fitBounds(bounds, { padding: [50, 50] });
+                }
+            } else {
+                MapState.locations = [];
+                displayLocations([]);
+                const suggestion = radiusKm < 100 
+                    ? `Không có địa điểm trong bán kính ${radiusKm} km. Thử tăng lên ${radiusKm + 10} km?`
+                    : `Không tìm thấy địa điểm nào trong bán kính ${radiusKm} km`;
+                showToast(suggestion);
+            }
+        } catch (error) {
+            console.error('Error fetching nearby locations:', error);
+            showToast('Lỗi khi tìm kiếm địa điểm gần bạn', 'error');
+        }
+    }
+
+    // API: Get suggested route with transport type and distance
+    async function fetchSuggestRoute() {
+        if (!MapState.userLocation) {
+            showToast('Không thể lấy vị trí hiện tại', 'error');
+            return;
+        }
+
+        try {
+            const url = `/Map/SuggestRoute?latitude=${MapState.userLocation.lat}&longitude=${MapState.userLocation.lon}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            if (data.success && data.data && data.data.length > 0) {
+                MapState.locations = data.data;
+                displayLocations(data.data, true); // Pass true to show distance + transport
+                showTourLocationsList();
+                // Show tour locations list in info panel
+                showToast(`Gợi ý ${data.data.length} điểm đến`, 'success');
+                // Fit bounds to results
+                if (data.data.length > 0) {
+                    const bounds = L.latLngBounds(data.data.map(loc => loc.coordinates));
+                    MapState.map.fitBounds(bounds, { padding: [50, 50] });
+                }
+            } else {
+                MapState.locations = [];
+                displayLocations([]);
+                showToast('Không tìm thấy địa điểm nào', 'info');
+            }
+        } catch (error) {
+            console.error('Error fetching suggested route:', error);
+            showToast('Lỗi khi gợi ý tuyến đường', 'error');
+        }
+    }
+
+    // ============================================================
+    // MAP DISPLAY FUNCTIONS
+    // ============================================================
+
+    function displayLocations(locationsToShow, showTransportInfo = false) {
+        // Clear old markers
+        MapState.markers.forEach(m => MapState.map.removeLayer(m));
+        MapState.markers = [];
 
         locationsToShow.forEach(location => {
-            const isIsland = location.id === 9 || location.id === 10;
+            if (!location.coordinates || location.coordinates[0] == null) return;
 
-            const markerColor = isIsland ? 'linear-gradient(135deg, #FF3D00, #FF8A00)' : 'linear-gradient(135deg, #0EA5E9, #38BDF8)';
-            const markerSize = isIsland ? '56px' : '40px';
-            const iconSize = isIsland ? '28px' : '20px';
-            const pulseEffect = isIsland ? '<div class="marker-pulse"></div>' : '';
+            // Determine marker content based on mode
+            let markerHtml = `<div style="background: linear-gradient(135deg, #0EA5E9, #38BDF8); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border: 3px solid white;"><i class="bi bi-geo-alt-fill"></i></div>`;
+
+            if (showTransportInfo && location.transportIcon) {
+                markerHtml = `<div style="background: linear-gradient(135deg, #0EA5E9, #38BDF8); color: white; width: 48px; height: 48px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border: 3px solid white; position: relative;">
+                    <div style="font-size: 16px;">${location.transportIcon}</div>
+                    <div style="font-size: 10px; margin-top: 2px;">${location.distanceKm}km</div>
+                </div>`;
+            }
 
             const markerIcon = L.divIcon({
-                html: `
-                <div style="position: relative;">
-                    ${pulseEffect}
-                    <div style="background: ${markerColor}; color: white; width: ${markerSize}; height: ${markerSize}; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: ${iconSize}; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border: 3px solid white; position: relative; z-index: 2;">
-                        <i class="bi bi-geo-alt-fill" style="font-size: ${iconSize};"></i>
-                    </div>
-                    ${isIsland ? `<div style="position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%); background: white; padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; color: #FF3D00; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,0.2); border: 1px solid #FF3D00;">${location.name}</div>` : ''}
-                </div>
-                `,
+                html: markerHtml,
                 className: 'location-marker',
-                iconSize: [parseInt(markerSize), parseInt(markerSize)],
-                iconAnchor: [parseInt(markerSize)/2, parseInt(markerSize)],
-                popupAnchor: [0, -parseInt(markerSize)]
+                iconSize: showTransportInfo ? [48, 48] : [40, 40],
+                iconAnchor: showTransportInfo ? [24, 48] : [20, 40],
+                popupAnchor: [0, showTransportInfo ? -48 : -40]
             });
+
+            let popupContent = `<strong>${location.name}</strong><br>${location.region}`;
+            if (showTransportInfo && location.distanceKm) {
+                popupContent += `<br>${location.transportIcon} ${location.distanceKm} km`;
+            }
 
             const marker = L.marker(location.coordinates, { icon: markerIcon })
-                .bindPopup(`<strong>${location.name}</strong><br>${location.region}`)
-                .addTo(map);
+                .bindPopup(popupContent)
+                .addTo(MapState.map);
 
             marker.on('click', () => {
+                MapState.currentLocation = location;
                 showLocationInfo(location);
-                map.flyTo(location.coordinates, 8, { duration: 1.5 });
+                MapState.map.flyTo(location.coordinates, 8, { duration: 1.5 });
             });
 
-            markers.push(marker);
+            MapState.markers.push(marker);
         });
     }
 
-    // Show location information in panel
+    // ============================================================
+    // UI FUNCTIONS
+    // ============================================================
+
     function showLocationInfo(location) {
-        currentLocation = location;
+        const mainImage = location.image || 'https://via.placeholder.com/600x300?text=No+Image';
+        const priceText = location.price ? `${location.price.toLocaleString('vi-VN')} VNĐ` : 'Liên hệ';
+
+        let distanceBadge = '';
+        let transportBadge = '';
+        if ((MapState.mode === 'nearby' || MapState.mode === 'tour') && location.distance) {
+            const distance = location.distance || location.distanceKm;
+            distanceBadge = `<div class="badge-distance">
+                <i class="bi bi-pin-map-fill" style="color: var(--sky-blue);"></i>
+                <span class="distance-value">${distance.toFixed(1)} km</span>
+            </div>`;
+        }
+
+        if (MapState.mode === 'tour' && location.transportIcon && location.transportType) {
+            const transportLabel = location.transportType === 'motorbike' ? 'Xe máy/Ô tô' : 'Máy bay';
+            transportBadge = `<div class="badge-transport">
+                <span class="transport-icon">${location.transportIcon}</span>
+                <span class="transport-label">${transportLabel}</span>
+            </div>`;
+        }
+
+        const tourModeBadges = (distanceBadge || transportBadge) ? `<div class="tour-mode-badges">${distanceBadge}${transportBadge}</div>` : '';
+        // View Route button - only show when user location exists
+        const viewRouteBtn = MapState.userLocation ? `
+            <button class="btn-view-route" onclick="handleViewRoute(${location.id}, ${location.coordinates[0]}, ${location.coordinates[1]})">
+                <i class="bi bi-arrow-right-circle"></i> Xem đường đi
+            </button>
+        ` : '';
         const infoPanelContent = `
             <div class="location-info">
-                <img src="${location.image}" alt="${location.name}" class="location-image">
+                <img src="${mainImage}" alt="${location.name}" class="location-image" onerror="this.src='https://via.placeholder.com/600x300?text=No+Image'">
                 <div class="location-header">
                     <div class="location-title">
                         <h3>${location.name}</h3>
-                        <p><i class="bi bi-geo-alt"></i> ${location.region}</p>
+                        <p><i class="bi bi-geo-alt"></i> ${location.region || 'N/A'}</p>
                     </div>
                     <button class="favorite-btn" onclick="toggleFavorite(this)" aria-label="Thêm vào yêu thích">
                         <i class="bi bi-heart"></i>
                     </button>
                 </div>
-                <div class="location-type-badge">${location.badge}</div>
-                <p class="location-description">${location.description}</p>
+                ${tourModeBadges}
+                <div class="location-type-badge">${location.badge || location.category}</div>
+                <p class="location-description">${location.description || 'Không có mô tả'}</p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; padding: 1rem; background: #f8fafc; border-radius: 12px; font-size: 0.875rem;">
+                    <div><strong>Giá vé:</strong> ${priceText}</div>
+                    <div><strong>Đánh giá:</strong> ⭐ ${location.rating ? location.rating.toFixed(1) : 'N/A'}</div>
+                    ${location.openingHours ? `<div style="grid-column: 1/-1;"><strong>Giờ mở cửa:</strong> ${location.openingHours}</div>` : ''}
+                </div>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.5rem 0; font-size: 0.875rem;">
+                    ${location.phone ? `<span><i class="bi bi-telephone"></i> ${location.phone}</span>` : ''}
+                    ${location.email ? `<span><i class="bi bi-envelope"></i> ${location.email}</span>` : ''}
+                </div>
                 <div class="action-buttons">
-                    <a href="/Home/DetailPlace?id=${location.id}" class="btn-view-details" target="_blank">
-                        <i class="bi bi-eye"></i> Xem chi tiết
-                    </a>
-                    <button class="btn-add-itinerary" onclick="addToItinerary(${location.id})">
-                        <i class="bi bi-calendar-plus"></i> Thêm lịch
-                    </button>
+                    ${viewRouteBtn}
+                    <div class="action-buttons-row">
+                        <a href="/Home/DetailPlace?id=${location.id}" class="btn-view-details" target="_blank">
+                            <i class="bi bi-eye"></i> Xem chi tiết
+                        </a>
+                        <button class="btn-add-itinerary" onclick="addToItinerary(${location.id})">
+                            <i class="bi bi-calendar-plus"></i> Thêm lịch
+                        </button>
+                    </div>
                 </div>
             </div>
         `;
@@ -645,115 +1527,500 @@
         infoPanel.innerHTML = infoPanelContent;
     }
 
-    // Toggle favorite
+    // Handle viewing route
+    function handleViewRoute(locationId, destLat, destLon) {
+        if (!MapState.userLocation) {
+            showToast('Vị trí hiện tại không khả dụng', 'error');
+            return;
+        }
+
+        const location = MapState.currentLocation;
+        // IMPORTANT: Transition to routing mode FIRST
+        // This will clear all previous markers and layers properly
+        MapState.mode = 'routing';
+        MapState.resetMap(); // Complete cleanup
+        MapState.clearRoute();
+        // Clear any existing route
+
+        const startLat = MapState.userLocation.lat;
+        const startLon = MapState.userLocation.lon;
+        console.log(`🛣️ Starting route from (${startLat}, ${startLon}) to (${destLat}, ${destLon})`);
+
+        // Create routing control
+        MapState.routingControl = L.Routing.control({
+            waypoints: [
+                L.latLng(startLat, startLon),
+                L.latLng(destLat, destLon)
+            ],
+            routeWhileDragging: false,
+            show: false,          // Ẩn UI mặc định của thư viện
+            addWaypoints: false,  // Không cho thêm điểm trên đường đi để tránh rác map
+            fitSelectedRoutes: false, // Tắt chế độ tự zoom của thư viện
+            lineOptions: {
+                styles: [
+                    {color: '#0EA5E9', opacity: 0.8, weight: 5}
+                ]
+            },
+            createMarker: function(i, wp) {
+                if (i === 0) {
+                    return L.marker(wp.latLng, {
+                        icon: L.icon({
+                            iconUrl: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDI0IDI0Ij48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSI4IiBmaWxsPSIjMEVBNUU5Ii8+PHBhdGggZD0iTTEyIDZsLTItMmgydjIiIGZpbGw9IndoaXRlIi8+PC9zdmc+',
+                            iconSize: [32, 32],
+                            iconAnchor: [16, 16]
+                        })
+                    }).bindPopup('📍 Vị trí hiện tại').openPopup();
+                } else {
+                    return L.marker(wp.latLng, {
+                        icon: L.icon({
+                            iconUrl: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMTIgMkM2LjQ4IDIgMiA2LjQ4IDIgMTJzNC40OCAxMCAxMCAxMCAxMC00LjQ4IDEwLTEwUzE3LjUyIDIgMTIgMnoiIGZpbGw9IiMxMGI5ODEiLz48dGV4dCB4PSIxMiIgeT0iMTYiIGZvbnQtc2l6ZT0iOCIgZm9udC13ZWlnaHQ9ImJvbGQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IndoaXRlIj7wn5iFPC90ZXh0Pjwvc3ZnPg==',
+                            iconSize: [32, 32],
+                            iconAnchor: [16, 32]
+                        })
+                    }).bindPopup(`🎯 ${location.name}`);
+                }
+            }
+        }).addTo(MapState.map);
+
+        // Store route when calculated
+        MapState.routingControl.on('routesfound', function(e) {
+            const routes = e.routes;
+            if (routes.length > 0) {
+                const route = routes[0];
+                MapState.currentRoute = {
+                    distance: (route.summary.totalDistance / 1000).toFixed(1),
+                    time: Math.ceil(route.summary.totalTime / 60),
+                    name: location.name,
+                    instructions: route.instructions || [],
+                    coordinates: route.coordinates || [] // LƯU LẠI TỌA ĐỘ ĐỂ ZOOM BẢN ĐỒ
+                };
+
+                // Fit map to route bounds (zoom to show full route)
+                if (e.routes[0].bounds) {
+                    MapState.map.fitBounds(e.routes[0].bounds, { padding: [50, 50] });
+                }
+
+                // Display directions panel
+                displayDirectionsPanel();
+
+                // Đã tắt dòng thông báo showToast gây lỗi undefined
+                // showToast(`${MapState.currentRoute.distance} km - ${MapState.currentRoute.time} phút`, 'success');
+            }
+        });
+
+        MapState.routingControl.on('routeserror', function(e) {
+            console.error('Routing error:', e);
+            showToast('Không thể tính toán đường đi', 'error');
+        });
+    }
+
+    // Display directions panel with steps
+    function displayDirectionsPanel() {
+        if (!MapState.currentRoute) return;
+        const route = MapState.currentRoute;
+        const panel = document.getElementById('directionsPanel');
+        const content = document.getElementById('directionsContent');
+
+        // Update header - destination name
+        document.getElementById('directionsDestination').textContent = `🎯 ${route.name}`;
+
+        // Update summary
+        document.getElementById('summaryDistance').textContent = `${route.distance} km`;
+        document.getElementById('summaryTime').textContent = `${route.time} phút`;
+        document.getElementById('summaryTransport').textContent = '🚗';
+
+        // Generate direction steps
+        let stepsHtml = '';
+        if (route.instructions && route.instructions.length > 0) {
+            route.instructions.forEach((step, index) => {
+                const icon = getDirectionIcon(step.type);
+                const distance = (step.distance / 1000).toFixed(1);
+
+                stepsHtml += `
+                    <div class="direction-step ${index === 0 ? 'current' : ''}" onclick="highlightStep(this, ${index})">
+                        <div class="step-icon">${icon}</div>
+                        <div class="step-content">
+                            <div class="step-instruction">${step.text}</div>
+                            <div class="step-distance">
+                                <i class="bi bi-rulers"></i>
+                                <span class="step-distance-value">${distance} km</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        } else {
+            // Fallback if no instructions
+            stepsHtml = `
+                <div class="direction-step current">
+                    <div class="step-icon">📍</div>
+                    <div class="step-content">
+                        <div class="step-instruction">Đi trực tiếp đến ${route.name}</div>
+                        <div class="step-distance">
+                            <i class="bi bi-rulers"></i>
+                            <span class="step-distance-value">${route.distance} km</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        content.innerHTML = stepsHtml;
+
+        // Show panel
+        panel.classList.add('active');
+        panel.classList.remove('collapsed');
+    }
+
+    // Get direction icon based on turn type
+    function getDirectionIcon(type) {
+        const iconMap = {
+            'straight': '⬆️',
+            'slightright': '↗️',
+            'right': '➡️',
+            'sharpright': '↪️',
+            'uturn': '↩️',
+            'sharpleft': '↖️',
+            'left': '⬅️',
+            'slightleft': '↙️',
+            'roundabout': '🔄',
+            'exit': '🚪'
+        };
+        return iconMap[type] || '📍';
+    }
+
+    // Highlight current step
+    function highlightStep(element, stepIndex) {
+        const steps = document.querySelectorAll('.direction-step');
+        steps.forEach((step, index) => {
+            step.classList.remove('current');
+            if (index < stepIndex) {
+                step.classList.add('completed');
+            } else {
+                step.classList.remove('completed');
+            }
+        });
+        element.classList.add('current');
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        // === THÊM CHỨC NĂNG ZOOM VÀ HIỂN THỊ LÊN BẢN ĐỒ ===
+        if (MapState.currentRoute && MapState.currentRoute.instructions && MapState.currentRoute.coordinates) {
+            const stepData = MapState.currentRoute.instructions[stepIndex];
+            
+            // Tìm tọa độ chính xác của bước rẽ/đi thẳng này
+            if (stepData && stepData.index !== undefined) {
+                const coord = MapState.currentRoute.coordinates[stepData.index];
+                if (coord) {
+                    // Bay mượt mà đến tọa độ đó, zoom lớn lên (mức 16)
+                    MapState.map.flyTo(coord, 16, { duration: 1.2 });
+
+                    // Xóa điểm đánh dấu của bước trước đó (nếu có)
+                    if (MapState.stepMarker) {
+                        MapState.map.removeLayer(MapState.stepMarker);
+                    }
+
+                    // Vẽ một điểm tròn màu xanh lá để nhấn mạnh điểm rẽ
+                    MapState.stepMarker = L.circleMarker(coord, {
+                        radius: 8,
+                        fillColor: '#10b981',
+                        color: '#ffffff',
+                        weight: 3,
+                        opacity: 1,
+                        fillOpacity: 0.9
+                    }).addTo(MapState.map)
+                      .bindPopup(`<strong>Đoạn đường:</strong><br/>${stepData.text}`) // Hiển thị text chỉ đường
+                      .openPopup();
+                }
+            }
+        }
+    }
+
+    // Toggle directions panel collapse
+    function toggleDirectionsPanel() {
+        const panel = document.getElementById('directionsPanel');
+        const toggle = document.getElementById('directionsToggle');
+
+        if (panel.classList.contains('active')) {
+            panel.classList.add('collapsed');
+            panel.classList.remove('active');
+            toggle.innerHTML = '<i class="bi bi-chevron-down"></i>';
+        } else {
+            panel.classList.remove('collapsed');
+            panel.classList.add('active');
+            toggle.innerHTML = '<i class="bi bi-chevron-up"></i>';
+        }
+    }
+
+    // Exit routing mode and return to browse mode
+    function exitRoutingMode() {
+        console.log('🔄 Exiting routing mode, returning to browse...');
+        // Transition back to browse mode with full cleanup
+        MapState.setMode('all');
+        // Reload all locations to show on map
+        fetchLocations();
+        showToast('Đã thoát chỉ đường', 'info');
+    }
+
+    function showTourLocationsList() {
+        if (MapState.mode !== 'tour' || !MapState.locations || MapState.locations.length === 0) {
+            return;
+        }
+
+        const listHtml = MapState.locations.map((location, index) => {
+            const distance = location.distanceKm || location.distance;
+            const isActive = MapState.currentLocation && MapState.currentLocation.id === location.id ? 'active' : '';
+
+            return `
+                <div class="tour-location-item ${isActive}" onclick="handleTourLocationClick(${location.id}, ${index})">
+                    <div class="tour-location-number">${index + 1}</div>
+                    <div class="tour-location-content">
+                        <p class="tour-location-name">${location.name}</p>
+                        <p class="tour-location-region">${location.region || 'N/A'}</p>
+                    </div>
+                    <div class="tour-location-info">
+                        <div class="tour-distance-info">
+                            <i class="bi bi-pin-map-fill"></i>
+                            <span>${distance ? distance.toFixed(1) : 'N/A'} km</span>
+                        </div>
+                        <div class="tour-transport-info">
+                            <span class="tour-transport-icon">${location.transportIcon || '📍'}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        const infoPanelContent = `
+            <div class="info-panel-tour-header">
+                <h2>🗺️ Gợi Ý Tuyến Đường</h2>
+                <p>Tổng cộng ${MapState.locations.length} điểm đến</p>
+            </div>
+            <div class="tour-locations-list" style="padding: var(--spacing-6);">
+                ${listHtml}
+            </div>
+        `;
+        const infoPanel = document.querySelector('.info-panel');
+        infoPanel.innerHTML = infoPanelContent;
+    }
+
+    function handleTourLocationClick(locationId, index) {
+        const location = MapState.locations.find(l => l.id === locationId);
+        if (location) {
+            MapState.currentLocation = location;
+            showLocationInfo(location);
+            MapState.map.flyTo(location.coordinates, 12, { duration: 1.5 });
+
+            // Highlight the clicked marker
+            MapState.markers.forEach((marker, i) => {
+                if (i === index) {
+                    marker.openPopup();
+                }
+            });
+        }
+    }
+
     function toggleFavorite(btn) {
         btn.classList.toggle('active');
     }
 
-    // Add to itinerary
     function addToItinerary(locationId) {
-        alert(`Đã thêm ${currentLocation.name} vào lịch trình!`);
+        const location = MapState.currentLocation;
+        showToast(`Đã thêm ${location.name} vào lịch trình`);
     }
 
-    // Filter locations
-    function filterLocations(category) {
-        currentFilter = category;
-        if (category === 'all') {
-            displayMarkers(locations);
+    function showToast(message, type = 'success') {
+        // Wrapper function that adapts to the global showToast signature
+        // Global showToast expects (title, message, type)
+        if (typeof window.showToast === 'function') {
+            // Call global showToast with title from type or message
+            const title = type === 'error' ? '❌ Lỗi' : type === 'info' ? 'ℹ️ Thông tin' : '✅ Thành công';
+            window.showToast(title, message, type);
         } else {
-            const filtered = locations.filter(loc => loc.category === category);
-            displayMarkers(filtered);
+            // Fallback if global showToast not available
+            console.log(`[${type}] ${message}`);
         }
     }
 
-    // Search locations
-    function searchLocations(query) {
-        if (!query.trim()) {
-            displayMarkers(locations);
+    // ============================================================
+    // GEOLOCATION
+    // ============================================================
+
+    function initGeolocation() {
+        if (!navigator.geolocation) {
+            console.log('Geolocation not supported');
             return;
         }
 
-        const searchTerm = query.toLowerCase();
-        const results = locations.filter(loc =>
-            loc.name.toLowerCase().includes(searchTerm) ||
-            loc.region.toLowerCase().includes(searchTerm) ||
-            loc.description.toLowerCase().includes(searchTerm)
-        );
-
-        if (results.length > 0) {
-            displayMarkers(results);
-            if (results.length === 1) {
-                showLocationInfo(results[0]);
-                map.flyTo(results[0].coordinates, 8, { duration: 1.5 });
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                MapState.userLocation = {
+                    lat: position.coords.latitude,
+                    lon: position.coords.longitude
+                };
+                console.log('User location obtained:', MapState.userLocation);
+                addUserMarker();
+            },
+            (error) => {
+                console.log('Geolocation error:', error.message);
+            },
+            {
+                enableHighAccuracy: false,
+                timeout: 10000,
+                maximumAge: 0
             }
-        } else {
-            displayMarkers([]);
-            alert('Không tìm thấy địa điểm phù hợp!');
+        );
+    }
+
+    function addUserMarker() {
+        if (!MapState.userLocation) return;
+        if (MapState.userMarker) MapState.map.removeLayer(MapState.userMarker);
+        MapState.userMarker = L.circleMarker([MapState.userLocation.lat, MapState.userLocation.lon], {
+            radius: 8,
+            fillColor: '#0EA5E9',
+            color: '#ffffff',
+            weight: 3,
+            opacity: 1,
+            fillOpacity: 0.8
+        }).bindPopup('Vị trí của bạn').addTo(MapState.map);
+    }
+
+    // ============================================================
+    // EVENT HANDLERS
+    // ============================================================
+
+    async function handleFilterClick(filter, categoryId = null) {
+        switch(filter) {
+            case 'all':
+                MapState.setMode('all');
+                MapState.updateUI();
+                await fetchLocations();
+                break;
+
+            case 'category':
+                if (!categoryId) break;
+                MapState.setMode('category', categoryId);
+                MapState.updateUI();
+                await fetchLocations(categoryId);
+                break;
+
+            case 'nearby':
+                if (!MapState.userLocation) {
+                    showToast('Vui lòng bật GPS để sử dụng tính năng này', 'error');
+                    return;
+                }
+                MapState.setMode('nearby');
+                MapState.updateUI();
+                await fetchNearbyLocations(MapState.nearbyRadius);
+                break;
+
+            case 'tour':
+                if (!MapState.userLocation) {
+                    showToast('Vui lòng bật GPS để sử dụng tính năng này', 'error');
+                    return;
+                }
+                MapState.setMode('tour');
+                MapState.updateUI();
+                await fetchSuggestRoute();
+                break;
+
+            default:
+                console.warn('Unknown filter:', filter);
         }
     }
 
-    // Setup event listeners
+    async function handleRadiusChange(newRadius) {
+        if (MapState.mode !== 'nearby') return;
+        MapState.nearbyRadius = newRadius;
+
+        // Debounce to avoid spam
+        clearTimeout(MapState.debounceTimer);
+        MapState.debounceTimer = setTimeout(() => {
+            fetchNearbyLocations(newRadius);
+        }, 300);
+    }
+
+    // ============================================================
+    // INITIALIZATION
+    // ============================================================
+
+    function initMap() {
+        if (!document.getElementById('map')) return;
+        MapState.map = L.map('map').setView([15.5007, 108.869], 5);
+
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19,
+            minZoom: 5
+        }).addTo(MapState.map);
+        initGeolocation();
+        setupEventListeners();
+
+        // Load initial data
+        MapState.setMode('all');
+        MapState.updateUI();
+        fetchLocations();
+    }
+
     function setupEventListeners() {
-        // Search functionality
+        // Search
         const searchBtn = document.getElementById('searchBtn');
         const searchInput = document.getElementById('searchInput');
 
         if (searchBtn) {
-            searchBtn.addEventListener('click', function () {
-                const query = searchInput.value;
-                searchLocations(query);
-            });
-        }
+            searchBtn.addEventListener('click', () => {
+                const query = searchInput.value.toLowerCase();
+                const results = MapState.locations.filter(loc =>
+                    loc.name.toLowerCase().includes(query) ||
+                    loc.region.toLowerCase().includes(query) ||
+                    (loc.description && loc.description.toLowerCase().includes(query))
+                );
 
-        if (searchInput) {
-            searchInput.addEventListener('keypress', function (e) {
-                if (e.key === 'Enter') {
-                    searchLocations(this.value);
+                if (results.length > 0) {
+                    const showTransport = MapState.mode === 'tour';
+                    displayLocations(results, showTransport);
+                    if (results.length === 1) {
+                        MapState.currentLocation = results[0];
+                        showLocationInfo(results[0]);
+                        MapState.map.flyTo(results[0].coordinates, 8, { duration: 1.5 });
+                    }
+                } else {
+                    showToast('Không tìm thấy địa điểm nào');
                 }
             });
         }
 
-        // Filter functionality
+        if (searchInput) {
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    searchBtn.click();
+                }
+            });
+        }
+
+        // Radius slider
+        const radiusSlider = document.getElementById('radiusSlider');
+        const radiusValue = document.getElementById('radiusValue');
+
+        if (radiusSlider) {
+            radiusSlider.addEventListener('input', (e) => {
+                const newRadius = parseInt(e.target.value);
+                if (radiusValue) radiusValue.textContent = newRadius;
+                handleRadiusChange(newRadius);
+            });
+        }
+
+        // Filter buttons
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', function () {
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                filterLocations(this.getAttribute('data-filter') || 'all');
+                const filter = this.getAttribute('data-filter');
+                const categoryId = filter === 'category' ? parseInt(this.getAttribute('data-id')) : null;
+                handleFilterClick(filter, categoryId);
             });
         });
+        // Load categories for dynamic buttons
+        loadCategories();
     }
 
-    // Initialize map on document load
     document.addEventListener('DOMContentLoaded', initMap);
 </script>
-
-<style>
-    /* CSS Pulse Animation for Islands */
-    .marker-pulse {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        background: rgba(255, 61, 0, 0.5);
-        z-index: 1;
-        animation: pulse 2s infinite;
-    }
-
-    @@keyframes pulse {
-        0% {
-            transform: translate(-50%, -50%) scale(1);
-            opacity: 0.8;
-        }
-        70% {
-            transform: translate(-50%, -50%) scale(2);
-            opacity: 0;
-        }
-        100% {
-            transform: translate(-50%, -50%) scale(1);
-            opacity: 0;
-        }
-    }
-</style>
+}
