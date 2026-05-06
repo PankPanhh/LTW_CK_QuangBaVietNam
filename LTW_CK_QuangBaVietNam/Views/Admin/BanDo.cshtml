@@ -1,0 +1,116 @@
+﻿@model IEnumerable<LTW_CK_QuangBaVietNam.Models.DiaDiem>
+@using System.Globalization
+
+@{
+    ViewBag.Title = "Bản đồ & vị trí";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-white">
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-2">
+            <div>
+                <div class="fw-semibold">
+                    <i class="fa-solid fa-map-location-dot text-primary me-2"></i>
+                    Quản lý dữ liệu bản đồ & vị trí
+                </div>
+                <div class="text-muted small">
+                    Cập nhật tọa độ, kiểm tra vị trí chính xác bằng Google Maps
+                </div>
+            </div>
+
+            <a class="btn btn-outline-secondary"
+               href="@Url.Action("DiaDiem","Admin")">
+                <i class="fa-solid fa-list me-2"></i>Danh sách địa điểm
+            </a>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Mã</th>
+                    <th>Địa điểm</th>
+                    <th>Vùng</th>
+                    <th class="text-end">Kinh độ</th>
+                    <th class="text-end">Vĩ độ</th>
+                    <th class="text-end" style="width:260px;">Thao tác</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (Model == null || !Model.Any())
+                {
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">
+                            Chưa có dữ liệu địa điểm.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var dd in Model)
+                    {
+                        string kinhDo = dd.KinhDo.HasValue
+                            ? dd.KinhDo.Value.ToString(CultureInfo.InvariantCulture)
+                            : "";
+
+                        string viDo = dd.ViDo.HasValue
+                            ? dd.ViDo.Value.ToString(CultureInfo.InvariantCulture)
+                            : "";
+
+                        bool coToaDo = dd.KinhDo.HasValue && dd.ViDo.HasValue;
+
+                        <tr>
+                            <td>@dd.MaDiaDiem</td>
+
+                            <td>
+                                <div class="fw-semibold">@dd.TenDiaDiem</div>
+                                <div class="text-muted small">@dd.DiaChiChiTiet</div>
+                            </td>
+
+                            <td>
+                                <span class="badge text-bg-primary-subtle text-primary border">
+                                    @dd.VungMien
+                                </span>
+                            </td>
+
+                            <td class="text-end">
+                                @(coToaDo ? kinhDo : "-")
+                            </td>
+
+                            <td class="text-end">
+                                @(coToaDo ? viDo : "-")
+                            </td>
+
+                            <td class="text-end">
+                                <div class="btn-group">
+                                    <a class="btn btn-sm btn-outline-primary"
+                                       href="@Url.Action("CapNhatToaDo","Admin", new { id = dd.MaDiaDiem })">
+                                        <i class="fa-solid fa-pen me-1"></i>Cập nhật
+                                    </a>
+
+                                    @if (coToaDo)
+                                    {
+                                        <a class="btn btn-sm btn-outline-secondary"
+                                           target="_blank"
+                                           href="https://www.google.com/maps?q=@viDo,@kinhDo">
+                                            <i class="fa-solid fa-location-crosshairs me-1"></i>Kiểm tra
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-sm btn-outline-secondary" disabled>
+                                            <i class="fa-solid fa-location-crosshairs me-1"></i>Kiểm tra
+                                        </button>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
