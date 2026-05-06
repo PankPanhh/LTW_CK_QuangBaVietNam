@@ -123,6 +123,10 @@ INSERT INTO AnhDiaDiem (MaDiaDiem, DuongDanAnh, LaAnhChinh) VALUES
 -- 8. Tràng An
 (8, '/Content/images/Places/trangan.jpg', 1);
 
+
+ALTER TABLE DiaDiem
+ALTER COLUMN MoTaNgan NVARCHAR(MAX);
+
 --Update lại mô tả 
 -- 1. Vịnh Hạ Long
 UPDATE DiaDiem 
