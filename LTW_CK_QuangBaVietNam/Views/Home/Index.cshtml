@@ -2,7 +2,9 @@
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
+<form id="favTokenForm" style="display:none;">
+    @Html.AntiForgeryToken()
+</form>
 <style>
     :root {
         --deep-slate: #1e293b;
@@ -1192,30 +1194,93 @@
 </section>
 
 <script>
+
+    const toggleFavUrl = '@Url.Action("Toggle", "YeuThich")';
+const myFavIdsUrl = '@Url.Action("MyIds", "YeuThich")';
+let serverFavSet = {}; // dùng object thay Set cho tương thích môi trường cũ
+
+function getAntiForgeryToken() {
+    var el = document.querySelector('#favTokenForm input[name="__RequestVerificationToken"]');
+    return el ? el.value : '';
+}
+
+async function loadFavoriteIdsFromServer() {
+    try {
+        const res = await fetch(myFavIdsUrl, { method: 'GET' });
+        const json = await res.json();
+        serverFavSet = {};
+
+        if (json && json.success && json.ids) {
+            for (var i = 0; i < json.ids.length; i++) {
+                serverFavSet[json.ids[i]] = true;
+            }
+        }
+    } catch (e) {
+        // không bắt buộc, lỗi thì vẫn render bình thường
+        serverFavSet = {};
+    }
+}
+
+async function toggleFavoriteServer(maDiaDiem) {
+    const token = getAntiForgeryToken();
+    const body = new URLSearchParams();
+    body.append('__RequestVerificationToken', token);
+    body.append('maDiaDiem', maDiaDiem);
+
+    const res = await fetch(toggleFavUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+        body: body.toString()
+    });
+
+    const json = await res.json();
+    if (!res.ok || !json || !json.success) {
+        throw new Error((json && json.message) ? json.message : 'Toggle favorite failed');
+    }
+    return json; // {success, isFavorite}
+}
     // 1. Hàm gắn sự kiện Favorite (Để đảm bảo nút tim hoạt động sau khi load API)
     function attachFavoriteEvents() {
         document.querySelectorAll('.favorite-btn').forEach(btn => {
             if (btn.getAttribute('data-event-bound')) return;
             btn.setAttribute('data-event-bound', 'true');
 
-            btn.addEventListener('click', function (e) {
+            btn.addEventListener('click', async function (e) {
                 e.preventDefault();
                 e.stopPropagation();
 
-                const icon = this.querySelector('i');
-                const title = this.getAttribute('data-title');
-                const isAdding = icon.classList.contains('bi-heart');
+                var icon = this.querySelector('i');
+                var title = this.getAttribute('data-title') || '';
+                var idStr = this.getAttribute('data-id') || '';
+                var maDiaDiem = parseInt(idStr, 10);
 
-                if (isAdding) {
-                    icon.classList.replace('bi-heart', 'bi-heart-fill');
-                    icon.classList.add('pop-animate');
-                    createParticleBurst(this, 8);
-                    showFavoriteToast(`Đã thêm "${title}" vào hành trình`, true);
-                    localStorage.setItem(`favorite_${title}`, 'true');
-                } else {
-                    icon.classList.replace('bi-heart-fill', 'bi-heart');
-                    showFavoriteToast(`Đã xóa "${title}" khỏi hành trình`, false);
-                    localStorage.removeItem(`favorite_${title}`);
+                if (!maDiaDiem) return;
+
+                // khoá nút tạm thời tránh bấm liên tục
+                this.disabled = true;
+
+                try {
+                    var result = await toggleFavoriteServer(maDiaDiem);
+
+                    if (result.isFavorite) {
+                        icon.classList.remove('bi-heart');
+                        icon.classList.add('bi-heart-fill');
+                        icon.classList.add('pop-animate');
+                        createParticleBurst(this, 8);
+                        showFavoriteToast(`Đã thêm "${title}" vào yêu thích`, true);
+                        serverFavSet[maDiaDiem] = true;
+                    } else {
+                        icon.classList.remove('bi-heart-fill');
+                        icon.classList.add('bi-heart');
+                        showFavoriteToast(`Đã xoá "${title}" khỏi yêu thích`, false);
+                        delete serverFavSet[maDiaDiem];
+                    }
+                } catch (err) {
+                    showFavoriteToast('Không thể lưu yêu thích. Vui lòng đăng nhập hoặc thử lại.', false);
+                } finally {
+                    this.disabled = false;
+                    // remove animate class
+                    setTimeout(function () { icon.classList.remove('pop-animate'); }, 600);
                 }
             });
         });
@@ -1245,8 +1310,6 @@
         }
     }
 
-    // 3. Hàm Render HTML (Mapping đúng các thuộc tính Viết Hoa từ C#)
-   // 3. Hàm Render HTML (Cập nhật để hiển thị Tên Danh Mục)
     function renderPlaces(places) {
         const container = document.getElementById('featured-destinations-container');
 
@@ -1262,22 +1325,22 @@
 
             // Giới hạn chữ mô tả
             const moTaGoc = place.MoTaNgan || "";
-            const maxLength = 100; 
+            const maxLength = 100;
             const motaRutGon = moTaGoc.length > maxLength
                 ? moTaGoc.substring(0, maxLength).trim() + "..."
                 : moTaGoc;
 
             // Xử lý địa chỉ
             const locationText = place.VungMien ? `${place.VungMien} - Việt Nam` : 'Việt Nam';
-            const isFav = localStorage.getItem(`favorite_${ten}`);
+            const isFav = !!serverFavSet[place.MaDiaDiem];
 
             return `
             <div class="col-md-6 col-lg-3">
                 <div class="destination-card h-100" onclick="location.href='/Home/DetailPlace?slug=${place.Slug}'" style="cursor:pointer">
                     <div class="card-img-wrapper">
                         <img src="${anh}" alt="${ten}">
-                        <button class="favorite-btn" data-title="${ten}">
-                            <i class="bi ${isFav ? 'bi-heart-fill' : 'bi-heart'}"></i>
+                       <button class="favorite-btn" data-id="${place.MaDiaDiem}" data-title="${ten}">
+                           <i class="bi ${isFav ? 'bi-heart-fill' : 'bi-heart'}"></i>
                         </button>
                     </div>
                     <div class="card-body">
@@ -1287,7 +1350,7 @@
                             <span>${locationText}</span>
                         </div>
                         <p class="card-description">${motaRutGon}</p>
-                        
+
                         <!-- THAY ĐỔI TẠI ĐÂY: Hiển thị Tên Danh Mục thay vì Sao -->
                         <div class="experience-badge">
                             <i class="bi"></i> ${danhMuc.toUpperCase()}
@@ -1327,11 +1390,11 @@
     }
 
     // 5. Khởi động
-    document.addEventListener('DOMContentLoaded', () => {
-        loadFeaturedPlaces(); // Load mặc định 4 cái
+    document.addEventListener('DOMContentLoaded', async () => {
+        await loadFavoriteIdsFromServer();
+        loadFeaturedPlaces();
         initHomeMapPreview();
 
-        // Xử lý bộ lọc
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', function () {
                 document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));

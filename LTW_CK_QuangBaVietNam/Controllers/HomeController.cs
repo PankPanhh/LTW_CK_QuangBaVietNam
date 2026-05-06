@@ -23,7 +23,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
 
         private static string GetConnectionString()
         {
-            var appConnection = ConfigurationManager.ConnectionStrings["QL_DL_LTWConnectionString"];
+            var appConnection = ConfigurationManager.ConnectionStrings["CK_QBVNConnectionString"];
             if (appConnection != null && !string.IsNullOrWhiteSpace(appConnection.ConnectionString))
             {
                 return appConnection.ConnectionString;
@@ -35,7 +35,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                 return defaultConnection.ConnectionString;
             }
 
-            throw new ConfigurationErrorsException("Missing connection string. Please add 'QL_DL_LTWConnectionString' (or 'DefaultConnection') in Web.config.");
+            throw new ConfigurationErrorsException("Missing connection string. Please add 'CK_QBVNConnectionString' (or 'DefaultConnection') in Web.config.");
         }
 
         //
@@ -222,6 +222,36 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             this.SetBreadcrumbs(breadcrumbs);
 
             return View();
+        }
+
+        public ActionResult YeuThich()
+        {
+            var user = Session["nguoiDung"] as NguoiDung;
+            if (user == null) return RedirectToAction("Login", "Home");
+
+            // Lấy danh sách yêu thích + ảnh chính (nếu có)
+            var list = (from yt in db.YeuThiches
+                        join dd in db.DiaDiems on yt.MaDiaDiem equals dd.MaDiaDiem
+                        join a in db.AnhDiaDiems.Where(x => x.LaAnhChinh == true)
+ on dd.MaDiaDiem equals a.MaDiaDiem into ga
+                        from a in ga.DefaultIfEmpty()
+                        where yt.MaNguoiDung == user.MaNguoiDung
+                        orderby yt.NgayLuu descending
+                        select new FavoritePlaceVM
+                        {
+                            MaDiaDiem = dd.MaDiaDiem,
+                            TenDiaDiem = dd.TenDiaDiem,
+                            VungMien = dd.VungMien,
+                            AnhChinh = (a != null ? a.DuongDanAnh : null),
+                            NgayLuu = yt.NgayLuu
+                        }).ToList();
+
+            ViewBag.Collections = db.BoSuuTaps
+        .Where(x => x.MaNguoiDung == user.MaNguoiDung)
+        .OrderByDescending(x => x.NgayTao)
+        .ToList();
+
+            return View(list); 
         }
 
     }

@@ -1,0 +1,69 @@
+﻿@using System.Linq
+@model LTW_CK_QuangBaVietNam.Models.BoSuuTapDetailVM
+
+@{
+    ViewBag.Title = "Chi tiết bộ sưu tập";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var bst = Model != null ? Model.BoSuuTap : null;
+    var places = (Model != null && Model.Places != null) ? Model.Places : new List<LTW_CK_QuangBaVietNam.Models.BoSuuTapPlaceVM>();
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h4 class="mb-0 fw-bold text-primary text-center">@((bst != null) ? bst.TenBoSuuTap : "Bộ sưu tập")</h4>
+            <div class="text-muted small">@((bst != null) ? bst.MoTa : "")</div>
+        </div>
+        <a class="btn btn-outline-secondary" href="@Url.Action("BoSuuTap","YeuThich")">
+            <i class="bi bi-arrow-left me-2"></i>Quay lại
+        </a>
+    </div>
+
+    @if (!places.Any())
+    {
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center text-muted py-5">
+                Bộ sưu tập chưa có địa điểm nào.
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row g-3">
+            @foreach (var p in places)
+            {
+                var img = string.IsNullOrWhiteSpace(p.AnhChinh)
+                    ? "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1200&q=80"
+                    : p.AnhChinh;
+
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <img src="@img" class="card-img-top" style="height:200px;object-fit:cover;" />
+                        <div class="card-body">
+                            <div class="fw-bold">@p.TenDiaDiem</div>
+                            <div class="text-muted small">
+                                <i class="bi bi-geo-alt me-1"></i>@(p.VungMien ?? "Việt Nam")
+                            </div>
+                            <div class="text-muted small mt-2">
+                                Thêm lúc: @p.NgayThem.ToString("dd/MM/yyyy HH:mm")
+                            </div>
+
+                            <div class="d-flex justify-content-end mt-3">
+                                @using (Html.BeginForm("XoaKhoiBoSuuTap", "YeuThich", FormMethod.Post, new { onsubmit = "return confirm('Xoá địa điểm khỏi bộ sưu tập?');" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="maBoSuuTap" value="@(bst != null ? bst.MaBoSuuTap : 0)" />
+                                    <input type="hidden" name="maDiaDiem" value="@p.MaDiaDiem" />
+                                    <button class="btn btn-outline-danger btn-sm" type="submit">
+                                        Xoá khỏi BST
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
