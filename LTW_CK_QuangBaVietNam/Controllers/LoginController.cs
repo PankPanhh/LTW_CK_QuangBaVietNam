@@ -10,7 +10,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
     public class LoginController : Controller
     {
         private readonly DataClasses1DataContext db = new DataClasses1DataContext(
-            ConfigurationManager.ConnectionStrings["QL_DL_LTWConnectionString"].ConnectionString);
+            ConfigurationManager.ConnectionStrings["CK_QBVNConnectionString"].ConnectionString);
        
         //DataClasses1DataContext db = new DataClasses1DataContext();
 
@@ -99,35 +99,31 @@ namespace LTW_CK_QuangBaVietNam.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult DangNhap(string txtTDN, string txtPass)
+        public ActionResult DangNhap(string txtTDN, string txtPass, string returnUrl)
         {
             if (string.IsNullOrWhiteSpace(txtTDN) || string.IsNullOrWhiteSpace(txtPass))
             {
                 TempData["LoginError"] = "Vui lòng nhập đầy đủ email và mật khẩu.";
-                return RedirectToAction("Login", "Home");
+                return RedirectToAction("Login", "Home", new { returnUrl = returnUrl });
             }
 
             string email = txtTDN.Trim();
 
-            var nguoiDung = db.NguoiDungs
-                             .FirstOrDefault(x => x.Email == email && x.TrangThai);
-
+            var nguoiDung = db.NguoiDungs.FirstOrDefault(x => x.Email == email && x.TrangThai);
             if (nguoiDung == null)
             {
                 TempData["LoginError"] = "Email hoặc mật khẩu không đúng.";
-                return RedirectToAction("Login", "Home");
+                return RedirectToAction("Login", "Home", new { returnUrl = returnUrl });
             }
 
-            // So sánh password (hash)
             bool isValid = PasswordHasher.VerifyPassword(txtPass, nguoiDung.MatKhauHash);
-
             if (!isValid)
             {
                 TempData["LoginError"] = "Email hoặc mật khẩu không đúng.";
-                return RedirectToAction("Login", "Home");
+                return RedirectToAction("Login", "Home", new { returnUrl = returnUrl });
             }
 
-            // Nếu mật khẩu cũ chưa hash -> tự động upgrade
+            // Upgrade mật khẩu nếu trước đó lưu plain text
             if (!PasswordHasher.IsHashedFormat(nguoiDung.MatKhauHash))
             {
                 nguoiDung.MatKhauHash = PasswordHasher.HashPassword(txtPass);
@@ -138,8 +134,60 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             Session["nguoiDung"] = nguoiDung;
             Session["khach"] = nguoiDung;
 
+            // 1) Ưu tiên quay lại trang được yêu cầu (Admin/...)
+            if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                return Redirect(returnUrl);
+
+            // 2) Không có returnUrl thì redirect theo VaiTro
+            if (nguoiDung.VaiTro == 1) 
+                return RedirectToAction("Index", "Admin");
+
             return RedirectToAction("Index", "Home");
         }
+
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult DangNhap(string txtTDN, string txtPass)
+        //{
+        //    if (string.IsNullOrWhiteSpace(txtTDN) || string.IsNullOrWhiteSpace(txtPass))
+        //    {
+        //        TempData["LoginError"] = "Vui lòng nhập đầy đủ email và mật khẩu.";
+        //        return RedirectToAction("Login", "Home");
+        //    }
+
+        //    string email = txtTDN.Trim();
+
+        //    var nguoiDung = db.NguoiDungs
+        //                     .FirstOrDefault(x => x.Email == email && x.TrangThai);
+
+        //    if (nguoiDung == null)
+        //    {
+        //        TempData["LoginError"] = "Email hoặc mật khẩu không đúng.";
+        //        return RedirectToAction("Login", "Home");
+        //    }
+
+        //    // So sánh password (hash)
+        //    bool isValid = PasswordHasher.VerifyPassword(txtPass, nguoiDung.MatKhauHash);
+
+        //    if (!isValid)
+        //    {
+        //        TempData["LoginError"] = "Email hoặc mật khẩu không đúng.";
+        //        return RedirectToAction("Login", "Home");
+        //    }
+
+        //    // Nếu mật khẩu cũ chưa hash -> tự động upgrade
+        //    if (!PasswordHasher.IsHashedFormat(nguoiDung.MatKhauHash))
+        //    {
+        //        nguoiDung.MatKhauHash = PasswordHasher.HashPassword(txtPass);
+        //        nguoiDung.NgayCapNhat = DateTime.Now;
+        //        db.SubmitChanges();
+        //    }
+
+        //    Session["nguoiDung"] = nguoiDung;
+        //    Session["khach"] = nguoiDung;
+
+        //    return RedirectToAction("Index", "Home");
+        //}
 
         [HttpPost]
         [ValidateAntiForgeryToken]

@@ -1,0 +1,103 @@
+﻿@using System.Linq
+@model List<LTW_CK_QuangBaVietNam.Models.ReviewHistoryVM>
+
+@{
+    ViewBag.Title = "Lịch sử đánh giá";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .review-content {
+        max-width: 520px;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white">
+            <div class="text-center">
+                <h4 class="mb-0 text-primary fw-bold">Lịch sử đánh giá</h4>
+                <div class="text-muted small">Các đánh giá bạn đã gửi cho địa điểm du lịch</div>
+            </div>
+
+            <div class="d-flex justify-content-end mt-2">
+                <a class="btn btn-outline-secondary btn-sm" href="@Url.Action("Profile","Home")">
+                    <i class="bi bi-arrow-left me-2"></i>Về hồ sơ
+                </a>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table align-middle mb-0 table-hover">
+                <thead class="bg-light">
+                    <tr class="text-muted small">
+                        <th>Địa điểm</th>
+                        <th>Nội dung</th>
+                        <th class="text-center">Sao</th>
+                        <th>Trạng thái</th>
+                        <th>Ngày</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model == null || !Model.Any())
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                Chưa có đánh giá nào.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var r in Model)
+                        {
+                            <tr>
+                                <td class="fw-semibold">@r.TenDiaDiem</td>
+
+                                <td class="review-content">
+                                    <span class="d-block text-truncate">
+                                        @r.NoiDung
+                                    </span>
+                                </td>
+
+                                <td class="text-center" style="white-space:nowrap;">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= r.SoSao)
+                                        {
+                                            <i class="bi bi-star-fill text-warning"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-star text-warning"></i>
+                                        }
+                                    }
+                                </td>
+
+                                <td>
+                                    @if (r.TrangThaiKiemDuyet)
+                                    {
+                                        <span class="badge bg-success text-white">
+                                            <i class="bi bi-check2 me-1"></i>Đã duyệt
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="bi bi-clock me-1"></i>Chờ duyệt
+                                        </span>
+                                    }
+                                </td>
+
+                                <td class="text-muted">
+                                    @r.NgayGui.ToString("dd/MM/yyyy HH:mm")
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

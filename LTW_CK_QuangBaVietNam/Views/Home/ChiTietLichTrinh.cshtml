@@ -1,0 +1,183 @@
+﻿@using System
+@using System.Linq
+@using System.Collections.Generic
+@model LTW_CK_QuangBaVietNam.Models.ItineraryDetailVM
+
+@{
+    ViewBag.Title = "Chi tiết lịch trình";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .it-wrap {
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        background: #fff;
+        box-shadow: 0 6px 18px rgba(15,23,42,.06);
+    }
+
+    .day-badge {
+        border: 1px solid #e2e8f0;
+        border-radius: 999px;
+        padding: 6px 12px;
+        background: #f8fafc;
+        color: #0f172a;
+        font-weight: 600;
+    }
+
+    .timeline {
+        border-left: 3px solid #e2e8f0;
+        margin-left: 10px;
+        padding-left: 18px;
+    }
+
+    .timeline-item {
+        position: relative;
+        padding: 10px 0;
+    }
+
+        .timeline-item::before {
+            content: "";
+            position: absolute;
+            left: -27px;
+            top: 18px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #0ea5e9;
+            border: 3px solid #e0f2fe;
+        }
+
+    .region-badge {
+        border: 1px solid #e2e8f0;
+        background: #fff;
+        color: #334155;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="it-wrap">
+        <div class="p-4 border-bottom bg-white" style="border-top-left-radius:16px;border-top-right-radius:16px;">
+            <div class="d-flex flex-column flex-md-row justify-content-between gap-3">
+                <div>
+                    <div class="text-muted small">Chi tiết lịch trình</div>
+                    <h4 class="mb-1 text-primary fw-bold">@Model.TenLichTrinh</h4>
+                    <div class="text-muted small">
+                        <i class="bi bi-clock me-1"></i>Tạo lúc: @Model.NgayTao.ToString("dd/MM/yyyy HH:mm")
+                    </div>
+                </div>
+
+                <div class="text-md-end">
+                    <div class="text-muted small">Tổng chi phí dự kiến</div>
+                    <div class="fs-4 fw-bold text-success">
+                        @String.Format("{0:N0}", (Model.TongChiPhiDuKien ?? 0)) đ
+                    </div>
+
+                    <div class="mt-2">
+                        <a class="btn btn-outline-secondary btn-sm"
+                           href="@Url.Action("LichTrinhDaTao","Home")">
+                            <i class="bi bi-arrow-left me-2"></i>Quay lại
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-4">
+            @{
+                var items = Model.Items ?? new List<LTW_CK_QuangBaVietNam.Models.ItineraryItemVM>();
+
+                var groups = items
+                    .Where(x => x.NgayThamQuan.HasValue)
+                    .GroupBy(x => x.NgayThamQuan.Value.Date)
+                    .OrderBy(g => g.Key)
+                    .ToList();
+
+                var noDateItems = items
+                    .Where(x => !x.NgayThamQuan.HasValue)
+                    .OrderBy(x => x.ThuTuUuTien.HasValue ? x.ThuTuUuTien.Value : int.MaxValue)
+                    .ToList();
+            }
+
+            @if (!groups.Any() && !noDateItems.Any())
+            {
+                <div class="text-center text-muted py-5">
+                    <div class="mb-2"><i class="bi bi-list-check fs-1"></i></div>
+                    <div>Lịch trình này chưa có địa điểm nào.</div>
+                </div>
+            }
+            else
+            {
+                foreach (var g in groups)
+                {
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <div class="day-badge">
+                            <i class="bi bi-calendar-event me-2"></i>
+                            Ngày @g.Key.ToString("dd/MM/yyyy")
+                        </div>
+                        <div class="text-muted small">@g.Count() địa điểm</div>
+                    </div>
+
+                    <div class="timeline mb-4">
+                        @foreach (var it in g.OrderBy(x => x.ThuTuUuTien.HasValue ? x.ThuTuUuTien.Value : int.MaxValue))
+                        {
+                            <div class="timeline-item">
+                                <div class="d-flex align-items-start justify-content-between gap-2">
+                                    <div>
+                                        <div class="fw-semibold">
+                                            <span class="text-muted me-2">
+                                                #@(it.ThuTuUuTien.HasValue ? it.ThuTuUuTien.Value.ToString() : "-")
+                                            </span>
+                                            @it.TenDiaDiem
+                                        </div>
+
+                                        <div class="mt-1">
+                                            <span class="badge region-badge">
+                                                <i class="bi bi-geo me-1"></i>@(it.VungMien ?? "N/A")
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <a class="btn btn-outline-primary btn-sm disabled" href="javascript:void(0)">
+                                            <i class="bi bi-box-arrow-up-right me-1"></i>Chi tiết
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+
+                if (noDateItems.Any())
+                {
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <div class="day-badge">
+                            <i class="bi bi-calendar-x me-2"></i>Chưa chọn ngày
+                        </div>
+                        <div class="text-muted small">@noDateItems.Count địa điểm</div>
+                    </div>
+
+                    <div class="timeline mb-4">
+                        @foreach (var it in noDateItems)
+                        {
+                            <div class="timeline-item">
+                                <div class="fw-semibold">
+                                    <span class="text-muted me-2">
+                                        #@(it.ThuTuUuTien.HasValue ? it.ThuTuUuTien.Value.ToString() : "-")
+                                    </span>
+                                    @it.TenDiaDiem
+                                </div>
+                                <div class="mt-1">
+                                    <span class="badge region-badge">
+                                        <i class="bi bi-geo me-1"></i>@(it.VungMien ?? "N/A")
+                                    </span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>

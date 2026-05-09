@@ -1,0 +1,139 @@
+﻿
+@using System.Linq
+@model IEnumerable<LTW_CK_QuangBaVietNam.Models.NguoiDung>
+
+@{
+    ViewBag.Title = "Quản lý người dùng";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var filter = ((ViewBag.Filter ?? "all").ToString()).ToLower();
+}
+
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-white p-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <div class="fw-semibold"><i class="fa-solid fa-users text-primary me-2"></i>Quản lý người dùng</div>
+                <div class="text-muted small">Khoá/mở khoá tài khoản, phân quyền Admin/User</div>
+            </div>
+
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link @(filter=="all" ? "active" : "")"
+                       href="@Url.Action("NguoiDung","Admin", new { filter="all" })">Tất cả</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(filter=="active" ? "active" : "")"
+                       href="@Url.Action("NguoiDung","Admin", new { filter="active" })">Hoạt động</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(filter=="locked" ? "active" : "")"
+                       href="@Url.Action("NguoiDung","Admin", new { filter="locked" })">Bị khoá</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Người dùng</th>
+                    <th>Vai trò</th>
+                    <th>Trạng thái</th>
+                    <th class="text-end" style="width:260px;">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model == null || !Model.Any())
+                {
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-4">
+                            Chưa có người dùng nào trong CSDL.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var u in Model)
+                    {
+                        var isAdmin = u.VaiTro == 1;
+                        <tr>
+                            <td>
+                                <div class="fw-semibold">@u.HoTen</div>
+                                <div class="text-muted small">@u.Email</div>
+                            </td>
+
+                            <td>
+                                @if (isAdmin)
+                                {
+                                    <span class="badge bg-danger">Admin</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-primary">User</span>
+                                }
+                            </td>
+
+                            <td>
+                                @if (u.TrangThai)
+                                {
+                                    <span class="badge bg-success">Hoạt động</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Bị khoá</span>
+                                }
+                            </td>
+
+                            <td class="text-end">
+                                <div class="btn-group">
+
+                                    @* Đổi quyền (toggle Admin/User) *@
+                                    @using (Html.BeginForm("DoiQuyenNguoiDung", "Admin", FormMethod.Post, new { style = "display:inline-block" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        @Html.Hidden("userId", u.MaNguoiDung)
+                                        @Html.Hidden("vaiTro", isAdmin ? 2 : 1)
+
+                                        <button class="btn btn-sm btn-outline-secondary" type="submit" title="Đổi quyền">
+                                            <i class="fa-solid fa-user-gear"></i>
+                                        </button>
+                                    }
+
+                                    @* Khoá / Mở khoá *@
+                                    @if (u.TrangThai)
+                                    {
+                                        using (Html.BeginForm("KhoaNguoiDung", "Admin", FormMethod.Post,
+                                            new { style = "display:inline-block", onsubmit = "return confirm('Khoá người dùng này?');" }))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            @Html.Hidden("userId", u.MaNguoiDung)
+
+                                            <button class="btn btn-sm btn-outline-dark" type="submit" title="Khoá">
+                                                <i class="fa-solid fa-ban"></i>
+                                            </button>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        using (Html.BeginForm("MoKhoaNguoiDung", "Admin", FormMethod.Post,
+                                            new { style = "display:inline-block", onsubmit = "return confirm('Mở khoá người dùng này?');" }))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            @Html.Hidden("userId", u.MaNguoiDung)
+
+                                            <button class="btn btn-sm btn-outline-success" type="submit" title="Mở khoá">
+                                                <i class="fa-solid fa-unlock"></i>
+                                            </button>
+                                        }
+                                    }
+
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

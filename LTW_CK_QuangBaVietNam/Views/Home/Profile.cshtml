@@ -399,6 +399,24 @@
             <button class="tab-btn active" onclick="switchTab('journeys')">Hành trình của tôi</button>
             <a class="tab-btn" href="@Url.Action("YeuThich","Home")">Địa điểm yêu thích</a>
             <button class="tab-btn" onclick="switchTab('settings')">Cài đặt tài khoản</button>
+            <button type="button" class="tab-btn"
+                    onclick="window.location.href='@Url.Action("LichSuDanhGia","Home")'">
+                Lịch sử đánh giá
+            </button>
+            <button type="button" class="tab-btn"
+                    onclick="window.location.href='@Url.Action("YeuThich","Home")'">
+                Địa điểm đã lưu
+            </button>
+            @*<button class="tab-btn" onclick="switchTab('reviews')">
+            Lịch sử đánh giá
+        </button>*@
+
+            <button type="button" class="tab-btn"
+                    onclick="window.location.href='@Url.Action("LichTrinhDaTao","Home")'">
+                Hành trình của tôi
+            </button>
+
+
         </div>
 
         <div id="journeys" class="tab-content active">
@@ -494,6 +512,8 @@
                 </div>
             </div>
         </div>
+
+
     </div>
 </div>
 

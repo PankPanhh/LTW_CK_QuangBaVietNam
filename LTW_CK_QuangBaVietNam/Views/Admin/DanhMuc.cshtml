@@ -1,0 +1,217 @@
+﻿@using System.Linq
+@model IEnumerable<LTW_CK_QuangBaVietNam.Models.DanhMuc>
+
+@{
+    ViewBag.Title = "Quản lý danh mục";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-white p-3 d-flex justify-content-between align-items-center">
+        <div>
+            <div class="fw-semibold">
+                <i class="fa-solid fa-layer-group text-primary me-2"></i>Quản lý danh mục
+            </div>
+            <div class="text-muted small">Biển, Núi, Di tích lịch sử, Văn hóa, Sinh thái</div>
+        </div>
+
+        <button id="btnOpenAddDanhMuc"
+                type="button"
+                class="btn btn-primary"
+                data-bs-toggle="modal" data-bs-target="#modalAddDanhMuc"
+                data-toggle="modal" data-target="#modalAddDanhMuc">
+            <i class="fa-solid fa-plus me-2"></i>Thêm danh mục
+        </button>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th style="width:80px;">Mã</th>
+                    <th>Tên danh mục</th>
+                    <th>Mô tả</th>
+                    <th class="text-end" style="width:180px;">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model == null || !Model.Any())
+                {
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-4">Chưa có danh mục.</td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var dm in Model)
+                    {
+                        <tr>
+                            <td>@dm.MaDanhMuc</td>
+                            <td class="fw-semibold">@dm.TenDanhMuc</td>
+                            <td class="text-muted text-truncate" style="max-width:520px;">
+                                @(dm.MoTa ?? "")
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group">
+                                    <!-- Edit -->
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-secondary btn-open-edit"
+                                            data-bs-toggle="modal" data-bs-target="#modalEditDanhMuc"
+                                            data-toggle="modal" data-target="#modalEditDanhMuc"
+                                            data-id="@dm.MaDanhMuc"
+                                            data-name="@dm.TenDanhMuc"
+                                            data-desc="@(dm.MoTa ?? "")"
+                                            title="Sửa">
+                                        <i class="fa-regular fa-pen-to-square"></i>
+                                    </button>
+
+                                    <!-- Delete -->
+                                    @using (Html.BeginForm("XoaDanhMuc", "Admin", FormMethod.Post, new { onsubmit = "return confirm('Xoá danh mục này?');" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@dm.MaDanhMuc" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Xoá">
+                                            <i class="fa-regular fa-trash-can"></i>
+                                        </button>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- MODAL ADD -->
+<div class="modal fade" id="modalAddDanhMuc" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            @using (Html.BeginForm("ThemDanhMuc", "Admin", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title">Thêm danh mục</h5>
+                    <button type="button" class="btn-close"
+                            data-bs-dismiss="modal" data-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <label class="form-label">Tên danh mục</label>
+                    <input class="form-control" name="tenDanhMuc" placeholder="VD: Biển" required />
+
+                    <div class="mt-2">
+                        <label class="form-label">Mô tả</label>
+                        <textarea class="form-control" name="moTa" rows="3" placeholder="Mô tả..."></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary"
+                            data-bs-dismiss="modal" data-dismiss="modal">
+                        Huỷ
+                    </button>
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- MODAL EDIT -->
+<div class="modal fade" id="modalEditDanhMuc" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            @using (Html.BeginForm("SuaDanhMuc", "Admin", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" id="edit_id" />
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Sửa danh mục</h5>
+                    <button type="button" class="btn-close"
+                            data-bs-dismiss="modal" data-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <label class="form-label">Tên danh mục</label>
+                    <input class="form-control" name="tenDanhMuc" id="edit_name" required />
+
+                    <div class="mt-2">
+                        <label class="form-label">Mô tả</label>
+                        <textarea class="form-control" name="moTa" id="edit_desc" rows="3"></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary"
+                            data-bs-dismiss="modal" data-dismiss="modal">
+                        Huỷ
+                    </button>
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        (function () {
+           
+            function ensureBootstrap(cb) {
+                if (window.bootstrap && window.bootstrap.Modal) { cb(); return; }
+
+                var s = document.createElement('script');
+                s.src = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js';
+                s.onload = cb;
+                document.body.appendChild(s);
+            }
+
+            function openModalById(id) {
+                var el = document.getElementById(id);
+                if (!el) return;
+                if (window.bootstrap && window.bootstrap.Modal) {
+                    var m = bootstrap.Modal.getOrCreateInstance(el);
+                    m.show();
+                }
+            }
+
+            ensureBootstrap(function () {
+
+               
+                var btnAdd = document.getElementById('btnOpenAddDanhMuc');
+                if (btnAdd) {
+                    btnAdd.addEventListener('click', function () {
+                        openModalById('modalAddDanhMuc');
+                    });
+                }
+
+               
+                var editButtons = document.querySelectorAll('.btn-open-edit');
+                for (var i = 0; i < editButtons.length; i++) {
+                    editButtons[i].addEventListener('click', function () {
+                        document.getElementById('edit_id').value = this.getAttribute('data-id') || '';
+                        document.getElementById('edit_name').value = this.getAttribute('data-name') || '';
+                        document.getElementById('edit_desc').value = this.getAttribute('data-desc') || '';
+                        openModalById('modalEditDanhMuc');
+                    });
+                }
+
+                var editModal = document.getElementById('modalEditDanhMuc');
+                if (editModal) {
+                    editModal.addEventListener('show.bs.modal', function (event) {
+                        var btn = event.relatedTarget;
+                        if (!btn) return;
+                        document.getElementById('edit_id').value = btn.getAttribute('data-id') || '';
+                        document.getElementById('edit_name').value = btn.getAttribute('data-name') || '';
+                        document.getElementById('edit_desc').value = btn.getAttribute('data-desc') || '';
+                    });
+                }
+            });
+        })();
+    </script>
+}

@@ -141,6 +141,23 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             ViewBag.City = extra != null ? (extra.ThanhPho ?? string.Empty) : string.Empty;
             ViewBag.Country = extra != null ? (extra.QuocGia ?? string.Empty) : string.Empty;
 
+            //var reviewList = (from dg in db.DanhGias
+            //                  join dd in db.DiaDiems on dg.MaDiaDiem equals dd.MaDiaDiem
+            //                  where dg.MaNguoiDung == user.MaNguoiDung
+            //                  orderby dg.NgayGui descending
+            //                  select new ReviewHistoryVM
+            //                  {
+            //                      MaDanhGia = dg.MaDanhGia,
+            //                      MaDiaDiem = dd.MaDiaDiem,
+            //                      TenDiaDiem = dd.TenDiaDiem,
+            //                      SoSao = dg.SoSao,
+            //                      NoiDung = dg.NoiDung,
+            //                      TrangThaiKiemDuyet = dg.TrangThaiKiemDuyet,
+            //                      NgayGui = dg.NgayGui
+            //                  }).ToList();
+
+            //ViewData["Reviews"] = reviewList;
+
             // Set breadcrumbs for Profile page
             var breadcrumbs = new List<BreadcrumbItem>
             {
@@ -150,6 +167,116 @@ namespace LTW_CK_QuangBaVietNam.Controllers
 
             return View(user);
         }
+
+    //    public ActionResult LichSuDanhGia()
+    //    {
+    //        var sessionUser = Session["nguoiDung"] as NguoiDung;
+    //        if (sessionUser == null)
+    //        {
+    //            TempData["LoginError"] = "Vui lòng đăng nhập để xem lịch sử đánh giá.";
+    //            return RedirectToAction("Login", "Home");
+    //        }
+
+    //        var breadcrumbs = new List<BreadcrumbItem>
+    //{
+    //    new BreadcrumbItem("Hồ sơ cá nhân", "/Home/Profile"),
+    //    new BreadcrumbItem("Lịch sử đánh giá", "/Home/LichSuDanhGia", isActive: true)
+    //};
+    //        this.SetBreadcrumbs(breadcrumbs);
+
+    //        var list = (from dg in db.DanhGias
+    //                    join dd in db.DiaDiems on dg.MaDiaDiem equals dd.MaDiaDiem
+    //                    where dg.MaNguoiDung == sessionUser.MaNguoiDung
+    //                    orderby dg.NgayGui descending
+    //                    select new ReviewHistoryVM
+    //                    {
+    //                        MaDanhGia = dg.MaDanhGia,
+    //                        MaDiaDiem = dd.MaDiaDiem,
+    //                        TenDiaDiem = dd.TenDiaDiem,
+    //                        SoSao = dg.SoSao,
+    //                        NoiDung = dg.NoiDung,
+    //                        TrangThaiKiemDuyet = dg.TrangThaiKiemDuyet,
+    //                        NgayGui = dg.NgayGui
+    //                    }).ToList();
+
+    //        return View(list); 
+    //    }
+
+        // /Home/LichTrinhDaTao
+    //    public ActionResult LichTrinhDaTao()
+    //    {
+    //        var sessionUser = Session["nguoiDung"] as NguoiDung;
+    //        if (sessionUser == null)
+    //        {
+    //            TempData["LoginError"] = "Vui lòng đăng nhập để xem lịch trình.";
+    //            return RedirectToAction("Login", "Home");
+    //        }
+
+    //        var breadcrumbs = new List<BreadcrumbItem>
+    //{
+    //    new BreadcrumbItem("Hồ sơ cá nhân", "/Home/Profile"),
+    //    new BreadcrumbItem("Lịch trình đã tạo", "/Home/LichTrinhDaTao", isActive: true)
+    //};
+    //        this.SetBreadcrumbs(breadcrumbs);
+
+    //        // Lấy danh sách lịch trình + đếm số địa điểm
+    //        var list = (from lt in db.LichTrinhs
+    //                    where lt.MaNguoiDung == sessionUser.MaNguoiDung
+    //                    join ct in db.ChiTietLichTrinhs on lt.MaLichTrinh equals ct.MaLichTrinh into g
+    //                    orderby lt.NgayTao descending
+    //                    select new ItineraryListVM
+    //                    {
+    //                        MaLichTrinh = lt.MaLichTrinh,
+    //                        TenLichTrinh = lt.TenLichTrinh,
+    //                        TongChiPhiDuKien = lt.TongChiPhiDuKien,
+    //                        NgayTao = lt.NgayTao,
+    //                        SoDiaDiem = g.Count()
+    //                    }).ToList();
+
+    //        return View(list); 
+    //    }
+
+    //    public ActionResult ChiTietLichTrinh(int? id)
+    //    {
+    //        if (!id.HasValue)
+    //            return RedirectToAction("LichTrinhDaTao");
+
+    //        var sessionUser = Session["nguoiDung"] as NguoiDung;
+    //        if (sessionUser == null)
+    //        {
+    //            TempData["LoginError"] = "Vui lòng đăng nhập để xem chi tiết lịch trình.";
+    //            return RedirectToAction("Login", "Home");
+    //        }
+
+    //        int ma = id.Value;
+
+    //        var lt = db.LichTrinhs.FirstOrDefault(x => x.MaLichTrinh == ma && x.MaNguoiDung == sessionUser.MaNguoiDung);
+    //        if (lt == null) return HttpNotFound();
+
+    //        var items = (from ct in db.ChiTietLichTrinhs
+    //                     join dd in db.DiaDiems on ct.MaDiaDiem equals dd.MaDiaDiem
+    //                     where ct.MaLichTrinh == ma
+    //                     orderby ct.NgayThamQuan, ct.ThuTuUuTien
+    //                     select new ItineraryItemVM
+    //                     {
+    //                         NgayThamQuan = ct.NgayThamQuan,
+    //                         ThuTuUuTien = ct.ThuTuUuTien,
+    //                         MaDiaDiem = dd.MaDiaDiem,
+    //                         TenDiaDiem = dd.TenDiaDiem,
+    //                         VungMien = dd.VungMien
+    //                     }).ToList();
+
+    //        var vm = new ItineraryDetailVM
+    //        {
+    //            MaLichTrinh = lt.MaLichTrinh,
+    //            TenLichTrinh = lt.TenLichTrinh,
+    //            TongChiPhiDuKien = lt.TongChiPhiDuKien,
+    //            NgayTao = lt.NgayTao,
+    //            Items = items
+    //        };
+
+    //        return View(vm);
+    //    }
 
         public ActionResult Map()
         {

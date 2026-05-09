@@ -1,0 +1,332 @@
+﻿@using System.Linq
+@using LTW_CK_QuangBaVietNam.Models
+@model IEnumerable<LTW_CK_QuangBaVietNam.Models.DiaDiemRowVM>
+
+@{
+    ViewBag.Title = "Quản lý danh lam thắng cảnh";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    var filter = ((ViewBag.Filter ?? "all").ToString()).ToLower();
+    var q = (ViewBag.Q ?? "").ToString();
+    var vung = (ViewBag.Vung ?? "all").ToString();
+    int? danhMuc = ViewBag.DanhMuc as int?;
+
+    var dmList = ViewBag.DanhMucList as IEnumerable<DanhMuc>;
+    if (dmList == null) { dmList = new DanhMuc[0]; }
+
+    var total = (Model == null) ? 0 : Model.Count();
+}
+
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-white p-3">
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger mb-3">@TempData["Error"]</div>
+        }
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success mb-3">@TempData["Success"]</div>
+        }
+
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <div class="fw-semibold">
+                    <i class="fa-solid fa-location-dot text-primary me-2"></i>Quản lý danh lam thắng cảnh
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <a class="btn btn-primary" href="@Url.Action("TaoDiaDiem","Admin")">
+                    <i class="fa-solid fa-plus me-2"></i>Thêm địa điểm
+                </a>
+            </div>
+        </div>
+
+        <div class="mt-3 d-flex justify-content-between align-items-center">
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link @(filter=="all" ? "active" : "")"
+                       href="@Url.Action("DiaDiem","Admin", new { filter="all", q=q, vung=vung, danhMuc=danhMuc })">Tất cả</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(filter=="showing" ? "active" : "")"
+                       href="@Url.Action("DiaDiem","Admin", new { filter="showing", q=q, vung=vung, danhMuc=danhMuc })">Đang hiển thị</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(filter=="hidden" ? "active" : "")"
+                       href="@Url.Action("DiaDiem","Admin", new { filter="hidden", q=q, vung=vung, danhMuc=danhMuc })">Đang ẩn</a>
+                </li>
+            </ul>
+
+            <small class="text-muted">
+                Đang hiển thị:
+                <b id="countShow">@(Model == null ? 0 : Model.Count())</b>
+                địa điểm
+            </small>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <form method="get" action="@Url.Action("DiaDiem","Admin")" class="row g-3 align-items-end" id="filterForm">
+            <input type="hidden" name="filter" value="@filter" />
+
+            <!-- Search realtime (không submit) -->
+            <div class="col-12 col-lg-5">
+                <label class="form-label fw-semibold text-secondary small mb-2">
+                    Tìm kiếm địa điểm
+                </label>
+
+                <div class="input-group shadow-sm rounded-4 overflow-hidden">
+                    <span class="input-group-text bg-white border-0 px-3">
+                        <i class="fa-solid fa-magnifying-glass text-primary"></i>
+                    </span>
+
+                    <input name="q"
+                           id="searchBox"
+                           value="@q"
+                           autocomplete="off"
+                           class="form-control border-0 py-2 px-2 shadow-none"
+                           placeholder="VD: Phố cổ..." />
+                </div>
+
+
+            </div>
+
+            <!-- Region -->
+            <div class="col-6 col-lg-3">
+                <label class="form-label fw-semibold text-secondary small mb-2">
+                    Vùng miền
+                </label>
+
+                <select class="form-select shadow-sm border-0 rounded-4 py-2"
+                        name="vung"
+                        onchange="this.form.submit()">
+                    <option value="all" @(vung == "all" ? "selected" : "")>🌍 Tất cả</option>
+                    <option value="Bắc" @(vung == "Bắc" ? "selected" : "")>🏔 Miền Bắc</option>
+                    <option value="Trung" @(vung == "Trung" ? "selected" : "")>🏖 Miền Trung</option>
+                    <option value="Nam" @(vung == "Nam" ? "selected" : "")>🌴 Miền Nam</option>
+                </select>
+            </div>
+
+            <!-- Category -->
+            <div class="col-6 col-lg-4">
+                <label class="form-label fw-semibold text-secondary small mb-2">
+                    Danh mục
+                </label>
+
+                <select class="form-select shadow-sm border-0 rounded-4 py-2"
+                        name="danhMuc"
+                        onchange="this.form.submit()">
+                    <option value="" @(danhMuc.HasValue ? "" : "selected")>
+                        📂 Tất cả danh mục
+                    </option>
+
+                    @foreach (var dm in dmList)
+                    {
+                        var selected = (danhMuc.HasValue && danhMuc.Value == dm.MaDanhMuc) ? "selected" : "";
+                        <option value="@dm.MaDanhMuc" @selected>@dm.TenDanhMuc</option>
+                    }
+                </select>
+            </div>
+        </form>
+    </div>
+
+    @{
+        var placeholderImg = "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1200&q=80";
+    }
+
+    <div class="row g-4" id="cardGrid">
+        @if (Model == null || !Model.Any())
+        {
+            <div class="col-12">
+                <div class="text-center text-muted py-4">Chưa có dữ liệu.</div>
+            </div>
+        }
+        else
+        {
+            foreach (var dd in Model)
+            {
+                var img = string.IsNullOrWhiteSpace(dd.AnhChinh) ? placeholderImg : dd.AnhChinh;
+                var vungText = string.IsNullOrWhiteSpace(dd.VungMien) ? "Việt Nam" : dd.VungMien;
+                var tinhText = string.IsNullOrWhiteSpace(dd.TinhThanh) ? "" : dd.TinhThanh;
+                var gioText = string.IsNullOrWhiteSpace(dd.GioMoCua) ? "N/A" : dd.GioMoCua;
+                var moTa = string.IsNullOrWhiteSpace(dd.MoTaNgan) ? "—" : dd.MoTaNgan;
+
+                <div class="col-12 col-md-6 col-xl-3 dd-card"
+                     data-name="@Html.AttributeEncode(dd.TenDiaDiem ?? "")">
+                    <div class="card border-0 shadow-sm h-100 overflow-hidden"
+                         style="border-radius:22px;">
+
+                        <!-- IMG -->
+                        <div class="position-relative">
+                            <img src="@img" alt="@dd.TenDiaDiem"
+                                 style="height:220px;width:100%;object-fit:cover;display:block;" />
+
+                            <!-- góc phải icon giống hình -->
+                            <!--<div class="position-absolute top-0 end-0 p-3">
+                                <span class="d-inline-flex align-items-center justify-content-center rounded-circle"
+                                      style="width:44px;height:44px;background:rgba(255,255,255,.92);border:1px solid rgba(15,23,42,.10);box-shadow:0 10px 26px rgba(2,6,23,.12);">
+                                    <i class="fa-regular fa-heart text-primary"></i>
+                                </span>
+                            </div>-->
+                            <!-- badge trạng thái -->
+                            <div class="position-absolute top-0 start-0 p-3">
+                                @if (dd.TrangThai)
+                                {
+                                    <span class="badge bg-success">Hiển thị</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Ẩn</span>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- BODY -->
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="fw-bold fs-5 mb-1">@dd.TenDiaDiem</div>
+
+                            <div class="text-muted small">
+                                <i class="fa-solid fa-location-dot text-primary me-1"></i>
+                                @vungText@if (!string.IsNullOrWhiteSpace(tinhText))
+                                {<span> - @tinhText</span>}
+                            </div>
+
+                            <div class="text-muted small mt-2 fst-italic" style="min-height:44px;">
+                                @moTa
+                            </div>
+
+                            <div class="mt-3 d-flex flex-wrap gap-2">
+                                <span class="badge rounded-pill bg-light text-primary border px-3 py-2">
+                                    <i class="fa-solid fa-tag me-2"></i>@dd.TenDanhMuc
+                                </span>
+
+                                <span class="badge rounded-pill bg-light text-dark border px-3 py-2">
+                                    <i class="fa-solid fa-clock me-2"></i>@gioText
+                                </span>
+
+                                <span class="badge rounded-pill bg-light text-success border px-3 py-2">
+                                    <i class="fa-solid fa-ticket me-2"></i>@String.Format("{0:N0}", (dd.GiaVe ?? 0)) đ
+                                </span>
+                            </div>
+
+                            <!-- ACTIONS -->
+                            <div class="mt-auto pt-3">
+                                <div class="d-flex justify-content-end gap-2 flex-wrap">
+                                    <a class="btn btn-outline-secondary btn-sm"
+                                       href="@Url.Action("SuaDiaDiem","Admin", new { id = dd.MaDiaDiem })" title="Sửa">
+                                        <i class="fa-regular fa-pen-to-square"></i>
+                                    </a>
+
+                                    @*<a class="btn btn-outline-secondary btn-sm"
+                                       href="@Url.Action("BanDo","Admin", new { id = dd.MaDiaDiem })" title="Bản đồ">
+                                        <i class="fa-solid fa-map-location-dot"></i>
+                                    </a>*@
+
+                                    @using (Html.BeginForm("DoiTrangThaiDiaDiem", "Admin", FormMethod.Post, new { style = "display:inline;" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@dd.MaDiaDiem" />
+                                        <input type="hidden" name="filter" value="@filter" />
+                                        <input type="hidden" name="q" value="@q" />
+                                        <input type="hidden" name="vung" value="@vung" />
+                                        <input type="hidden" name="danhMuc" value="@(danhMuc.HasValue ? danhMuc.Value.ToString() : "")" />
+
+                                        <button type="submit" class="btn btn-outline-primary btn-sm" title="Ẩn/Hiện">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </button>
+                                    }
+
+                                    @using (Html.BeginForm("XoaDiaDiem", "Admin", FormMethod.Post,
+                                        new { style = "display:inline;", onsubmit = "return confirm('Xoá (ẩn) địa điểm này?');" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@dd.MaDiaDiem" />
+                                        <input type="hidden" name="filter" value="@filter" />
+                                        <input type="hidden" name="q" value="@q" />
+                                        <input type="hidden" name="vung" value="@vung" />
+                                        <input type="hidden" name="danhMuc" value="@(danhMuc.HasValue ? danhMuc.Value.ToString() : "")" />
+
+                                        <button class="btn btn-outline-danger btn-sm" title="Xoá" type="submit">
+                                            <i class="fa-regular fa-trash-can"></i>
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            }
+
+            <div class="col-12" id="noResultCard" style="display:none;">
+                <div class="text-center text-muted py-4">Không có kết quả phù hợp.</div>
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        (function () {
+            function normalizeText(s) {
+                s = (s || '').toString().toLowerCase().trim();
+                if (s.normalize) s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                s = s.replace(/đ/g, 'd');
+                return s;
+            }
+
+            var box = document.getElementById('searchBox');
+            var countEl = document.getElementById('countShow');
+
+           
+            var items = document.querySelectorAll('.dd-item');
+            if (!items || items.length === 0) items = document.querySelectorAll('.dd-row');
+            if (!items || items.length === 0) items = document.querySelectorAll('.dd-card');
+
+            var noEl = document.getElementById('noResultRow') || document.getElementById('noResultCard');
+
+            if (!items || items.length === 0) return;
+
+            if (countEl) countEl.textContent = items.length;
+
+          
+            if (!box) return;
+
+            
+            box.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') e.preventDefault();
+            });
+
+            var timer = null;
+
+            function doFilter() {
+                var q = normalizeText(box.value);
+                var show = 0;
+
+                for (var i = 0; i < items.length; i++) {
+                    var el = items[i];
+
+                    
+                    var name = normalizeText(el.getAttribute('data-name'));
+
+                    var ok = (q === '' || name.indexOf(q) === 0);
+
+                    el.style.display = ok ? '' : 'none';
+                    if (ok) show++;
+                }
+
+                if (countEl) countEl.textContent = show;
+                if (noEl) noEl.style.display = (show === 0 ? '' : 'none');
+            }
+
+            box.addEventListener('input', function () {
+                if (timer) clearTimeout(timer);
+                timer = setTimeout(doFilter, 80);
+            });
+
+            doFilter();
+        })();
+    </script>
+}

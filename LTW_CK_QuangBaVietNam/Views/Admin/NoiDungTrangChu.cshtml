@@ -1,0 +1,76 @@
+﻿@using System.Linq
+@model LTW_CK_QuangBaVietNam.Models.NoiDungTrangChuVM
+
+@{
+    ViewBag.Title = "Nội dung trang chủ";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-white p-3 d-flex justify-content-between align-items-center">
+        <div>
+            <div class="fw-semibold"><i class="fa-solid fa-house text-primary me-2"></i>Nội dung trang chủ</div>
+            <div class="text-muted small">Chọn địa điểm nổi bật + thứ tự hiển thị, quản lý banner</div>
+        </div>
+        <a class="btn btn-outline-primary" href="@Url.Action("Banner","Admin")">
+            <i class="fa-regular fa-images me-2"></i>Quản lý Banner
+        </a>
+    </div>
+
+    @using (Html.BeginForm("LuuNoiBat", "Admin", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width:90px;">Nổi bật</th>
+                        <th>Địa điểm</th>
+                        <th style="width:160px;">Thứ tự nổi bật</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model == null || Model.DiaDiems == null || !Model.DiaDiems.Any())
+                    {
+                        <tr>
+                            <td colspan="3" class="text-center text-muted py-4">Chưa có địa điểm.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var dd in Model.DiaDiems)
+                        {
+                            <tr>
+                                <td class="text-center align-middle">
+                                    <input type="hidden" name="allIds" value="@dd.MaDiaDiem" />
+
+                                    <input class="form-check-input m-0"
+                                           type="checkbox"
+                                           name="featuredIds"
+                                           value="@dd.MaDiaDiem"
+                                           @(dd.NoiBat ? "checked" : "") />
+                                </td>
+
+                                <td class="fw-semibold">@dd.TenDiaDiem</td>
+
+                                <td>
+                                    <input class="form-control form-control-sm"
+                                           type="number"
+                                           name="thuTuNoiBat"
+                                           value="@(dd.ThuTuNoiBat ?? 0)" />
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card-footer bg-white text-end">
+            <button class="btn btn-primary" type="submit">
+                <i class="fa-solid fa-floppy-disk me-2"></i>Lưu nổi bật
+            </button>
+        </div>
+    }
+</div>

@@ -1,0 +1,70 @@
+﻿@model LTW_CK_QuangBaVietNam.Models.DiaDiem
+@{
+    ViewBag.Title = "Cập nhật tọa độ";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row g-3">
+    <div class="col-12 col-xl-5">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white p-3">
+                <div class="fw-semibold">
+                    <i class="fa-solid fa-pen text-primary me-2"></i>Cập nhật tọa độ
+                </div>
+                <div class="text-muted small">Mã địa điểm: @Model.MaDiaDiem</div>
+            </div>
+
+            @using (Html.BeginForm("CapNhatToaDo", "Admin", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+
+                <!-- Không dùng ViewBag nữa -->
+                <input type="hidden" name="id" value="@Model.MaDiaDiem" />
+
+                <div class="card-body">
+                    <div class="mb-2">
+                        <label class="form-label">Kinh độ</label>
+                        <input name="kinhDo" class="form-control"
+                               value="@(Model.KinhDo.HasValue ? Model.KinhDo.Value.ToString() : "")"
+                               placeholder="106.700000" />
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Vĩ độ</label>
+                        <input name="viDo" class="form-control"
+                               value="@(Model.ViDo.HasValue ? Model.ViDo.Value.ToString() : "")"
+                               placeholder="10.770000" />
+                    </div>
+
+                    <div class="alert alert-info small mb-0">
+                        Lưu xong bấm “Kiểm tra” để mở Google Maps.
+                    </div>
+                </div>
+
+                <div class="card-footer bg-white d-flex justify-content-between">
+                    <a class="btn btn-outline-secondary" href="@Url.Action("BanDo","Admin")">
+                        <i class="fa-solid fa-arrow-left me-2"></i>Quay lại
+                    </a>
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fa-solid fa-floppy-disk me-2"></i>Lưu
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="col-12 col-xl-7">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white p-3">
+                <div class="fw-semibold">
+                    <i class="fa-brands fa-google text-danger me-2"></i>Xem trước bản đồ
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="ratio ratio-16x9">
+                    <iframe src="https://www.google.com/maps?q=10.77,106.70&z=14&output=embed" loading="lazy"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
