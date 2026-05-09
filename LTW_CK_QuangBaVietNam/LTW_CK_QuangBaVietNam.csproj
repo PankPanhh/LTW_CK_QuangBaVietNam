@@ -167,7 +167,6 @@
     </Compile>
     <Compile Include="Helpers\BreadcrumbHelper.cs" />
     <Compile Include="Helpers\PasswordHasher.cs" />
-    <Compile Include="Controllers\ProfileController.cs" />
     <Compile Include="Models\BreadcrumbItem.cs" />
     <Compile Include="Models\DataClasses1.designer.cs">
       <AutoGen>True</AutoGen>
@@ -430,9 +429,11 @@
     <Content Include="Views\Home\ChiTietLichTrinh.cshtml" />
     <Content Include="Views\Admin\TaoDiaDiem.cshtml" />
     <Content Include="Views\Home\YeuThich.cshtml" />
+    <Content Include="Views\Admin\SuaDiaDiem.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Content\NewFolder1\" />
     <Folder Include="obj\Debug\TempPE\" />
   </ItemGroup>
   <ItemGroup>

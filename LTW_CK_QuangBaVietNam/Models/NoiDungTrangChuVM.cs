@@ -5,11 +5,13 @@ using System.Web;
 
 namespace LTW_CK_QuangBaVietNam.Models
 {
+
     public class NoiDungTrangChuVM
     {
         public List<DiaDiem> DiaDiems { get; set; }
-        public List<Banner> Banners { get; set; }
+        
     }
+
 
     public class ReviewHistoryVM
     {
@@ -51,16 +53,41 @@ namespace LTW_CK_QuangBaVietNam.Models
 
     public class DiaDiemRowVM
     {
+        public HttpPostedFileBase AnhChinhFile { get; set; }     
+        public HttpPostedFileBase[] AnhPhuFiles { get; set; }
+        public string AnhChinh { get; set; }
+
         public int MaDiaDiem { get; set; }
+
         public string TenDiaDiem { get; set; }
-        public string GioMoCua { get; set; }
+        public string Slug { get; set; }
+
+        public string MoTaNgan { get; set; }
+        public string MoTaChiTiet { get; set; }
 
         public int? MaDanhMuc { get; set; }
         public string TenDanhMuc { get; set; }
 
-        public string VungMien { get; set; }
         public decimal? GiaVe { get; set; }
+        public string GioMoCua { get; set; }
+
+        public string VungMien { get; set; }
+        public string TinhThanh { get; set; }
+
+        public decimal? KinhDo { get; set; }
+        public decimal? ViDo { get; set; }
+
+        public string DiaChiChiTiet { get; set; }
+
+        public string SoDienThoai { get; set; }
+        public string Email { get; set; }
+        public string Website { get; set; }
+
         public bool TrangThai { get; set; }
-        public DateTime NgayDang { get; set; }
+        public int? LuotXem { get; set; }
+        public double? DiemDanhGiaTB { get; set; }
+        public DateTime? NgayDang { get; set; }
+
+        public bool LaDiemChinh { get; set; }
     }
 }

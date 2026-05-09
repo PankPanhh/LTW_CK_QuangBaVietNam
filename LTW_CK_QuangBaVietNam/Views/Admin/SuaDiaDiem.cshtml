@@ -1,0 +1,260 @@
+﻿@using System
+@using System.Linq
+@using LTW_CK_QuangBaVietNam.Models
+@model DiaDiemRowVM
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    var dmList = ViewBag.DanhMucList as IEnumerable<DanhMuc>;
+    if (dmList == null) { dmList = new DanhMuc[0]; }
+
+    // ẢNH HIỆN TẠI (đổ từ controller: ViewBag.Images)
+    var images = ViewBag.Images as IEnumerable<AnhDiaDiem>;
+    if (images == null) { images = new AnhDiaDiem[0]; }
+
+    var mainImg = images.FirstOrDefault(x => x.LaAnhChinh == true);
+    var subImgs = images.Where(x => x.LaAnhChinh != true).ToList();
+
+    Func<string, bool> IsRegion = (r) =>
+!string.IsNullOrWhiteSpace(Model.VungMien) &&
+Model.VungMien.IndexOf(r, StringComparison.OrdinalIgnoreCase) >= 0;
+}
+
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-white p-3 d-flex justify-content-between align-items-center">
+        <div class="fw-semibold">
+            <i class="fa-regular fa-pen-to-square text-primary me-2"></i>Sửa địa điểm
+        </div>
+        <a class="btn btn-outline-secondary" href="@Url.Action("DiaDiem","Admin")">
+            <i class="fa-solid fa-arrow-left me-2"></i>Quay lại
+        </a>
+    </div>
+
+    <div class="card-body">
+        @using (Html.BeginForm("SuaDiaDiem", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.MaDiaDiem)
+
+            <div class="row g-3">
+                <!-- ====== THÔNG TIN CƠ BẢN ====== -->
+                <div class="col-12 col-lg-6">
+                    <label class="form-label">Tên địa điểm *</label>
+                    @Html.TextBoxFor(m => m.TenDiaDiem, new { @class = "form-control", required = "required" })
+                    @Html.ValidationMessageFor(m => m.TenDiaDiem, "", new { @class = "text-danger small" })
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <label class="form-label">Slug *</label>
+                    @Html.TextBoxFor(m => m.Slug, new { @class = "form-control", placeholder = "vd: pho-co-hoi-an", required = "required" })
+                    @Html.ValidationMessageFor(m => m.Slug, "", new { @class = "text-danger small" })
+                </div>
+
+                <div class="col-12 col-lg-4">
+                    <label class="form-label">Danh mục *</label>
+                    <select class="form-select" name="MaDanhMuc" required>
+                        <option value="">-- Chọn danh mục --</option>
+                        @foreach (var dm in dmList)
+                        {
+                            <option value="@dm.MaDanhMuc" @(Model.MaDanhMuc == dm.MaDanhMuc ? "selected" : "")>
+                                @dm.TenDanhMuc
+                            </option>
+                        }
+                    </select>
+                    @Html.ValidationMessage("MaDanhMuc", "", new { @class = "text-danger small" })
+                </div>
+
+                <div class="col-12 col-lg-4">
+                    <label class="form-label">Vùng miền *</label>
+                    <select class="form-select" name="VungMien" required>
+                        <option value="">-- Chọn vùng miền --</option>
+                        <option value="Miền Bắc" @(IsRegion("Bắc") ? "selected" : "")>Miền Bắc</option>
+                        <option value="Miền Trung" @(IsRegion("Trung") ? "selected" : "")>Miền Trung</option>
+                        <option value="Miền Nam" @(IsRegion("Nam") ? "selected" : "")>Miền Nam</option>
+                    </select>
+                    @Html.ValidationMessage("VungMien", "", new { @class = "text-danger small" })
+                </div>
+
+                <div class="col-12 col-lg-4">
+                    <label class="form-label">Tỉnh/Thành</label>
+                    @Html.TextBoxFor(m => m.TinhThanh, new { @class = "form-control", placeholder = "VD: Quảng Nam" })
+                </div>
+
+                <div class="col-12 col-lg-3">
+                    <label class="form-label">Giá vé</label>
+                    @Html.TextBoxFor(m => m.GiaVe, new { @class = "form-control", type = "number", min = "0" })
+                </div>
+
+                <div class="col-12 col-lg-3">
+                    <label class="form-label">Giờ mở cửa</label>
+                    @Html.TextBoxFor(m => m.GioMoCua, new { @class = "form-control", placeholder = "08:00 - 17:00" })
+                </div>
+
+                <div class="col-12 col-lg-3">
+                    <label class="form-label">Kinh độ</label>
+                    @Html.TextBoxFor(m => m.KinhDo, new { @class = "form-control", type = "number", step = "0.0000000001" })
+                </div>
+
+                <div class="col-12 col-lg-3">
+                    <label class="form-label">Vĩ độ</label>
+                    @Html.TextBoxFor(m => m.ViDo, new { @class = "form-control", type = "number", step = "0.0000000001" })
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">Địa chỉ chi tiết</label>
+                    @Html.TextBoxFor(m => m.DiaChiChiTiet, new { @class = "form-control" })
+                </div>
+
+                <div class="col-12 col-lg-4">
+                    <label class="form-label">SĐT</label>
+                    @Html.TextBoxFor(m => m.SoDienThoai, new { @class = "form-control" })
+                </div>
+                <div class="col-12 col-lg-4">
+                    <label class="form-label">Email</label>
+                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control", type = "email" })
+                </div>
+                <div class="col-12 col-lg-4">
+                    <label class="form-label">Website</label>
+                    @Html.TextBoxFor(m => m.Website, new { @class = "form-control" })
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">Mô tả ngắn</label>
+                    @Html.TextAreaFor(m => m.MoTaNgan, new { @class = "form-control", rows = "2" })
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">Mô tả chi tiết</label>
+                    @Html.TextAreaFor(m => m.MoTaChiTiet, new { @class = "form-control", rows = "6" })
+                </div>
+
+                <!-- ====== ẢNH HIỆN TẠI ====== -->
+                <div class="col-12">
+                    <label class="form-label">Ảnh hiện tại</label>
+
+                    <div class="d-flex flex-wrap gap-2">
+                        @if (mainImg != null)
+                        {
+                            <div class="border rounded-3 overflow-hidden" style="width:260px;">
+                                <img src="@mainImg.DuongDanAnh" alt="Ảnh chính" style="width:100%;height:160px;object-fit:cover;" />
+                                <div class="px-2 py-1 small bg-light text-muted">
+                                    Ảnh chính
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-muted small">Chưa có ảnh chính.</div>
+                        }
+
+                        @foreach (var im in subImgs.Take(8))
+                        {
+                            <div class="border rounded-3 overflow-hidden" style="width:140px;">
+                                <img src="@im.DuongDanAnh" alt="Ảnh phụ" style="width:100%;height:100px;object-fit:cover;" />
+                                <div class="px-2 py-1 small bg-light text-muted">
+                                    Ảnh phụ
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="text-muted small mt-2">
+                        * Ảnh chính sẽ dùng để hiển thị trên card/grid.
+                    </div>
+                </div>
+
+                <!-- ====== UPLOAD ẢNH MỚI ====== -->
+                <div class="col-12 col-lg-6">
+                    <label class="form-label">Đổi ảnh chính</label>
+                    <input type="file" name="AnhChinhFile" id="AnhChinhFile" class="form-control" accept="image/*" />
+                    <div class="text-muted small mt-1">Nếu chọn ảnh mới, ảnh này sẽ trở thành ảnh chính.</div>
+
+                    <div class="mt-2" id="previewMainWrap" style="display:none;">
+                        <img id="previewMain" src="" alt="Preview ảnh chính"
+                             style="width:100%;max-width:360px;height:200px;object-fit:cover;border-radius:12px;border:1px solid #e2e8f0;" />
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <label class="form-label">Thêm ảnh phụ (nhiều ảnh)</label>
+                    <input type="file" name="AnhPhuFiles" id="AnhPhuFiles" class="form-control" accept="image/*" multiple />
+                    <div class="text-muted small mt-1">Có thể chọn nhiều ảnh.</div>
+
+                    <div class="mt-2 d-flex flex-wrap gap-2" id="previewSubs"></div>
+                </div>
+
+                <!-- ====== TRẠNG THÁI ====== -->
+                <div class="col-12 d-flex gap-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="TrangThai" value="true" @(Model.TrangThai ? "checked" : "") />
+                        <label class="form-check-label">Hiển thị</label>
+                    </div>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="LaDiemChinh" value="true" @(Model.LaDiemChinh ? "checked" : "") />
+                        <label class="form-check-label">Là điểm chính</label>
+                    </div>
+                </div>
+
+                <div class="col-12 d-flex justify-content-end">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fa-solid fa-floppy-disk me-2"></i>Lưu
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts{
+    <script>
+(function () {
+    // Preview ảnh chính
+    var mainInput = document.getElementById('AnhChinhFile');
+    var previewMain = document.getElementById('previewMain');
+    var previewMainWrap = document.getElementById('previewMainWrap');
+
+    if (mainInput) {
+        mainInput.addEventListener('change', function () {
+            var f = mainInput.files && mainInput.files.length ? mainInput.files[0] : null;
+            if (!f) { previewMainWrap.style.display = 'none'; return; }
+
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                previewMain.src = e.target.result;
+                previewMainWrap.style.display = 'block';
+            };
+            reader.readAsDataURL(f);
+        });
+    }
+
+    // Preview ảnh phụ
+    var subsInput = document.getElementById('AnhPhuFiles');
+    var previewSubs = document.getElementById('previewSubs');
+
+    if (subsInput) {
+        subsInput.addEventListener('change', function () {
+            previewSubs.innerHTML = '';
+            var files = subsInput.files || [];
+            for (var i = 0; i < files.length; i++) {
+                (function (file) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        var img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.style.width = '110px';
+                        img.style.height = '80px';
+                        img.style.objectFit = 'cover';
+                        img.style.borderRadius = '10px';
+                        img.style.border = '1px solid #e2e8f0';
+                        previewSubs.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                })(files[i]);
+            }
+        });
+    }
+})();
+    </script>
+}
