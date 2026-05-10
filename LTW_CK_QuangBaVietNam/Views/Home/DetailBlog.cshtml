@@ -25,6 +25,50 @@
         background: #f8fafc;
     }
 
+    .post-status-banner {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 16px;
+        border-radius: 14px;
+        margin-bottom: var(--spacing-8);
+        font-weight: 600;
+    }
+
+    .post-status-banner.pending {
+        background: rgba(245, 158, 11, 0.12);
+        color: #92400e;
+        border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+
+    .post-status-banner.rejected {
+        background: rgba(239, 68, 68, 0.12);
+        color: #991b1b;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .post-status-banner.approved {
+        background: rgba(16, 185, 129, 0.12);
+        color: #065f46;
+        border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .interaction-disabled {
+        opacity: 0.55;
+        pointer-events: none;
+        filter: grayscale(40%);
+    }
+
+    .interaction-note {
+        margin-top: var(--spacing-4);
+        padding: 14px 16px;
+        border-radius: 12px;
+        background: #fff7ed;
+        color: #9a3412;
+        border: 1px solid #fed7aa;
+        font-weight: 600;
+    }
+
     /* Hero Section */
     .blog-hero {
         position: relative;
@@ -345,6 +389,11 @@
         color: var(--sky-blue);
     }
 
+    .footer-action-btn:disabled {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
     /* Modal */
     .image-modal {
         display: none;
@@ -515,7 +564,8 @@
     <div class="blog-content-wrapper">
         <!-- Article Content -->
         <main class="blog-main-content">
-            <article class="article-text">
+            <div id="postStatusBanner" class="post-status-banner approved" style="display:none;"></div>
+            <article class="article-text" id="articleContent">
                 <p>Vịnh Hạ Long, nằm ở phía đông bắc của Việt Nam, là một trong những di sản thiên nhiên thế giới được UNESCO công nhận. Với hơn 1600 hòn đảo đá vôi nổi trên mặt nước xanh ngọc, Hạ Long tạo nên một bức tranh thiên nhiên kỳ vĩ mà ít nơi nào trên thế giới có thể sánh được.</p>
 
                 <h2>Vẻ đẹp kỳ vĩ của thiên nhiên</h2>
@@ -551,8 +601,8 @@
             </article>
 
             <!-- Article Footer -->
-            <div class="article-footer">
-                <div class="article-footer-actions">
+            <div class="article-footer" id="articleFooter">
+                <div class="article-footer-actions" id="articleFooterActions">
                     <button class="footer-action-btn" onclick="toggleLike(this)">
                         <i class="bi bi-hand-thumbs-up"></i>
                         <span>Thích</span>
@@ -566,6 +616,7 @@
                         <span>Chia sẻ</span>
                     </button>
                 </div>
+                <div class="interaction-note" id="interactionNote" style="display:none;"></div>
             </div>
         </main>
 
@@ -625,10 +676,66 @@
 </div>
 
 <script>
+    var isPostApproved = false;
+    var isUserLoggedIn = @((Session["nguoiDung"] != null).ToString().ToLower());
+
+    function requireLoginForInteraction() {
+        showToast('Đăng nhập để sử dụng tính năng này', 'Vui lòng đăng nhập để tương tác với bài viết.', 'info');
+        return false;
+    }
+
+    function setPostState(status, message) {
+        var normalized = (status || 'pending').toString().toLowerCase();
+        var banner = document.getElementById('postStatusBanner');
+        var note = document.getElementById('interactionNote');
+        var articleContent = document.getElementById('articleContent');
+        var footerActions = document.getElementById('articleFooterActions');
+        var buttonLabel = '';
+        var bannerClass = '';
+        var allowInteraction = normalized === 'approved' && isUserLoggedIn;
+
+        if (normalized === 'approved') {
+            buttonLabel = 'Bài viết đã được duyệt và đang hiển thị công khai.';
+            bannerClass = 'approved';
+        } else if (normalized === 'rejected') {
+            buttonLabel = 'Bài viết bị từ chối. Vui lòng kiểm tra lại nội dung.';
+            bannerClass = 'rejected';
+        } else {
+            buttonLabel = 'Bài viết đang chờ duyệt. Các chức năng tương tác tạm thời được ẩn.';
+            bannerClass = 'pending';
+        }
+
+        banner.className = 'post-status-banner ' + bannerClass;
+        banner.innerHTML = '<i class="bi bi-info-circle-fill"></i><span>' + buttonLabel + '</span>';
+        banner.style.display = 'flex';
+        note.textContent = message || buttonLabel;
+        note.style.display = allowInteraction ? 'none' : 'block';
+        articleContent.classList.toggle('interaction-disabled', !allowInteraction);
+        footerActions.classList.toggle('interaction-disabled', !allowInteraction);
+        isPostApproved = normalized === 'approved';
+
+        footerActions.querySelectorAll('button').forEach(function (btn) {
+            btn.disabled = !allowInteraction;
+            if (!allowInteraction) {
+                btn.onclick = requireLoginForInteraction;
+            }
+        });
+    }
+
+    setPostState('pending', 'Bài viết này chỉ hiển thị đầy đủ chức năng khi ở trạng thái Đã duyệt.');
+
     // Toggle Favorite in Hero
     function toggleFavorite(btn) {
+        if (!isUserLoggedIn) {
+            requireLoginForInteraction();
+            return;
+        }
+        if (!isPostApproved) {
+            showToast('Bài viết đang chờ duyệt', 'Tương tác này chỉ khả dụng với bài đã duyệt.', 'info');
+            return;
+        }
         btn.classList.toggle('active');
-        const isFavorite = btn.classList.contains('active');
+        var isFavorite = btn.classList.contains('active');
         showToast(
             'Bài viết yêu thích',
             isFavorite ? 'Đã thêm bài viết vào yêu thích!' : 'Đã bỏ yêu thích!',
@@ -638,8 +745,16 @@
 
     // Toggle Like
     function toggleLike(btn) {
+        if (!isUserLoggedIn) {
+            requireLoginForInteraction();
+            return;
+        }
+        if (!isPostApproved) {
+            showToast('Bài viết đang chờ duyệt', 'Tương tác này chỉ khả dụng với bài đã duyệt.', 'info');
+            return;
+        }
         btn.classList.toggle('active');
-        const isLiked = btn.classList.contains('active');
+        var isLiked = btn.classList.contains('active');
         showToast(
             'Thích bài viết',
             isLiked ? 'Cảm ơn bạn đã thích bài viết!' : 'Đã bỏ thích!',
@@ -649,8 +764,16 @@
 
     // Toggle Save
     function toggleSave(btn) {
+        if (!isUserLoggedIn) {
+            requireLoginForInteraction();
+            return;
+        }
+        if (!isPostApproved) {
+            showToast('Bài viết đang chờ duyệt', 'Tương tác này chỉ khả dụng với bài đã duyệt.', 'info');
+            return;
+        }
         btn.classList.toggle('active');
-        const isSaved = btn.classList.contains('active');
+        var isSaved = btn.classList.contains('active');
         showToast(
             'Lưu bài viết',
             isSaved ? 'Bài viết đã được lưu!' : 'Đã xóa khỏi danh sách lưu!',
@@ -660,8 +783,8 @@
 
     // Share Article
     function shareArticle() {
-        const url = window.location.href;
-        const text = document.querySelector('.blog-hero-title').innerText;
+        var url = window.location.href;
+        var text = document.querySelector('.blog-hero-title').innerText;
 
         if (navigator.share) {
             navigator.share({
@@ -670,7 +793,6 @@
                 url: url
             });
         } else {
-            // Fallback: Copy to clipboard
             navigator.clipboard.writeText(url).then(() => {
                 showToast('Chia sẻ', 'Đã sao chép liên kết bài viết!', 'success');
             });
@@ -680,8 +802,8 @@
     // Open Image Modal
     document.querySelectorAll('.article-image').forEach(img => {
         img.addEventListener('click', function() {
-            const modal = document.getElementById('imageModal');
-            const modalImage = document.getElementById('modalImage');
+            var modal = document.getElementById('imageModal');
+            var modalImage = document.getElementById('modalImage');
             modalImage.src = this.src;
             modal.classList.add('show');
         });
@@ -689,7 +811,7 @@
 
     // Close Image Modal
     function closeImageModal() {
-        const modal = document.getElementById('imageModal');
+        var modal = document.getElementById('imageModal');
         modal.classList.remove('show');
     }
 
