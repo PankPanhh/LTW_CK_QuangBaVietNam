@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewBag.Title = "Blog - Du lịch, Văn hóa và Ẩm thực Việt Nam";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -63,6 +63,7 @@
         margin-bottom: var(--spacing-8);
         border-bottom: 2px solid var(--slate-200);
         padding-bottom: var(--spacing-4);
+        flex-wrap: wrap;
     }
 
     .tab-btn {
@@ -153,20 +154,27 @@
         position: absolute;
         top: 12px;
         right: 12px;
-        padding: 4px 12px;
+        padding: 6px 14px;
         border-radius: 999px;
         font-size: 0.75rem;
         font-weight: 800;
         color: white;
         z-index: 10;
         box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        display: flex;
+        align-items: center;
+        gap: 4px;
     }
     .status-pending { background: var(--warning); }
     .status-approved { background: var(--success); }
     .status-rejected { background: var(--danger); }
+    .status-hidden { background: #475569; }
     
     .blog-card.is-pending { opacity: 0.9; }
-    .blog-card.is-rejected { opacity: 0.6; filter: grayscale(50%); }
+    .blog-card.is-rejected, .blog-card.is-hidden { 
+        opacity: 0.65;
+        filter: grayscale(60%);
+    }
 
     .blog-card-image {
         width: 100%;
@@ -211,16 +219,55 @@
         overflow: hidden;
     }
 
-    .blog-card-footer {
+    .blog-card-author {
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        gap: 10px;
+        padding: var(--spacing-4) 0;
+        border-top: 1px solid var(--slate-200);
+    }
+
+    .blog-card-author-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .blog-card-author-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .author-name {
+        font-weight: 700;
+        color: var(--deep-slate);
+        font-size: 0.85rem;
+    }
+
+    .author-date {
+        font-size: 0.75rem;
+        color: #94a3b8;
+    }
+
+    .blog-card-stats {
+        display: flex;
+        gap: var(--spacing-4);
+        align-items: center;
+        justify-content: space-between;
         padding-top: var(--spacing-4);
         border-top: 1px solid var(--slate-200);
         margin-top: auto;
     }
 
-    .blog-card-date { font-size: 0.8rem; color: #94a3b8; }
+    .stat {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.85rem;
+        color: #94a3b8;
+    }
 
     .blog-card-link {
         color: var(--sky-blue);
@@ -229,9 +276,13 @@
         display: inline-flex;
         align-items: center;
         gap: 6px;
+        transition: all 0.3s ease;
     }
 
-    .blog-card-link:hover { color: var(--sky-light); }
+    .blog-card-link:hover { 
+        color: var(--sky-light);
+        gap: 10px;
+    }
 
     .blog-card-link.is-locked {
         color: #94a3b8;
@@ -249,6 +300,12 @@
         grid-column: 1 / -1;
     }
 
+    .empty-state i {
+        font-size: 4rem;
+        color: #cbd5e1;
+        margin-bottom: var(--spacing-4);
+    }
+
     .my-blog-note {
         background: rgba(14, 165, 233, 0.08);
         border: 1px solid rgba(14, 165, 233, 0.12);
@@ -262,7 +319,45 @@
         font-weight: 600;
     }
 
-    /* Form Đăng bài (Đơn giản hóa) */
+    .reject-reason-box {
+        background: rgba(239, 68, 68, 0.08);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        border-radius: 8px;
+        padding: var(--spacing-4);
+        margin-top: var(--spacing-4);
+        color: #991b1b;
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+
+    .reject-reason-label {
+        font-weight: 700;
+        display: block;
+        margin-bottom: 6px;
+    }
+
+    .edit-resubmit-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: var(--spacing-4);
+        padding: 10px 20px;
+        background: var(--sky-blue);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .edit-resubmit-btn:hover {
+        background: var(--sky-light);
+        transform: translateY(-2px);
+    }
+
+    /* Form */
     .create-form-container {
         background: white;
         padding: var(--spacing-8);
@@ -277,9 +372,221 @@
     .form-control {
         width: 100%; padding: 12px 16px; border: 2px solid var(--slate-200);
         border-radius: 12px; font-size: 1rem; outline: none; transition: 0.3s;
+        font-family: inherit;
     }
     .form-control:focus { border-color: var(--sky-blue); }
     textarea.form-control { resize: vertical; min-height: 150px; }
+
+    /* Gallery Upload Styles */
+    .gallery-upload-area {
+        border: 2px dashed rgba(14, 165, 233, 0.3);
+        border-radius: 16px;
+        padding: var(--spacing-8);
+        text-align: center;
+        transition: all 0.3s ease;
+        background: rgba(14, 165, 233, 0.02);
+        cursor: pointer;
+    }
+
+    .gallery-upload-area.drag-over {
+        border-color: var(--sky-blue);
+        background: rgba(14, 165, 233, 0.08);
+    }
+
+    .gallery-upload-placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--spacing-4);
+    }
+
+    .gallery-upload-icon {
+        font-size: 3rem;
+        color: var(--sky-blue);
+    }
+
+    .gallery-upload-text {
+        color: #64748b;
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+
+    .gallery-upload-text strong {
+        color: var(--deep-slate);
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .gallery-upload-buttons {
+        display: flex;
+        gap: var(--spacing-4);
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: var(--spacing-4);
+    }
+
+    .btn-upload-type {
+        padding: 10px 20px;
+        border: 2px solid var(--sky-blue);
+        background: white;
+        color: var(--sky-blue);
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+    }
+
+    .btn-upload-type:hover {
+        background: rgba(14, 165, 233, 0.1);
+    }
+
+    .btn-upload-type:active {
+        transform: scale(0.98);
+    }
+
+    .gallery-preview {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: var(--spacing-4);
+        margin-top: var(--spacing-6);
+    }
+
+    .gallery-item {
+        position: relative;
+        border-radius: 12px;
+        overflow: hidden;
+        aspect-ratio: 1;
+        background: #f1f5f9;
+        cursor: grab;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .gallery-item:active {
+        cursor: grabbing;
+    }
+
+    .gallery-item.drag-disabled {
+        cursor: default;
+    }
+
+    .gallery-item:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .gallery-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .gallery-item-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .gallery-item:hover .gallery-item-overlay {
+        opacity: 1;
+    }
+
+    .gallery-item-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: none;
+        background: rgba(255, 255, 255, 0.9);
+        color: #1e293b;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+    }
+
+    .gallery-item-btn:hover {
+        background: white;
+        transform: scale(1.1);
+    }
+
+    .gallery-item-btn.btn-delete:hover {
+        background: #ef4444;
+        color: white;
+    }
+
+    .gallery-item-btn.btn-cover {
+        background: var(--sky-blue);
+        color: white;
+    }
+
+    .gallery-item-btn.btn-cover.active {
+        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.3);
+    }
+
+    .gallery-item-badge {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: var(--sky-blue);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+
+    .gallery-stats {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: var(--spacing-4);
+        padding: var(--spacing-4);
+        background: rgba(14, 165, 233, 0.05);
+        border-radius: 8px;
+        font-size: 0.9rem;
+        color: #475569;
+    }
+
+    .gallery-progress {
+        width: 100%;
+        height: 4px;
+        background: #e2e8f0;
+        border-radius: 999px;
+        overflow: hidden;
+        margin-top: 8px;
+    }
+
+    .gallery-progress-bar {
+        height: 100%;
+        background: var(--sky-blue);
+        transition: width 0.3s ease;
+    }
+
+    /* Hidden file input */
+    #blogImages, #blogCameraCapture {
+        display: none;
+    }
+
+    /* Loading state */
+    .is-uploading {
+        opacity: 0.6;
+        pointer-events: none;
+    }
 
     /* Custom Toast */
     .toast-container {
@@ -294,6 +601,176 @@
     }
     .toast-success { border-color: var(--success); color: var(--success); }
     .toast-error { border-color: var(--danger); color: var(--danger); }
+    .toast-info { border-color: var(--sky-blue); color: var(--sky-blue); }
+
+    @@keyframes slideInRight {
+        from { transform: translateX(400px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: var(--spacing-4);
+        margin-top: var(--spacing-6);
+    }
+
+    .blog-card-actions {
+        display: flex;
+        gap: var(--spacing-4);
+        margin-top: var(--spacing-4);
+        padding-top: var(--spacing-4);
+        border-top: 1px solid var(--slate-200);
+    }
+
+    .btn-like,
+    .btn-save {
+        flex: 1;
+        padding: 10px 12px;
+        border: 2px solid var(--slate-200);
+        background: white;
+        border-radius: 8px;
+        color: #94a3b8;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .btn-like:hover,
+    .btn-save:hover {
+        border-color: var(--sky-blue);
+        color: var(--sky-blue);
+    }
+
+    .btn-like.active {
+        background: rgba(239, 68, 68, 0.1);
+        border-color: #ef4444;
+        color: #ef4444;
+    }
+
+    .btn-save.active {
+        background: rgba(14, 165, 233, 0.1);
+        border-color: var(--sky-blue);
+        color: var(--sky-blue);
+    }
+
+    .btn-secondary {
+        background: #f1f5f9;
+        color: #475569;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 24px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+        background: #e2e8f0;
+    }
+
+    .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--sky-blue);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 32px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background: var(--sky-light);
+        transform: translateY(-2px);
+    }
+
+    .btn-primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    /* Edit Blog Modal */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1050;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        backdrop-filter: blur(5px);
+    }
+
+    .modal.show {
+        display: flex;
+    }
+
+    .modal-content {
+        background: white;
+        margin: 10% auto;
+        padding: var(--spacing-8);
+        border-radius: 12px;
+        max-width: 700px;
+        width: 100%;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        animation: slideDown 0.4s ease forwards;
+    }
+
+    @@keyframes slideDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--spacing-4);
+    }
+
+    .modal-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--deep-slate);
+        margin: 0;
+    }
+
+    .close-modal {
+        background: transparent;
+        border: none;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: color 0.3s;
+    }
+
+    .close-modal:hover {
+        color: var(--danger);
+    }
+
+    .modal-body {
+        max-height: 60vh;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-4);
+    }
+
+    .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: var(--spacing-4);
+        margin-top: var(--spacing-4);
+    }
 </style>
 
 <div class="toast-container" id="toastContainer"></div>
@@ -308,14 +785,17 @@
 
         <!-- Tabs Navigation -->
         <div class="blog-tabs">
-            <button class="tab-btn active" onclick="switchTab('public-tab', this)">
+            <button class="tab-btn active" onclick="switchTab(event, 'public-tab')">
                 <i class="bi bi-globe-americas"></i> Khám phá
             </button>
-            <button class="tab-btn" onclick="switchTab('my-tab', this)">
+            <button class="tab-btn" onclick="switchTab(event, 'my-tab')">
                 <i class="bi bi-person-lines-fill"></i> Bài viết của tôi
             </button>
+            <button class="tab-btn" onclick="window.location.href='/Home/SaveBlog'">
+                <i class="bi bi-bookmark-fill"></i> Bài viết đã lưu
+            </button>
             
-            <button class="tab-action-btn" onclick="switchTab('create-tab', this)">
+            <button class="tab-action-btn" onclick="switchTab(event, 'create-tab')">
                 <i class="bi bi-pencil-square"></i> Viết bài mới
             </button>
         </div>
@@ -323,10 +803,9 @@
         <!-- TAB 1: KHÁM PHÁ (PUBLIC) -->
         <div id="public-tab" class="tab-content active">
             <div class="blog-grid" id="publicBlogGrid">
-                <!-- Nội dung load qua AJAX -->
                 <div class="empty-state">
-                    <i class="bi bi-hourglass-split" style="font-size: 3rem; color: #cbd5e1;"></i>
-                    <p style="margin-top: 10px; font-weight:bold;">Đang tải dữ liệu...</p>
+                    <i class="bi bi-hourglass-split"></i>
+                    <p style="font-weight:bold;">Đang tải dữ liệu...</p>
                 </div>
             </div>
         </div>
@@ -338,11 +817,11 @@
                 <span>Bài viết của bạn sẽ luôn xuất hiện tại đây kèm trạng thái rõ ràng: Chờ duyệt, Đã duyệt hoặc Bị từ chối.</span>
             </div>
             <div class="blog-grid" id="myBlogGrid">
-                 <!-- Nội dung load qua AJAX -->
+                 <!-- Content loaded via AJAX -->
             </div>
         </div>
 
-        <!-- TAB 3: VIẾT BÀI -->
+        <!-- TAB 3: VIếT BÀI -->
         <div id="create-tab" class="tab-content">
             <div class="create-form-container">
                 <h2 style="margin-top:0; color:var(--deep-slate);"><i class="bi bi-pencil-fill" style="color:var(--sky-blue)"></i> Chia sẻ trải nghiệm của bạn</h2>
@@ -358,13 +837,7 @@
                         <label class="form-label">Gắn thẻ Địa điểm (Tùy chọn)</label>
                         <select id="blogLocation" class="form-control">
                             <option value="">-- Không gắn thẻ --</option>
-                            <!-- Tự động đổ dữ liệu bằng JS -->
                         </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Đường dẫn ảnh Cover (Tùy chọn)</label>
-                        <input type="url" id="blogImage" class="form-control" placeholder="https://example.com/image.jpg">
                     </div>
 
                     <div class="form-group">
@@ -372,21 +845,106 @@
                         <textarea id="blogContent" class="form-control" placeholder="Bạn đã có trải nghiệm gì thú vị? Hãy kể cho mọi người nghe nhé..." required></textarea>
                     </div>
 
-                    <div style="text-align: right; margin-top: 20px;">
-                        <button type="button" class="tab-btn" onclick="document.querySelector('.blog-tabs button:first-child').click()" style="background:#f1f5f9; border-radius:12px; padding:12px 24px; color:#475569;">Hủy</button>
-                        <button type="submit" class="tab-action-btn" style="display:inline-flex; padding: 12px 32px; font-size: 1.1rem;">
+                    <!-- Gallery Upload Area -->
+                    <div class="form-group">
+                        <label class="form-label">Hình ảnh chuyến đi (Tùy chọn)</label>
+                        <div class="gallery-upload-area" id="galleryUploadArea" ondrop="handleGalleryDrop(event)" ondragover="handleGalleryDragOver(event)" ondragleave="handleGalleryDragLeave(event)" onclick="document.getElementById('blogImages').click()">
+                            <div class="gallery-upload-placeholder" id="uploadPlaceholder">
+                                <div class="gallery-upload-icon">
+                                    <i class="bi bi-images"></i>
+                                </div>
+                                <div class="gallery-upload-text">
+                                    <strong>Thêm ảnh chuyến đi của bạn</strong>
+                                    Kéo thả, chọn từ thư viện hoặc chụp trực tiếp
+                                </div>
+                                <div class="gallery-upload-buttons">
+                                    <button type="button" class="btn-upload-type" onclick="document.getElementById('blogImages').click(); event.stopPropagation();">
+                                        <i class="bi bi-folder-fill"></i> Thư viện
+                                    </button>
+                                    <button type="button" class="btn-upload-type" onclick="document.getElementById('blogCameraCapture').click(); event.stopPropagation();">
+                                        <i class="bi bi-camera-fill"></i> Camera
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="gallery-preview" id="galleryPreview" style="display: none;"></div>
+                        </div>
+                        <div class="gallery-stats" id="galleryStats" style="display: none;">
+                            <div><i class="bi bi-image"></i> <span id="galleryCount">0</span> / <span id="galleryMax">10</span> ảnh</div>
+                            <div id="gallerySize" style="color: #94a3b8;"></div>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button type="button" class="btn-secondary" onclick="switchTab(event, 'public-tab')">Hủy</button>
+                        <button type="submit" class="btn-primary">
                             <i class="bi bi-send-fill"></i> Đăng bài
                         </button>
                     </div>
                 </form>
+
+                <!-- Hidden file inputs -->
+                <input type="file" id="blogImages" multiple accept="image/jpeg,image/png,image/webp" onchange="handleGallerySelect(event)">
+                <input type="file" id="blogCameraCapture" accept="image/*" capture="environment" onchange="handleGallerySelect(event)">
             </div>
         </div>
 
     </div>
 </div>
 
+<!-- Edit Blog Modal -->
+<div class="modal" id="editBlogModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Chỉnh sửa bài viết</h2>
+            <button type="button" class="close-modal" onclick="closeEditModal()">
+                <i class="bi bi-x-circle"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form id="editBlogForm" onsubmit="submitEditBlog(event)">
+                <input type="hidden" id="editBlogId">
+                
+                <div class="form-group">
+                    <label class="form-label">Tiêu đề bài viết</label>
+                    <input type="text" id="editBlogTitle" class="form-control" placeholder="Ví dụ: Chuyến đi đáng nhớ tại Đà Lạt..." required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Gắn thẻ Địa điểm (Tùy chọn)</label>
+                    <select id="editBlogLocation" class="form-control">
+                        <option value="">-- Không gắn thẻ --</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Đường dẫn ảnh Cover (Tùy chọn)</label>
+                    <input type="url" id="editBlogImage" class="form-control" placeholder="https://example.com/image.jpg">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Nội dung</label>
+                    <textarea id="editBlogContent" class="form-control" placeholder="Bạn đã có trải nghiệm gì thú vị? Hãy kể cho mọi người nghe nhé..." required></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeEditModal()">Hủy</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-send-fill"></i> Gửi lại
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
     const PLACEHOLDER_IMG = 'https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&q=80&w=800';
+    const MAX_IMAGES = 10;
+    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+    const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+    
+    let selectedImages = []; // { file, preview, order, isCover }
+    let coverImageIndex = 0;
 
     document.addEventListener('DOMContentLoaded', () => {
         loadPublicBlogs();
@@ -397,6 +955,7 @@
         const value = status === null || status === undefined ? '' : String(status).trim().toLowerCase();
         if (value === '1' || value === 'approved' || value === 'true') return 'approved';
         if (value === '2' || value === 'rejected') return 'rejected';
+        if (value === '3' || value === 'hidden') return 'hidden';
         return 'pending';
     }
 
@@ -408,26 +967,31 @@
         if (normalized === 'rejected') {
             return { label: 'Bị từ chối', icon: 'bi-x-circle-fill', css: 'status-rejected' };
         }
+        if (normalized === 'hidden') {
+            return { label: 'Đã bị ẩn', icon: 'bi-eye-slash-fill', css: 'status-hidden' };
+        }
         return { label: 'Chờ duyệt', icon: 'bi-clock-history', css: 'status-pending' };
     }
 
-    // Quản lý Tab UI
-    function switchTab(tabId, btnElement) {
-        // Cập nhật nút
+    // Manage Tab UI
+    function switchTab(e, tabId) {
+        e.preventDefault();
+        
+        // Update buttons
         document.querySelectorAll('.blog-tabs button').forEach(b => b.classList.remove('active'));
-        btnElement.classList.add('active');
+        e.target.closest('button').classList.add('active');
 
-        // Cập nhật tab
+        // Update tabs
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
 
-        // Trigger load data dựa theo tab
+        // Trigger load data based on tab
         if(tabId === 'public-tab') loadPublicBlogs();
         else if(tabId === 'my-tab') loadMyBlogs();
     }
 
     // ==========================================
-    // API CALLS & RENDER CHỐNG LỖI 404
+    // API CALLS & RENDER
     // ==========================================
 
     async function loadPublicBlogs() {
@@ -438,7 +1002,7 @@
             
             const contentType = res.headers.get("content-type");
             if (!contentType || !contentType.includes("application/json")) {
-                throw new Error("Không nhận được dữ liệu JSON hợp lệ.");
+                throw new Error("Invalid response format");
             }
 
             const data = await res.json();
@@ -453,9 +1017,9 @@
                 return;
             }
 
-            throw new Error((data && data.message) ? data.message : 'API bài viết công khai trả về trạng thái không hợp lệ.');
+            throw new Error((data && data.message) ? data.message : 'Invalid API response');
         } catch (e) {
-            console.error("Lỗi khi tải bài viết công khai:", e);
+            console.error("Error loading public blogs:", e);
             grid.innerHTML = renderApiFailureState('Không thể tải dữ liệu cộng đồng lúc này.', 'Vui lòng thử tải lại trang sau ít phút.');
         }
     }
@@ -475,7 +1039,7 @@
             
             const contentType = res.headers.get("content-type");
             if (!contentType || !contentType.includes("application/json")) {
-                throw new Error("Không nhận được dữ liệu JSON hợp lệ.");
+                throw new Error("Invalid response format");
             }
 
             const data = await res.json();
@@ -490,9 +1054,9 @@
                 return;
             }
 
-            throw new Error((data && data.message) ? data.message : 'API bài viết cá nhân trả về trạng thái không hợp lệ.');
+            throw new Error((data && data.message) ? data.message : 'Invalid API response');
         } catch (e) {
-            console.error("Lỗi khi tải bài viết cá nhân:", e);
+            console.error("Error loading my blogs:", e);
             grid.innerHTML = renderApiFailureState('Không thể tải bài viết của bạn lúc này.', 'Kiểm tra lại kết nối hoặc đăng nhập lại rồi thử lại.');
         }
     }
@@ -503,48 +1067,56 @@
         for (const endpoint of endpoints) {
             try {
                 const res = await fetch(endpoint);
-                if (!res.ok) {
-                    continue;
-                }
+                if (!res.ok) continue;
 
                 const contentType = res.headers.get("content-type");
-                if (!contentType || !contentType.includes("application/json")) {
-                    continue;
-                }
+                if (!contentType || !contentType.includes("application/json")) continue;
 
                 const data = await res.json();
                 if (data.success) {
                     const select = document.getElementById('blogLocation');
+                    const editSelect = document.getElementById('editBlogLocation');
                     data.data.forEach(loc => {
                         let option = new Option(loc.name, loc.id);
                         select.add(option);
+                        let editOption = new Option(loc.name, loc.id);
+                        editSelect.add(editOption);
                     });
                     return;
                 }
             } catch (e) {
-                console.warn(`Không tải được dropdown từ ${endpoint}:`, e);
+                console.warn(`Cannot load dropdown from ${endpoint}:`, e);
             }
         }
 
-        console.warn('Không tải được danh sách địa điểm cho blog.');
+        console.warn('Cannot load locations for blog dropdown');
     }
 
-    // Xử lý Form Submit (Tạo bài mới)
+    // Handle Form Submit
     async function handleCreateBlog(e) {
         e.preventDefault();
         
         const title = document.getElementById('blogTitle').value;
         const content = document.getElementById('blogContent').value;
         const locationId = document.getElementById('blogLocation').value;
-        const imageUrl = document.getElementById('blogImage').value;
 
-        const payload = new URLSearchParams();
-        payload.append('title', title);
-        payload.append('content', content);
-        payload.append('locationId', locationId ? locationId : '');
-        if (imageUrl) {
-            payload.append('imageUrls', imageUrl);
+        if (!title.trim() || !content.trim()) {
+            showToast('Vui lòng nhập tiêu đề và nội dung', 'error');
+            return;
         }
+
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('content', content);
+        formData.append('locationId', locationId || '0');
+
+        // Add images
+        selectedImages.forEach((img, index) => {
+            formData.append('images', img.file);
+            if (img.isCover) {
+                formData.append('coverImageIndex', index);
+            }
+        });
 
         try {
             const submitBtn = e.target.querySelector('button[type="submit"]');
@@ -553,8 +1125,7 @@
 
             const res = await fetch('/Blog/CreateBlog', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
-                body: payload.toString()
+                body: formData
             });
 
             if (res.status === 401) {
@@ -562,21 +1133,24 @@
                 return;
             }
             
-            if (!res.ok) throw new Error("Lỗi kết nối tới máy chủ.");
-            const contentType = res.headers.get("content-type");
-            if (!contentType || !contentType.includes("application/json")) throw new Error("Máy chủ trả về kết quả không hợp lệ.");
+            if (!res.ok) throw new Error("Connection error");
 
             const data = await res.json();
 
             if (data.success) {
                 showToast('Bài viết của bạn đã được gửi và đang chờ duyệt.', 'success');
                 e.target.reset();
+                selectedImages = [];
+                coverImageIndex = 0;
+                renderGalleryPreview();
+                updateGalleryStats();
                 loadMyBlogs();
                 setTimeout(() => {
-                    document.querySelector('button[onclick="switchTab(\'my-tab\', this)"]').click();
+                    const myTabBtn = document.querySelector('[onclick*="my-tab"]');
+                    switchTab({ preventDefault: () => {}, target: myTabBtn }, 'my-tab');
                 }, 800);
             } else {
-                showToast(data.message, 'error');
+                showToast(data.message || 'Lỗi khi đăng bài', 'error');
             }
         } catch (error) {
             showToast('Lỗi mạng khi đăng bài', 'error');
@@ -585,6 +1159,92 @@
             const submitBtn = e.target.querySelector('button[type="submit"]');
             if (submitBtn) {
                 submitBtn.innerHTML = '<i class="bi bi-send-fill"></i> Đăng bài';
+                submitBtn.disabled = false;
+            }
+        }
+    }
+
+    async function editBlog(blogId) {
+        try {
+            const res = await fetch(`/Blog/GetBlogForEdit?id=${blogId}`);
+            const contentType = res.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                showToast('Lỗi máy chủ khi tải dữ liệu bài viết', 'error');
+                return;
+            }
+
+            const data = await res.json();
+            if (data.success) {
+                const blog = data.data;
+                document.getElementById('editBlogId').value = blogId;
+                document.getElementById('editBlogTitle').value = blog.title;
+                document.getElementById('editBlogContent').value = blog.content;
+                document.getElementById('editBlogLocation').value = blog.locationId || '';
+                showEditModal();
+            } else {
+                showToast(data.message || 'Lỗi khi tải bài viết', 'error');
+            }
+        } catch (e) {
+            showToast('Lỗi kết nối khi tải bài viết', 'error');
+        }
+    }
+
+    function showEditModal() {
+        const modal = document.getElementById('editBlogModal');
+        if (modal) {
+            modal.style.display = 'flex';
+            modal.classList.add('show');
+        }
+    }
+
+    function closeEditModal() {
+        const modal = document.getElementById('editBlogModal');
+        if (modal) {
+            modal.classList.remove('show');
+            setTimeout(() => modal.style.display = 'none', 300);
+        }
+    }
+
+    async function submitEditBlog(e) {
+        e.preventDefault();
+        
+        const blogId = document.getElementById('editBlogId').value;
+        const title = document.getElementById('editBlogTitle').value;
+        const content = document.getElementById('editBlogContent').value;
+        const locationId = document.getElementById('editBlogLocation').value;
+
+        const payload = new URLSearchParams();
+        payload.append('id', blogId);
+        payload.append('title', title);
+        payload.append('content', content);
+        payload.append('locationId', locationId ? locationId : '');
+
+        try {
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Đang gửi...';
+            submitBtn.disabled = true;
+
+            const res = await fetch('/Blog/EditBlog', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                body: payload.toString()
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                showToast('Bài viết đã được gửi duyệt lại!', 'success');
+                closeEditModal();
+                loadMyBlogs();
+            } else {
+                showToast(data.message || 'Lỗi khi cập nhật', 'error');
+            }
+        } catch (error) {
+            showToast('Lỗi mạng', 'error');
+        } finally {
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="bi bi-send-fill"></i> Gửi lại';
                 submitBtn.disabled = false;
             }
         }
@@ -601,11 +1261,10 @@
         const avatar = post.avatar || ('https://ui-avatars.com/api/?name=' + encodeURIComponent(authorName) + '&background=0EA5E9&color=fff');
         const likesText = typeof post.likes === 'number' ? post.likes : (typeof post.totalLikes === 'number' ? post.totalLikes : 0);
         const commentsText = typeof post.totalComments === 'number' ? post.totalComments : 0;
-        const isLiked = post.isLiked === true;
-        const loginHint = '<span style="color:#94a3b8;font-size:0.85rem;">Đăng nhập để tương tác</span>';
         
         let statusHtml = '';
         let cardClass = 'blog-card';
+        let rejectHtml = '';
         
         if (isMyBlog) {
             statusHtml = `<span class="status-badge ${statusMeta.css}"><i class="bi ${statusMeta.icon}"></i> ${statusMeta.label}</span>`;
@@ -613,8 +1272,31 @@
                 cardClass += ' is-pending';
             } else if (status === 'rejected') {
                 cardClass += ' is-rejected';
+                rejectHtml = `
+                    <div class="reject-reason-box">
+                        <span class="reject-reason-label"><i class="bi bi-exclamation-circle"></i> Lý do từ chối:</span>
+                        ${post.rejectReason || 'Không có lý do được cung cấp'}
+                        <button type="button" class="edit-resubmit-btn" onclick="editBlog(${post.id})">
+                            <i class="bi bi-pencil"></i> Chỉnh sửa & Gửi lại
+                        </button>
+                    </div>
+                `;
+            } else if (status === 'hidden') {
+                cardClass += ' is-hidden';
+                rejectHtml = `
+                    <div class="reject-reason-box" style="background:rgba(245,158,11,0.08); border-color:rgba(245,158,11,0.2); color:#b45309;">
+                        <span class="reject-reason-label"><i class="bi bi-info-circle"></i> Đã bị ẩn bởi quản trị viên:</span>
+                        ${post.hideReason || 'Không có lý do được cung cấp'}
+                        <button type="button" class="edit-resubmit-btn" onclick="editBlog(${post.id})">
+                            <i class="bi bi-pencil"></i> Chỉnh sửa & Gửi lại
+                        </button>
+                    </div>
+                `;
             }
         }
+
+        const likeButtonClass = post.isLiked ? 'btn-like active' : 'btn-like';
+        const saveButtonClass = post.isSaved ? 'btn-save active' : 'btn-save';
 
         const linkHtml = canViewDetail 
             ? `<a href="/Home/DetailBlog?id=${post.id}" class="blog-card-link">Đọc tiếp <i class="bi bi-arrow-right"></i></a>`
@@ -623,31 +1305,40 @@
         return `
             <div class="${cardClass}">
                 ${statusHtml}
-                <div style="position:relative;">
-                    <img src="${img}" alt="${post.title}" class="blog-card-image" onerror="this.src='${PLACEHOLDER_IMG}'">
-                </div>
+                <img src="${img}" alt="${post.title}" class="blog-card-image" onerror="this.src='${PLACEHOLDER_IMG}'">
                 <div class="blog-card-content">
-                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px;">
-                        <img src="${avatar}" alt="${authorName}" style="width:32px; height:32px; border-radius:50%; object-fit:cover;">
-                        <div style="display:flex; flex-direction:column;">
-                            <span style="font-weight:700; color:var(--deep-slate); font-size:0.92rem;">${authorName}</span>
-                            <span style="font-size:0.78rem; color:#94a3b8;">${dateText}</span>
-                        </div>
-                    </div>
                     <div class="blog-card-meta">
                         <i class="bi bi-geo-alt-fill"></i> ${locationName}
                     </div>
                     <h3 class="blog-card-title">${post.title}</h3>
                     <p class="blog-card-excerpt">${post.excerpt}</p>
-                    <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap; color:#64748b; font-size:0.85rem;">
-                        <span><i class="bi bi-heart${isLiked ? '-fill' : ''}" style="color:${isLiked ? 'var(--danger)' : '#94a3b8'};"></i> ${likesText}</span>
-                        <span><i class="bi bi-chat-dots"></i> ${commentsText}</span>
+                    
+                    <div class="blog-card-author">
+                        <img src="${avatar}" alt="${authorName}" class="blog-card-author-avatar" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(authorName)}&background=0EA5E9&color=fff'">
+                        <div class="blog-card-author-info">
+                            <div class="author-name">${authorName}</div>
+                            <div class="author-date">${dateText}</div>
+                        </div>
                     </div>
-                    <div class="blog-card-footer">
-                        <span class="blog-card-date">${dateText}</span>
+
+                    <div class="blog-card-stats">
+                        <div style="display:flex; gap:14px;">
+                            <div class="stat"><i class="bi bi-heart"></i> ${likesText}</div>
+                            <div class="stat"><i class="bi bi-chat-dots"></i> ${commentsText}</div>
+                        </div>
                         ${linkHtml}
                     </div>
-                    ${isMyBlog ? '' : loginHint}
+
+                    ${rejectHtml}
+
+                    <div class="blog-card-actions">
+                        <button class="${likeButtonClass}" onclick="toggleBlogLike(this, ${post.id})">
+                            <i class="bi bi-heart-fill"></i> Thích
+                        </button>
+                        <button class="${saveButtonClass}" onclick="toggleSaveBlog(this, ${post.id})">
+                            <i class="bi bi-bookmark-fill"></i> Lưu
+                        </button>
+                    </div>
                 </div>
             </div>
         `;
@@ -656,8 +1347,8 @@
     function renderEmptyState(message) {
         return `
             <div class="empty-state">
-                <i class="bi bi-inbox" style="font-size: 4rem; color: #cbd5e1;"></i>
-                <h3 style="margin-top: 15px;">Trống</h3>
+                <i class="bi bi-inbox"></i>
+                <h3>Trống</h3>
                 <p>${message}</p>
             </div>
         `;
@@ -666,28 +1357,315 @@
     function renderApiFailureState(title, message) {
         return `
             <div class="empty-state">
-                <i class="bi bi-exclamation-triangle" style="font-size: 4rem; color: #f59e0b;"></i>
-                <h3 style="margin-top: 15px;">${title}</h3>
+                <i class="bi bi-exclamation-triangle"></i>
+                <h3>${title}</h3>
                 <p>${message}</p>
             </div>
         `;
     }
 
-    // Hệ thống Toast đẹp mắt thay cho Alert
+    document.getElementById('rejectModal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('rejectModal')) {
+            closeRejectModal();
+        }
+    });
+
+    // Enhanced interactivity functions
+    async function toggleBlogLike(button, blogId) {
+        try {
+            const res = await fetch('/Blog/ToggleBlogLike', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ blogId })
+            });
+
+            if (res.status === 401) {
+                showToast('Vui lòng đăng nhập để thích bài viết', 'error');
+                return;
+            }
+
+            const data = await res.json();
+            if (data.success) {
+                button.classList.toggle('active');
+                // Update the like counter
+                const card = button.closest('.blog-card');
+                if (card) {
+                    const likeCounter = card.querySelector('.stat i.bi-heart');
+                    if (likeCounter) {
+                        const statDiv = likeCounter.parentElement;
+                        statDiv.textContent = `${data.likes} `;
+                        statDiv.innerHTML = `<i class="bi bi-heart"></i> ${data.likes}`;
+                    }
+                }
+                showToast(data.message, 'success');
+            } else {
+                showToast(data.message, 'error');
+            }
+        } catch (e) {
+            showToast('Lỗi khi thích bài viết', 'error');
+        }
+    }
+
+    async function toggleSaveBlog(button, blogId) {
+        try {
+            const res = await fetch('/Blog/ToggleSaveBlog', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ blogId })
+            });
+
+            if (res.status === 401) {
+                showToast('Vui lòng đăng nhập để lưu bài viết', 'error');
+                return;
+            }
+
+            const data = await res.json();
+            if (data.success) {
+                button.classList.toggle('active');
+                showToast(data.message, 'success');
+            } else {
+                showToast(data.message, 'error');
+            }
+        } catch (e) {
+            showToast('Lỗi khi lưu bài viết', 'error');
+        }
+    }
+
     function showToast(message, type = 'success') {
         const container = document.getElementById('toastContainer');
         const toast = document.createElement('div');
-        
-        const icon = type === 'success' ? '<i class="bi bi-check-circle-fill"></i>' : '<i class="bi bi-exclamation-triangle-fill"></i>';
         toast.className = `custom-toast toast-${type}`;
-        toast.innerHTML = `${icon} <span>${message}</span>`;
         
+        const icon = type === 'success' ? '<i class="bi bi-check-circle"></i>' 
+            : type === 'error' ? '<i class="bi bi-x-circle"></i>'
+            : '<i class="bi bi-info-circle"></i>';
+
+        toast.innerHTML = `${icon}<span>${message}</span>`;
         container.appendChild(toast);
 
-        // Tự xóa sau 3.5s
         setTimeout(() => {
-            toast.style.animation = 'slideInRight 0.3s ease reverse forwards';
-            setTimeout(() => toast.remove(), 300);
-        }, 3500);
+            toast.remove();
+        }, 3000);
     }
+
+    // ==========================================
+    // GALLERY UPLOAD FUNCTIONS
+    // ==========================================
+
+    function handleGalleryDragOver(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        document.getElementById('galleryUploadArea').classList.add('drag-over');
+    }
+
+    function handleGalleryDragLeave(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        document.getElementById('galleryUploadArea').classList.remove('drag-over');
+    }
+
+    function handleGalleryDrop(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        document.getElementById('galleryUploadArea').classList.remove('drag-over');
+        
+        const files = e.dataTransfer.files;
+        handleGallerySelect({ target: { files } });
+    }
+
+    async function handleGallerySelect(e) {
+        const files = Array.from(e.target.files);
+        
+        if (files.length === 0) return;
+
+        for (const file of files) {
+            // Validation
+            if (selectedImages.length >= MAX_IMAGES) {
+                showToast(`Tối đa ${MAX_IMAGES} ảnh cho mỗi bài viết`, 'error');
+                break;
+            }
+
+            if (!ALLOWED_TYPES.includes(file.type)) {
+                showToast(`${file.name}: Định dạng không hỗ trợ`, 'error');
+                continue;
+            }
+
+            if (file.size > MAX_FILE_SIZE) {
+                showToast(`${file.name}: Ảnh vượt quá 10MB`, 'error');
+                continue;
+            }
+
+            try {
+                // Compress image
+                const compressedBlob = await compressImage(file);
+                const preview = URL.createObjectURL(compressedBlob);
+
+                selectedImages.push({
+                    file: new File([compressedBlob], file.name, { type: file.type }),
+                    preview: preview,
+                    order: selectedImages.length,
+                    isCover: selectedImages.length === 0 // First image is cover by default
+                });
+
+                if (selectedImages.length === 1) {
+                    coverImageIndex = 0;
+                }
+            } catch (err) {
+                showToast(`${file.name}: Không thể xử lý ảnh`, 'error');
+            }
+        }
+
+        renderGalleryPreview();
+        updateGalleryStats();
+
+        // Reset input
+        e.target.value = '';
+    }
+
+    async function compressImage(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+
+            reader.onload = (e) => {
+                const img = new Image();
+                img.src = e.target.result;
+
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    let width = img.width;
+                    let height = img.height;
+                    const MAX_WIDTH = 1920;
+                    const MAX_HEIGHT = 1920;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height = (height * MAX_WIDTH) / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width = (width * MAX_HEIGHT) / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    canvas.toBlob(resolve, 'image/jpeg', 0.85);
+                };
+
+                img.onerror = reject;
+            };
+
+            reader.onerror = reject;
+        });
+    }
+
+    function renderGalleryPreview() {
+        const area = document.getElementById('galleryUploadArea');
+        const placeholder = document.getElementById('uploadPlaceholder');
+        const preview = document.getElementById('galleryPreview');
+
+        if (selectedImages.length === 0) {
+            placeholder.style.display = 'flex';
+            preview.style.display = 'none';
+            return;
+        }
+
+        placeholder.style.display = 'none';
+        preview.style.display = 'grid';
+
+        preview.innerHTML = selectedImages.map((img, index) => `
+            <div class="gallery-item" draggable="true" data-index="${index}" ondragstart="handleImageDragStart(event)" ondragend="handleImageDragEnd(event)" ondrop="handleImageDrop(event, ${index})" ondragover="handleImageDragOver(event)">
+                ${img.isCover ? '<div class="gallery-item-badge"><i class="bi bi-star-fill"></i> Cover</div>' : ''}
+                <img src="${img.preview}" alt="Preview ${index + 1}">
+                <div class="gallery-item-overlay">
+                    <button type="button" class="gallery-item-btn btn-cover ${img.isCover ? 'active' : ''}" onclick="setCoverImage(${index}); event.stopPropagation();" title="Đặt làm ảnh cover">
+                        <i class="bi bi-star"></i>
+                    </button>
+                    <button type="button" class="gallery-item-btn btn-delete" onclick="removeImage(${index}); event.stopPropagation();" title="Xóa ảnh">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function setCoverImage(index) {
+        selectedImages = selectedImages.map((img, i) => ({
+            ...img,
+            isCover: i === index
+        }));
+        coverImageIndex = index;
+        renderGalleryPreview();
+        updateGalleryStats();
+    }
+
+    function removeImage(index) {
+        selectedImages.splice(index, 1);
+        
+        // Reassign cover if needed
+        if (coverImageIndex >= selectedImages.length && selectedImages.length > 0) {
+            coverImageIndex = 0;
+            selectedImages[0].isCover = true;
+        }
+
+        renderGalleryPreview();
+        updateGalleryStats();
+    }
+
+    let draggedIndex = null;
+
+    function handleImageDragStart(e) {
+        draggedIndex = parseInt(e.target.closest('.gallery-item').dataset.index);
+        e.target.closest('.gallery-item').style.opacity = '0.5';
+    }
+
+    function handleImageDragEnd(e) {
+        e.target.closest('.gallery-item').style.opacity = '1';
+    }
+
+    function handleImageDragOver(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.target.closest('.gallery-item').style.transform = 'scale(1.05)';
+    }
+
+    function handleImageDrop(e, targetIndex) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.target.closest('.gallery-item').style.transform = '';
+
+        if (draggedIndex === null || draggedIndex === targetIndex) return;
+
+        // Swap images
+        [selectedImages[draggedIndex], selectedImages[targetIndex]] = [selectedImages[targetIndex], selectedImages[draggedIndex]];
+
+        renderGalleryPreview();
+    }
+
+    function updateGalleryStats() {
+        const stats = document.getElementById('galleryStats');
+        const count = document.getElementById('galleryCount');
+        const size = document.getElementById('gallerySize');
+
+        if (selectedImages.length === 0) {
+            stats.style.display = 'none';
+            return;
+        }
+
+        stats.style.display = 'flex';
+        count.textContent = selectedImages.length;
+
+        const totalSize = selectedImages.reduce((sum, img) => sum + img.file.size, 0);
+        const sizeMB = (totalSize / (1024 * 1024)).toFixed(2);
+        size.textContent = `${sizeMB}MB`;
+    }
+
+    // ...existing functions continue...
 </script>

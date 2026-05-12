@@ -1,4 +1,4 @@
-﻿using LTW_CK_QuangBaVietNam.Models;
+using LTW_CK_QuangBaVietNam.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -20,7 +20,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
         DataClasses1DataContext db =
         new DataClasses1DataContext(
             ConfigurationManager
-            .ConnectionStrings["CK_QBVNConnectionString"]
+            .ConnectionStrings["QBConnectionString"]
             .ConnectionString
         );
 
@@ -50,7 +50,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                         join a in db.AnhDiaDiems.Where(x => x.LaAnhChinh.GetValueOrDefault())
     on dd.MaDiaDiem equals a.MaDiaDiem into ga
                         from a in ga.DefaultIfEmpty()
-                       
+
 
                         select new DiaDiemRowVM
                         {
@@ -77,11 +77,11 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                 list = list.Where(x => NormalizeText(x.TenDiaDiem).Contains(qNorm)).ToList();
             }
 
-           
+
             if (!string.IsNullOrWhiteSpace(vung) && vung.ToLower() != "all")
             {
-                
-                var vNorm = NormalizeText(vung); 
+
+                var vNorm = NormalizeText(vung);
                 list = list.Where(x => NormalizeText(x.VungMien).Contains(vNorm)).ToList();
             }
 
@@ -93,7 +93,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
 
             ViewBag.Filter = filter;
             ViewBag.Q = q;
-            ViewBag.Vung = vung;       
+            ViewBag.Vung = vung;
             ViewBag.DanhMuc = danhMuc;
             ViewBag.DanhMucList = db.DanhMucs.OrderBy(x => x.TenDanhMuc).ToList();
 
@@ -137,7 +137,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
 
             file.SaveAs(fullPath);
 
-            return "/Content/uploads/diadiem/" + fileName; 
+            return "/Content/uploads/diadiem/" + fileName;
         }
 
         [HttpGet]
@@ -153,7 +153,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                 LaDiemChinh = false
             };
 
-            return View(vm); 
+            return View(vm);
         }
 
         [HttpPost]
@@ -205,9 +205,9 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             };
 
             db.DiaDiems.InsertOnSubmit(dd);
-            db.SubmitChanges(); 
+            db.SubmitChanges();
 
-            
+
             if (vm.AnhChinhFile != null && vm.AnhChinhFile.ContentLength > 0)
             {
                 var url = SaveUploadImage(vm.AnhChinhFile);
@@ -278,7 +278,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
     .ToList();
 
 
-            return View(vm); 
+            return View(vm);
         }
 
         [HttpPost]
@@ -339,7 +339,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                 });
             }
 
-            
+
             if (vm.AnhPhuFiles != null)
             {
                 foreach (var f in vm.AnhPhuFiles)
@@ -381,11 +381,11 @@ namespace LTW_CK_QuangBaVietNam.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult XoaDiaDiem(int id, string filter = "all", string q = "", string vung = "all", int? danhMuc = null)
         {
-            
+
             var dd = db.DiaDiems.SingleOrDefault(x => x.MaDiaDiem == id);
             if (dd != null)
             {
-                dd.TrangThai = false; 
+                dd.TrangThai = false;
                 db.SubmitChanges();
             }
 
@@ -401,7 +401,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
         }
 
         [HttpPost]
-      
+
         public ActionResult ThemDanhMuc(string tenDanhMuc, string moTa)
         {
             tenDanhMuc = (tenDanhMuc ?? "").Trim();
@@ -528,23 +528,31 @@ namespace LTW_CK_QuangBaVietNam.Controllers
         //[HttpPost]
         //public ActionResult KhoaNguoiDung(int userId)
         //{
-            
+
         //    return RedirectToAction("DanhGia");
         //}
 
-        //// BLOG
-        //public ActionResult Blog()
-        //{
-        //    ViewBag.Title = "Quản lý bài viết blog";
-        //    return View();
-        //}
+        // QUẢN LÝ BLOG
+        public ActionResult Blog()
+        {
+            if (Session["nguoiDung"] == null) return RedirectToAction("Index", "Home");
+            var user = Session["nguoiDung"] as NguoiDung;
+            if (user.VaiTro != 1) return RedirectToAction("Index", "Home");
 
-        //public ActionResult BanDo()
-        //{
-        //    ViewBag.Title = "Bản đồ & vị trí";
-        //    return View(); 
-        //}
+            ViewBag.Title = "Quản lý bài viết blog";
+            return View();
+        }
 
+        public ActionResult BlogDetail(int id)
+        {
+            if (Session["nguoiDung"] == null) return RedirectToAction("Index", "Home");
+            var user = Session["nguoiDung"] as NguoiDung;
+            if (user.VaiTro != 1) return RedirectToAction("Index", "Home");
+
+            ViewBag.Title = "Chi tiết bài viết - Kiểm duyệt";
+            ViewBag.BlogId = id;
+            return View();
+        }
 
         // THỐNG KÊ
         public ActionResult ThongKe()
@@ -553,6 +561,131 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             return View();
         }
 
+        // QUẢN LÝ BÌNH LUẬN
+        public ActionResult Comments()
+        {
+            if (Session["nguoiDung"] == null) return RedirectToAction("Index", "Home");
+            var user = Session["nguoiDung"] as NguoiDung;
+            if (user.VaiTro != 1) return RedirectToAction("Index", "Home");
 
+            ViewBag.Title = "Quản lý bình luận";
+            return View();
+        }
+
+        [HttpGet]
+        public JsonResult GetCommentsAdmin()
+        {
+            try
+            {
+                var user = Session["nguoiDung"] as NguoiDung;
+                if (user == null || user.VaiTro != 1) return Json(new { success = false, message = "Unauthorized" }, JsonRequestBehavior.AllowGet);
+
+                var dbComments = db.BinhLuans.OrderByDescending(c => c.NgayDang).Select(c => new
+                {
+                    id = c.MaBinhLuan,
+                    blogId = c.MaBaiViet,
+                    blogTitle = c.BaiViet.TieuDe,
+                    content = c.NoiDung,
+                    author = c.NguoiDung.HoTen,
+                    date = c.NgayDang,
+                    status = c.TrangThai,
+                    reason = c.LyDoAn
+                }).ToList();
+
+                var comments = dbComments.Select(c => new
+                {
+                    id = c.id,
+                    blogId = c.blogId,
+                    blogTitle = c.blogTitle,
+                    content = c.content,
+                    author = c.author,
+                    authorAvatar = "https://ui-avatars.com/api/?name=" + Uri.EscapeDataString(c.author ?? "User") + "&background=0EA5E9&color=fff",
+                    date = c.date.HasValue ? c.date.Value.ToString("dd/MM/yyyy HH:mm") : "",
+                    status = c.status,
+                    reason = c.reason
+                });
+
+                return Json(new { success = true, data = comments }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpPost]
+        public JsonResult HideComment(int id, string reason)
+        {
+            try
+            {
+                var user = Session["nguoiDung"] as NguoiDung;
+                if (user == null || user.VaiTro != 1) return Json(new { success = false, message = "Unauthorized" });
+
+                var c = db.BinhLuans.FirstOrDefault(x => x.MaBinhLuan == id);
+                if (c == null) return Json(new { success = false, message = "Không tìm thấy bình luận" });
+
+                c.TrangThai = "hidden";
+                c.LyDoAn = reason;
+                c.NgayXuLy = DateTime.Now;
+                c.NguoiXuLy = user.MaNguoiDung;
+
+                db.SubmitChanges();
+                return Json(new { success = true, message = "Đã ẩn bình luận" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public JsonResult RestoreComment(int id)
+        {
+            try
+            {
+                var user = Session["nguoiDung"] as NguoiDung;
+                if (user == null || user.VaiTro != 1) return Json(new { success = false, message = "Unauthorized" });
+
+                var c = db.BinhLuans.FirstOrDefault(x => x.MaBinhLuan == id);
+                if (c == null) return Json(new { success = false, message = "Không tìm thấy bình luận" });
+
+                c.TrangThai = "visible";
+                c.LyDoAn = null;
+                c.NgayXuLy = DateTime.Now;
+                c.NguoiXuLy = user.MaNguoiDung;
+
+                db.SubmitChanges();
+                return Json(new { success = true, message = "Đã khôi phục bình luận" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public JsonResult DeleteCommentAdmin(int id)
+        {
+            try
+            {
+                var user = Session["nguoiDung"] as NguoiDung;
+                if (user == null || user.VaiTro != 1) return Json(new { success = false, message = "Unauthorized" });
+
+                var c = db.BinhLuans.FirstOrDefault(x => x.MaBinhLuan == id);
+                if (c == null) return Json(new { success = false, message = "Không tìm thấy bình luận" });
+
+                c.TrangThai = "deleted";
+                c.LyDoAn = "Bị admin xoá";
+                c.NgayXuLy = DateTime.Now;
+                c.NguoiXuLy = user.MaNguoiDung;
+
+                db.SubmitChanges();
+                return Json(new { success = true, message = "Đã xoá mềm bình luận" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
     }
 }

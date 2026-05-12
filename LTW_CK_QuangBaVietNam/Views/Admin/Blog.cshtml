@@ -1,83 +1,1233 @@
-﻿@{
+@{
     ViewBag.Title = "Quản lý bài viết blog";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
-    var filter = ((ViewBag.Filter ?? "all").ToString()).ToLower(); // all | pending | published | featured
 }
 
-<div class="card shadow-sm border-0">
-    <div class="card-header bg-white p-3">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <div class="fw-semibold"><i class="fa-solid fa-pen-nib text-info me-2"></i>Quản lý bài viết blog</div>
-                <div class="text-muted small">Duyệt bài trước khi đăng, xoá vi phạm, gắn nhãn nổi bật</div>
-            </div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-            <ul class="nav nav-pills">
-                <li class="nav-item"><a class="nav-link @(filter=="all"?"active":"")" href="@Url.Action("Blog","Admin", new { filter="all" })">Tất cả</a></li>
-                <li class="nav-item"><a class="nav-link @(filter=="pending"?"active":"")" href="@Url.Action("Blog","Admin", new { filter="pending" })">Chờ duyệt</a></li>
-                <li class="nav-item"><a class="nav-link @(filter=="published"?"active":"")" href="@Url.Action("Blog","Admin", new { filter="published" })">Đã đăng</a></li>
-                <li class="nav-item"><a class="nav-link @(filter=="featured"?"active":"")" href="@Url.Action("Blog","Admin", new { filter="featured" })">Nổi bật</a></li>
-            </ul>
+<style>
+    :root {
+        --deep-slate: #1e293b;
+        --slate: #334155;
+        --sky-blue: #0EA5E9;
+        --sky-light: #38BDF8;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --spacing-4: 1rem;
+        --spacing-6: 1.5rem;
+        --spacing-8: 2rem;
+    }
+
+    .blog-admin-container {
+        padding: var(--spacing-8);
+        background: #f8fafc;
+        min-height: 100vh;
+    }
+
+    /* Stats Cards */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: var(--spacing-6);
+        margin-bottom: var(--spacing-8);
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 16px;
+        padding: var(--spacing-6);
+        box-shadow: 0 2px 8px rgba(30, 41, 59, 0.08);
+        border-left: 4px solid var(--sky-blue);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-4);
+    }
+
+    .stat-card.pending { border-left-color: var(--warning); }
+    .stat-card.success { border-left-color: var(--success); }
+    .stat-card.danger { border-left-color: var(--danger); }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+        background: rgba(14, 165, 233, 0.1);
+        color: var(--sky-blue);
+    }
+
+    .stat-card.pending .stat-icon {
+        background: rgba(245, 158, 11, 0.1);
+        color: var(--warning);
+    }
+
+    .stat-card.success .stat-icon {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--success);
+    }
+
+    .stat-card.danger .stat-icon {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--danger);
+    }
+
+    .stat-content h3 { margin: 0; font-size: 1.5rem; font-weight: 700; color: var(--deep-slate); }
+    .stat-content p { margin: 4px 0 0 0; color: #94a3b8; font-size: 0.9rem; }
+
+    /* Header */
+    .moderation-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--spacing-8);
+        flex-wrap: wrap;
+        gap: var(--spacing-4);
+    }
+
+    .moderation-header h1 {
+        margin: 0;
+        font-size: 1.875rem;
+        font-weight: 800;
+        color: var(--deep-slate);
+    }
+
+    .header-actions {
+        display: flex;
+        gap: var(--spacing-4);
+        flex-wrap: wrap;
+    }
+
+    .btn-filter {
+        padding: 10px 20px;
+        border: 2px solid #e2e8f0;
+        background: white;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: #475569;
+    }
+
+    .btn-filter:hover, .btn-filter.active {
+        border-color: var(--sky-blue);
+        background: rgba(14, 165, 233, 0.05);
+        color: var(--sky-blue);
+    }
+
+    /* Moderation Cards */
+    .moderation-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(30, 41, 59, 0.08);
+        margin-bottom: var(--spacing-6);
+        transition: all 0.3s ease;
+        display: flex;
+        gap: var(--spacing-4);
+    }
+
+    .moderation-card:hover {
+        box-shadow: 0 8px 24px rgba(30, 41, 59, 0.12);
+    }
+
+    .card-image {
+        width: 200px;
+        height: 180px;
+        object-fit: cover;
+        background: #f1f5f9;
+        flex-shrink: 0;
+    }
+
+    .card-body {
+        padding: var(--spacing-6);
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .card-meta {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-4);
+        margin-bottom: var(--spacing-4);
+        flex-wrap: wrap;
+    }
+
+    .author-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .author-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .author-details {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .author-name {
+        font-weight: 700;
+        color: var(--deep-slate);
+        font-size: 0.95rem;
+    }
+
+    .author-date {
+        font-size: 0.8rem;
+        color: #94a3b8;
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--deep-slate);
+        margin: 0 0 var(--spacing-2) 0;
+        line-height: 1.4;
+    }
+
+    .card-excerpt {
+        color: #475569;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        margin: 0 0 var(--spacing-4) 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        flex: 1;
+    }
+
+    .card-footer {
+        display: flex;
+        gap: var(--spacing-4);
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        padding-top: var(--spacing-4);
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .card-info-badges {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background: #f1f5f9;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #475569;
+    }
+
+    .badge.images {
+        background: rgba(56, 189, 248, 0.1);
+        color: var(--sky-light);
+    }
+
+    .badge.location {
+        background: rgba(14, 165, 233, 0.1);
+        color: var(--sky-blue);
+    }
+
+    .card-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .action-btn {
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+    }
+
+    .btn-approve {
+        background: var(--success);
+        color: white;
+    }
+
+    .btn-approve:hover {
+        background: #059669;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-reject {
+        background: var(--danger);
+        color: white;
+    }
+
+    .btn-reject:hover {
+        background: #dc2626;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-view {
+        background: var(--sky-blue);
+        color: white;
+    }
+
+    .btn-view:hover {
+        background: var(--sky-light);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 2px 8px rgba(30, 41, 59, 0.08);
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: #cbd5e1;
+        margin-bottom: var(--spacing-4);
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 2000;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .modal-overlay.show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: 16px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        animation: slideUp 0.3s ease;
+    }
+
+    .modal-header {
+        padding: var(--spacing-6);
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-header h2 {
+        margin: 0;
+        color: var(--deep-slate);
+        font-size: 1.5rem;
+    }
+
+    .modal-close-btn {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #94a3b8;
+        transition: color 0.3s ease;
+    }
+
+    .modal-close-btn:hover {
+        color: var(--deep-slate);
+    }
+
+    .modal-body {
+        padding: var(--spacing-6);
+    }
+
+    .modal-footer {
+        padding: var(--spacing-6);
+        border-top: 1px solid #e2e8f0;
+        display: flex;
+        gap: var(--spacing-4);
+        justify-content: flex-end;
+    }
+
+    .reason-textarea {
+        width: 100%;
+        padding: var(--spacing-4);
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-family: inherit;
+        resize: vertical;
+        min-height: 120px;
+        outline: none;
+        transition: border-color 0.3s ease;
+    }
+
+    .reason-textarea:focus {
+        border-color: var(--sky-blue);
+    }
+
+    @@keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @@keyframes slideUp {
+        from {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    /* Toast */
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .toast {
+        background: white;
+        padding: 16px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        border-left: 4px solid;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        animation: slideInRight 0.3s ease;
+    }
+
+    .toast.success { border-left-color: var(--success); color: var(--success); }
+    .toast.error { border-left-color: var(--danger); color: var(--danger); }
+    .toast.info { border-left-color: var(--sky-blue); color: var(--sky-blue); }
+
+    @@keyframes slideInRight {
+        from { transform: translateX(400px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: var(--spacing-8);
+    }
+
+    .pagination button {
+        padding: 8px 12px;
+        border: 1px solid #e2e8f0;
+        background: white;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+    }
+
+    .pagination button.active {
+        background: var(--sky-blue);
+        color: white;
+        border-color: var(--sky-blue);
+    }
+
+    .pagination button:hover:not(.active) {
+        border-color: var(--sky-blue);
+        color: var(--sky-blue);
+    }
+</style>
+
+<div class="blog-admin-container">
+    <!-- Stats -->
+    <div class="stats-grid" id="statsContainer">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="bi bi-file-text"></i></div>
+            <div class="stat-content">
+                <h3 id="totalStat">--</h3>
+                <p>Tổng số bài viết</p>
+            </div>
+        </div>
+        <div class="stat-card pending">
+            <div class="stat-icon"><i class="bi bi-hourglass-split"></i></div>
+            <div class="stat-content">
+                <h3 id="pendingStat">--</h3>
+                <p>Chờ duyệt</p>
+            </div>
+        </div>
+        <div class="stat-card success">
+            <div class="stat-icon"><i class="bi bi-check-circle"></i></div>
+            <div class="stat-content">
+                <h3 id="approvedStat">--</h3>
+                <p>Đã duyệt</p>
+            </div>
+        </div>
+        <div class="stat-card danger">
+            <div class="stat-icon"><i class="bi bi-x-circle"></i></div>
+            <div class="stat-content">
+                <h3 id="rejectedStat">--</h3>
+                <p>Bị từ chối</p>
+            </div>
+        </div>
+        <div class="stat-card danger">
+            <div class="stat-icon"><i class="bi bi-eye-slash"></i></div>
+            <div class="stat-content">
+                <h3 id="hiddenStat">--</h3>
+                <p>Đã ẩn</p>
+            </div>
         </div>
     </div>
 
-    <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-            <thead class="table-light">
-                <tr>
-                    <th>Tác giả</th>
-                    <th>Tiêu đề</th>
-                    <th>Ngày</th>
-                    <th>Trạng thái</th>
-                    <th class="text-end">Thao tác</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (filter == "all" || filter == "published")
-                {
-                    <tr>
-                        <td><div class="fw-semibold">Nguyễn Văn A</div><div class="text-muted small">a@gmail.com</div></td>
-                        <td class="fw-semibold">Hành trình Đà Nẵng 3 ngày</td>
-                        <td class="text-muted">2026-05-01</td>
-                        <td><span class="badge bg-success">Đã đăng</span></td>
-                        <td class="text-end">
-                            <div class="btn-group">
-                                <button class="btn btn-sm btn-outline-secondary" title="Gắn nổi bật"><i class="fa-solid fa-tag"></i></button>
-                                <button class="btn btn-sm btn-outline-danger" title="Xoá"><i class="fa-regular fa-trash-can"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                }
+    <!-- Header -->
+    <div class="moderation-header">
+        <h1><i class="bi bi-pencil-square me-2"></i>Kiểm duyệt bài viết</h1>
+        <div class="header-actions">
+            <button class="btn-filter active" onclick="switchFilter(event, 'pending')">
+                <i class="bi bi-hourglass-split"></i> Chờ duyệt
+            </button>
+            <button class="btn-filter" onclick="switchFilter(event, 'approved')">
+                <i class="bi bi-check-circle"></i> Đã duyệt
+            </button>
+            <button class="btn-filter" onclick="switchFilter(event, 'rejected')">
+                <i class="bi bi-x-circle"></i> Chờ sửa
+            </button>
+            <button class="btn-filter" onclick="switchFilter(event, 'hidden')">
+                <i class="bi bi-eye-slash"></i> Đã ẩn
+            </button>
+        </div>
+    </div>
 
-                @if (filter == "all" || filter == "pending")
-                {
-                    <tr>
-                        <td><div class="fw-semibold">User B</div><div class="text-muted small">b@gmail.com</div></td>
-                        <td class="fw-semibold">Review Phú Quốc ăn gì?</td>
-                        <td class="text-muted">2026-05-01</td>
-                        <td><span class="badge bg-warning">Chờ duyệt</span></td>
-                        <td class="text-end">
-                            <div class="btn-group">
-                                <button class="btn btn-sm btn-outline-success" title="Duyệt"><i class="fa-solid fa-check"></i></button>
-                                <button class="btn btn-sm btn-outline-danger" title="Xoá"><i class="fa-regular fa-trash-can"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                }
+    <!-- Moderation Cards Container -->
+    <div id="moderationContainer">
+        <div class="empty-state">
+            <i class="bi bi-hourglass-split"></i>
+            <h3>Đang tải dữ liệu...</h3>
+        </div>
+    </div>
 
-                @if (filter == "featured")
-                {
-                    <tr>
-                        <td><div class="fw-semibold">Nguyễn Văn A</div><div class="text-muted small">a@gmail.com</div></td>
-                        <td class="fw-semibold">Bài nổi bật tuần này</td>
-                        <td class="text-muted">2026-05-01</td>
-                        <td><span class="badge bg-primary">Nổi bật</span></td>
-                        <td class="text-end">
-                            <button class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-tag"></i> Bỏ nổi bật</button>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+    <!-- Pagination -->
+    <div class="pagination" id="paginationContainer"></div>
+</div>
+
+<!-- Reject Modal -->
+<div class="modal-overlay" id="rejectModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Từ chối bài viết</h2>
+            <button class="modal-close-btn" onclick="closeRejectModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <p style="color: #475569; margin-bottom: var(--spacing-4);">Vui lòng cung cấp lý do để người đăng có thể cải thiện:</p>
+            <textarea id="rejectReason" class="reason-textarea" placeholder="Ví dụ: Nội dung không phù hợp với chủ đề du lịch, chứa quảng cáo, không hợp lệ..."></textarea>
+        </div>
+        <div class="modal-footer">
+            <button class="action-btn btn-view" onclick="closeRejectModal()">Hủy</button>
+            <button class="action-btn btn-reject" onclick="confirmReject()"><i class="bi bi-x-circle"></i> Xác nhận từ chối</button>
+        </div>
     </div>
 </div>
+
+</div>
+
+<!-- Hide Modal -->
+<div class="modal-overlay" id="hideModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Ẩn bài viết</h2>
+            <button class="modal-close-btn" onclick="closeHideModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <p style="color: #475569; margin-bottom: var(--spacing-4);">Vui lòng cung cấp lý do ẩn bài viết (người đăng sẽ thấy lý do này):</p>
+            <textarea id="hideReason" class="reason-textarea" placeholder="Ví dụ: Bài viết chứa nội dung nhạy cảm, thông tin chưa được xác thực..."></textarea>
+        </div>
+        <div class="modal-footer">
+            <button class="action-btn btn-view" onclick="closeHideModal()">Hủy</button>
+            <button class="action-btn btn-reject" onclick="confirmHide()" style="background: var(--warning);"><i class="bi bi-eye-slash"></i> Xác nhận ẩn</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+    const PLACEHOLDER_IMG = 'https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&q=80&w=800';
+    const MAX_IMAGES = 10;
+    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+    const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+    
+    let selectedImages = []; // { file, preview, order, isCover }
+    let coverImageIndex = 0;
+    let currentFilter = 'pending';
+    let currentPage = 1;
+    let currentRejectId = null;
+    let currentHideId = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadStats();
+        loadBlogs(currentFilter, currentPage);
+        loadPublicBlogs();
+        loadLocationsForDropdown();
+    });
+
+    function switchFilter(e, filter) {
+        currentFilter = filter;
+        currentPage = 1;
+        document.querySelectorAll('.btn-filter').forEach(btn => btn.classList.remove('active'));
+        e.target.closest('button').classList.add('active');
+        loadBlogs(filter, 1);
+    }
+
+    async function readJsonResponse(res) {
+        const contentType = res.headers.get('content-type') || '';
+        if (!contentType.includes('application/json')) {
+            const text = await res.text();
+            throw new Error((text || '').trim().startsWith('<') ? 'Server returned HTML instead of JSON.' : 'Server returned a non-JSON response.');
+        }
+
+        return await res.json();
+    }
+
+    function normalizeStatus(status) {
+        const value = status === null || status === undefined ? '' : String(status).trim().toLowerCase();
+        if (value === '1' || value === 'approved' || value === 'true') return 'approved';
+        if (value === '2' || value === 'rejected') return 'rejected';
+        return 'pending';
+    }
+
+    async function loadPublicBlogs() {
+        const grid = document.getElementById('publicBlogGrid');
+        try {
+            const res = await fetch('/Blog/GetPublicBlogs', { cache: 'no-store' });
+            if (!res.ok) throw new Error("HTTP Status: " + res.status);
+
+            const data = await readJsonResponse(res);
+            const posts = Array.isArray(data && data.data) ? data.data : [];
+
+            if (data && data.success) {
+                if (posts.length === 0) {
+                    grid.innerHTML = renderEmptyState('Chưa có bài viết nào trong cộng đồng.');
+                } else {
+                    grid.innerHTML = posts.map(post => renderBlogCard(post, false)).join('');
+                }
+                return;
+            }
+
+            throw new Error((data && data.message) ? data.message : 'Invalid API response');
+        } catch (e) {
+            console.error("Error loading public blogs:", e);
+            grid.innerHTML = renderApiFailureState('Không thể tải dữ liệu cộng đồng lúc này.', 'Vui lòng thử tải lại trang sau ít phút.');
+        }
+    }
+
+    async function loadMyBlogs() {
+        const grid = document.getElementById('myBlogGrid');
+        grid.innerHTML = `<div class="empty-state"><i class="bi bi-hourglass-split"></i><p>Đang tải bài viết của bạn...</p></div>`;
+        
+        try {
+            const res = await fetch('/Blog/GetMyBlogs', { cache: 'no-store' });
+            if (res.status === 401) {
+                showToast('Vui lòng đăng nhập để sử dụng chức năng này', 'error');
+                grid.innerHTML = renderApiFailureState('Bạn chưa đăng nhập.', 'Hãy đăng nhập để xem các bài viết của mình.');
+                return;
+            }
+            if (!res.ok) throw new Error("HTTP Status: " + res.status);
+
+            const data = await readJsonResponse(res);
+            const posts = Array.isArray(data && data.data) ? data.data : [];
+            
+            if (data && data.success) {
+                if (posts.length === 0) {
+                    grid.innerHTML = renderEmptyState('Bạn chưa có bài viết nào. Hãy chia sẻ chuyến đi đầu tiên nhé!');
+                } else {
+                    grid.innerHTML = posts.map(post => renderBlogCard(post, true)).join('');
+                }
+                return;
+            }
+
+            throw new Error((data && data.message) ? data.message : 'Invalid API response');
+        } catch (e) {
+            console.error("Error loading my blogs:", e);
+            grid.innerHTML = renderApiFailureState('Không thể tải bài viết của bạn lúc này.', 'Kiểm tra lại kết nối hoặc đăng nhập lại rồi thử lại.');
+        }
+    }
+
+    async function loadLocationsForDropdown() {
+        const endpoints = ['/Blog/GetLocationsForDropdown', '/Map/GetLocationsForDropdown'];
+
+        for (const endpoint of endpoints) {
+            try {
+                const res = await fetch(endpoint);
+                if (!res.ok) continue;
+
+                const data = await readJsonResponse(res);
+                if (data.success) {
+                    const select = document.getElementById('blogLocation');
+                    const editSelect = document.getElementById('editBlogLocation');
+                    data.data.forEach(loc => {
+                        let option = new Option(loc.name, loc.id);
+                        select.add(option);
+                        let editOption = new Option(loc.name, loc.id);
+                        editSelect.add(editOption);
+                    });
+                    return;
+                }
+            } catch (e) {
+                console.warn(`Cannot load dropdown from ${endpoint}:`, e);
+            }
+        }
+
+        console.warn('Cannot load locations for blog dropdown');
+    }
+
+    // Handle Form Submit
+    async function handleCreateBlog(e) {
+        e.preventDefault();
+        
+        const title = document.getElementById('blogTitle').value;
+        const content = document.getElementById('blogContent').value;
+        const locationId = document.getElementById('blogLocation').value;
+
+        if (!title.trim() || !content.trim()) {
+            showToast('Vui lòng nhập tiêu đề và nội dung', 'error');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('content', content);
+        formData.append('locationId', locationId || '0');
+
+        // Add images
+        selectedImages.forEach((img, index) => {
+            formData.append('images', img.file);
+            if (img.isCover) {
+                formData.append('coverImageIndex', index);
+            }
+        });
+
+        try {
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Đang gửi...';
+            submitBtn.disabled = true;
+
+            const res = await fetch('/Blog/CreateBlog', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (res.status === 401) {
+                showToast('Vui lòng đăng nhập để sử dụng chức năng này', 'error');
+                return;
+            }
+            
+            if (!res.ok) throw new Error("Connection error");
+
+            const data = await readJsonResponse(res);
+
+            if (data.success) {
+                showToast('Bài viết của bạn đã được gửi và đang chờ duyệt.', 'success');
+                e.target.reset();
+                selectedImages = [];
+                coverImageIndex = 0;
+                renderGalleryPreview();
+                updateGalleryStats();
+                loadMyBlogs();
+                setTimeout(() => {
+                    const myTabBtn = document.querySelector('[onclick*="my-tab"]');
+                    switchTab({ preventDefault: () => {}, target: myTabBtn }, 'my-tab');
+                }, 800);
+            } else {
+                showToast(data.message || 'Lỗi khi đăng bài', 'error');
+            }
+        } catch (error) {
+            showToast('Lỗi mạng khi đăng bài', 'error');
+            console.error(error);
+        } finally {
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="bi bi-send-fill"></i> Đăng bài';
+                submitBtn.disabled = false;
+            }
+        }
+    }
+
+    async function editBlog(blogId) {
+        try {
+            const res = await fetch(`/Blog/GetBlogForEdit?id=${blogId}`);
+            const data = await readJsonResponse(res);
+            if (data.success) {
+                const blog = data.data;
+                document.getElementById('editBlogId').value = blogId;
+                document.getElementById('editBlogTitle').value = blog.title;
+                document.getElementById('editBlogContent').value = blog.content;
+                document.getElementById('editBlogLocation').value = blog.locationId || '';
+                showEditModal();
+            } else {
+                showToast(data.message || 'Lỗi khi tải bài viết', 'error');
+            }
+        } catch (e) {
+            showToast('Lỗi kết nối khi tải bài viết', 'error');
+        }
+    }
+
+    async function submitEditBlog(e) {
+        e.preventDefault();
+        
+        const blogId = document.getElementById('editBlogId').value;
+        const title = document.getElementById('editBlogTitle').value;
+        const content = document.getElementById('editBlogContent').value;
+        const locationId = document.getElementById('editBlogLocation').value;
+
+        const payload = new URLSearchParams();
+        payload.append('id', blogId);
+        payload.append('title', title);
+        payload.append('content', content);
+        payload.append('locationId', locationId ? locationId : '');
+
+        try {
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Đang gửi...';
+            submitBtn.disabled = true;
+
+            const res = await fetch('/Blog/EditBlog', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                body: payload.toString()
+            });
+
+            const data = await readJsonResponse(res);
+
+            if (data.success) {
+                showToast('Bài viết đã được gửi duyệt lại!', 'success');
+                closeEditModal();
+                loadMyBlogs();
+            } else {
+                showToast(data.message || 'Lỗi khi cập nhật', 'error');
+            }
+        } catch (error) {
+            showToast('Lỗi mạng', 'error');
+        } finally {
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="bi bi-send-fill"></i> Gửi lại';
+                submitBtn.disabled = false;
+            }
+        }
+    }
+
+    async function toggleBlogLike(button, blogId) {
+        try {
+            const res = await fetch('/Blog/ToggleBlogLike', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ blogId })
+            });
+
+            if (res.status === 401) {
+                showToast('Vui lòng đăng nhập để thích bài viết', 'error');
+                return;
+            }
+
+            const data = await readJsonResponse(res);
+            if (data.success) {
+                button.classList.toggle('active');
+                // Update the like counter
+                const card = button.closest('.blog-card');
+                if (card) {
+                    const likeCounter = card.querySelector('.stat i.bi-heart');
+                    if (likeCounter) {
+                        const statDiv = likeCounter.parentElement;
+                        statDiv.textContent = `${data.likes} `;
+                        statDiv.innerHTML = `<i class="bi bi-heart"></i> ${data.likes}`;
+                    }
+                }
+                showToast(data.message, 'success');
+            } else {
+                showToast(data.message, 'error');
+            }
+        } catch (e) {
+            showToast('Lỗi khi thích bài viết', 'error');
+        }
+    }
+
+    async function toggleSaveBlog(button, blogId) {
+        try {
+            const res = await fetch('/Blog/ToggleSaveBlog', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ blogId })
+            });
+
+            if (res.status === 401) {
+                showToast('Vui lòng đăng nhập để lưu bài viết', 'error');
+                return;
+            }
+
+            const data = await readJsonResponse(res);
+            if (data.success) {
+                button.classList.toggle('active');
+                showToast(data.message, 'success');
+            } else {
+                showToast(data.message, 'error');
+            }
+        } catch (e) {
+            showToast('Lỗi khi lưu bài viết', 'error');
+        }
+    }
+
+    async function loadStats() {
+        try {
+            const res = await fetch('/Blog/GetBlogStats');
+            const data = await readJsonResponse(res);
+            if (data.success) {
+                document.getElementById('totalStat').innerText = data.data.total;
+                document.getElementById('pendingStat').innerText = data.data.pending;
+                document.getElementById('approvedStat').innerText = data.data.approved;
+                document.getElementById('rejectedStat').innerText = data.data.rejected;
+                document.getElementById('hiddenStat').innerText = data.data.hidden;
+            }
+        } catch (e) {
+            console.error("Lỗi khi tải thống kê:", e);
+        }
+    }
+
+    async function loadBlogs(filter, page = 1) {
+        const container = document.getElementById('moderationContainer');
+        container.innerHTML = '<div class="empty-state"><i class="bi bi-hourglass-split"></i><h3>Đang tải...</h3></div>';
+
+        try {
+            let endpoint = '';
+            if (filter === 'pending') {
+                endpoint = `/Blog/GetPendingBlogs?page=${page}&pageSize=10`;
+            } else if (filter === 'approved') {
+                endpoint = `/Blog/GetApprovedBlogs?page=${page}&pageSize=10`;
+            } else if (filter === 'rejected') {
+                endpoint = `/Blog/GetRejectedBlogs?page=${page}&pageSize=10`;
+            } else if (filter === 'hidden') {
+                endpoint = `/Blog/GetHiddenBlogs?page=${page}&pageSize=10`;
+            }
+
+            const res = await fetch(endpoint);
+            const data = await readJsonResponse(res);
+
+            if (data.success && data.data.length > 0) {
+                container.innerHTML = data.data.map(blog => renderBlogCard(blog, filter)).join('');
+                renderPagination(data.pagination, filter);
+            } else {
+                let emptyMsg = 'Không có bài viết nào';
+                if (filter === 'pending') emptyMsg = 'Không có bài chờ duyệt';
+                else if (filter === 'approved') emptyMsg = 'Không có bài đã duyệt';
+                else if (filter === 'rejected') emptyMsg = 'Không có bài nào đang chờ sửa';
+                else if (filter === 'hidden') emptyMsg = 'Không có bài viết nào bị ẩn';
+
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="bi bi-inbox"></i>
+                        <h3>${emptyMsg}</h3>
+                        <p>Hệ thống hoạt động bình thường</p>
+                    </div>
+                `;
+            }
+        } catch (e) {
+            console.error("Lỗi:", e);
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <h3>Lỗi khi tải dữ liệu</h3>
+                </div>
+            `;
+        }
+    }
+
+    function renderBlogCard(blog, filter) {
+        const firstImage = blog.images && blog.images.length > 0 
+            ? blog.images[0] 
+            : 'https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&q=80&w=800';
+
+        let actions = '';
+        let statusBadge = '';
+
+        if (filter === 'pending') {
+            statusBadge = '<span style="position:absolute;top:12px;right:12px;background:#f59e0b;color:white;padding:6px 14px;border-radius:999px;font-size:0.75rem;font-weight:800;z-index:10;"><i class="bi bi-hourglass-split"></i> Chờ duyệt</span>';
+            actions = `
+                <button class="action-btn btn-approve" onclick="approveBlog(${blog.id})" title="Duyệt">
+                    <i class="bi bi-check-circle"></i> Duyệt
+                </button>
+                <button class="action-btn btn-reject" onclick="openRejectModal(${blog.id})" title="Từ chối">
+                    <i class="bi bi-x-circle"></i> Từ chối
+                </button>
+            `;
+        } else if (filter === 'approved') {
+            statusBadge = '<span style="position:absolute;top:12px;right:12px;background:#10b981;color:white;padding:6px 14px;border-radius:999px;font-size:0.75rem;font-weight:800;z-index:10;"><i class="bi bi-check-circle"></i> Đã duyệt</span>';
+            actions = `
+                <button class="action-btn btn-reject" onclick="openHideModal(${blog.id})" title="Ẩn" style="background: var(--warning);">
+                    <i class="bi bi-eye-slash"></i> Ẩn
+                </button>
+            `;
+        } else if (filter === 'rejected') {
+            statusBadge = '<span style="position:absolute;top:12px;right:12px;background:#ef4444;color:white;padding:6px 14px;border-radius:999px;font-size:0.75rem;font-weight:800;z-index:10;"><i class="bi bi-clock-history"></i> Chờ sửa</span>';
+            actions = `
+                <button class="action-btn btn-view" onclick="viewRejectionDetails(${blog.id})">
+                    <i class="bi bi-eye"></i> Xem lý do
+                </button>
+            `;
+        } else if (filter === 'hidden') {
+            statusBadge = '<span style="position:absolute;top:12px;right:12px;background:#6b7280;color:white;padding:6px 14px;border-radius:999px;font-size:0.75rem;font-weight:800;z-index:10;"><i class="bi bi-eye-slash"></i> Đã ẩn</span>';
+            actions = `
+                <button class="action-btn btn-approve" onclick="restoreBlog(${blog.id})" title="Khôi phục">
+                    <i class="bi bi-arrow-counterclockwise"></i> Khôi phục
+                </button>
+            `;
+        }
+
+        return `
+            <div class="moderation-card" style="position:relative;">
+                ${statusBadge}
+                <img src="${firstImage}" alt="${blog.title}" class="card-image" onerror="this.src='https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&q=80&w=800'">
+                <div class="card-body">
+                    <div class="card-meta">
+                        <div class="author-info">
+                            <img src="${blog.avatar}" alt="${blog.author}" class="author-avatar" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(blog.author)}&background=0EA5E9&color=fff'">
+                            <div class="author-details">
+                                <div class="author-name">${blog.author}</div>
+                                <div class="author-date">${blog.dateSubmitted}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 class="card-title">${blog.title}</h3>
+                    <p class="card-excerpt">${blog.excerpt}</p>
+                    ${filter === 'rejected' && blog.rejectReason ? `
+                        <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:12px;margin:12px 0;color:#991b1b;font-size:0.85rem;">
+                            <strong><i class="bi bi-exclamation-circle"></i> Lý do từ chối:</strong>
+                            <p style="margin:6px 0 0 0;line-height:1.5;">${blog.rejectReason}</p>
+                        </div>
+                    ` : ''}
+                    ${filter === 'hidden' && blog.hiddenReason ? `
+                        <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:8px;padding:12px;margin:12px 0;color:#b45309;font-size:0.85rem;">
+                            <strong><i class="bi bi-info-circle"></i> Lý do ẩn:</strong>
+                            <p style="margin:6px 0 0 0;line-height:1.5;">${blog.hiddenReason}</p>
+                        </div>
+                    ` : ''}
+                    <div class="card-footer">
+                        <div class="card-info-badges">
+                            <span class="badge images"><i class="bi bi-image"></i> ${blog.imageCount} ảnh</span>
+                            <span class="badge location"><i class="bi bi-geo-alt"></i> ${blog.locationName}</span>
+                        </div>
+                        <div class="card-actions">
+                            ${actions}
+                            <button class="action-btn btn-view" onclick="viewDetails(${blog.id})">
+                                <i class="bi bi-arrow-right"></i> Chi tiết
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderPagination(pagination, filter) {
+        const container = document.getElementById('paginationContainer');
+        let html = '';
+        
+        for (let i = 1; i <= pagination.totalPages; i++) {
+            html += `<button onclick="loadBlogs('${filter}', ${i})" class="${i === pagination.page ? 'active' : ''}">${i}</button>`;
+        }
+        
+        container.innerHTML = html;
+    }
+
+    async function approveBlog(id) {
+        if (!confirm('Xác nhận duyệt bài viết này?')) return;
+
+        try {
+            const res = await fetch('/Blog/ApproveBlog', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id })
+            });
+            const data = await readJsonResponse(res);
+
+            if (data.success) {
+                showToast('Duyệt thành công!', 'success');
+                loadStats();
+                loadBlogs(currentFilter, currentPage);
+            } else {
+                showToast(data.message, 'error');
+            }
+        } catch (e) {
+            showToast('Lỗi khi duyệt bài viết', 'error');
+        }
+    }
+
+    function openRejectModal(id) {
+        currentRejectId = id;
+        document.getElementById('rejectReason').value = '';
+        document.getElementById('rejectModal').classList.add('show');
+    }
+
+    function closeRejectModal() {
+        document.getElementById('rejectModal').classList.remove('show');
+        currentRejectId = null;
+    }
+
+    async function confirmReject() {
+        const reason = document.getElementById('rejectReason').value.trim();
+        if (!reason) {
+            showToast('Vui lòng nhập lý do từ chối', 'error');
+            return;
+        }
+
+        try {
+            const res = await fetch('/Blog/RejectBlog', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: currentRejectId, reason })
+            });
+            const data = await readJsonResponse(res);
+
+            if (data.success) {
+                showToast('Từ chối thành công!', 'success');
+                closeRejectModal();
+                loadStats();
+                loadBlogs(currentFilter, currentPage);
+            } else {
+                showToast(data.message, 'error');
+            }
+        } catch (e) {
+            showToast('Lỗi khi từ chối bài viết', 'error');
+        }
+    }
+
+    function openHideModal(id) {
+        currentHideId = id;
+        document.getElementById('hideReason').value = '';
+        document.getElementById('hideModal').classList.add('show');
+    }
+
+    function closeHideModal() {
+        document.getElementById('hideModal').classList.remove('show');
+        currentHideId = null;
+    }
+
+    async function confirmHide() {
+        const reason = document.getElementById('hideReason').value.trim();
+        if (!reason) {
+            showToast('Vui lòng nhập lý do ẩn', 'error');
+            return;
+        }
+
+        try {
+            const res = await fetch('/Blog/HideBlog', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: currentHideId, reason })
+            });
+            const data = await readJsonResponse(res);
+
+            if (data.success) {
+                showToast('Đã ẩn bài viết!', 'success');
+                closeHideModal();
+                loadStats();
+                loadBlogs(currentFilter, currentPage);
+            } else {
+                showToast(data.message, 'error');
+            }
+        } catch (e) {
+            showToast('Lỗi khi ẩn bài viết', 'error');
+        }
+    }
+
+    async function restoreBlog(id) {
+        if (!confirm('Khôi phục bài viết này về trạng thái hiển thị?')) return;
+
+        try {
+            const res = await fetch('/Blog/RestoreBlog', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id })
+            });
+            const data = await readJsonResponse(res);
+
+            if (data.success) {
+                showToast('Khôi phục thành công!', 'success');
+                loadStats();
+                loadBlogs(currentFilter, currentPage);
+            } else {
+                showToast(data.message, 'error');
+            }
+        } catch (e) {
+            showToast('Lỗi khi khôi phục bài viết', 'error');
+        }
+    }
+
+    function viewDetails(id) {
+        window.location.href = `/Admin/BlogDetail?id=${id}`;
+    }
+
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        
+        const icon = type === 'success' ? '<i class="bi bi-check-circle"></i>' 
+            : type === 'error' ? '<i class="bi bi-x-circle"></i>'
+            : '<i class="bi bi-info-circle"></i>';
+
+        toast.innerHTML = `${icon}<span>${message}</span>`;
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 3500);
+    }
+
+    document.getElementById('rejectModal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('rejectModal')) {
+            closeRejectModal();
+        }
+    });
+
+    document.getElementById('hideModal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('hideModal')) {
+            closeHideModal();
+        }
+    });
+</script>

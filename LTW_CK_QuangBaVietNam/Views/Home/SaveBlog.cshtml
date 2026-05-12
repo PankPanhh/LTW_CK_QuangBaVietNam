@@ -1,0 +1,622 @@
+﻿@{
+    ViewBag.Title = "Bài viết đã lưu - Bộ sưu tập du lịch của tôi";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+    :root {
+        --deep-slate: #1e293b;
+        --slate: #334155;
+        --sky-blue: #0EA5E9;
+        --sky-light: #38BDF8;
+        --success: #10b981;
+        --spacing-4: 1rem;
+        --spacing-6: 1.5rem;
+        --spacing-8: 2rem;
+    }
+
+    .saved-page {
+        background: #f8fafc;
+        padding: var(--spacing-8) 0;
+        min-height: 100vh;
+    }
+
+    .saved-header {
+        text-align: center;
+        margin-bottom: var(--spacing-8);
+        padding: var(--spacing-8);
+        background: linear-gradient(135deg, rgba(14, 165, 233, 0.08), rgba(56, 189, 248, 0.08));
+        border-radius: 24px;
+        border: 1px solid rgba(14, 165, 233, 0.1);
+    }
+
+    .saved-header h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--deep-slate);
+        margin: 0 0 var(--spacing-4) 0;
+    }
+
+    .saved-header p {
+        font-size: 1.1rem;
+        color: #64748b;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--spacing-6);
+        flex-wrap: wrap;
+        gap: var(--spacing-4);
+    }
+
+    .filter-group {
+        display: flex;
+        gap: var(--spacing-3);
+        flex-wrap: wrap;
+    }
+
+    .filter-btn {
+        padding: 8px 16px;
+        border: 2px solid #e2e8f0;
+        background: white;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s;
+        color: #475569;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+        border-color: var(--sky-blue);
+        color: var(--sky-blue);
+        background: rgba(14, 165, 233, 0.05);
+    }
+
+    .sort-group {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-3);
+    }
+
+    .sort-group label {
+        font-weight: 600;
+        color: var(--deep-slate);
+        margin: 0;
+    }
+
+    .sort-group select {
+        padding: 8px 12px;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        background: white;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    /* Masonry Grid */
+    .saved-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: var(--spacing-6);
+        margin-bottom: var(--spacing-8);
+    }
+
+    .saved-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(30, 41, 59, 0.08);
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+
+    .saved-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 32px rgba(30, 41, 59, 0.15);
+    }
+
+    .card-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        background: #f1f5f9;
+    }
+
+    .card-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0);
+        opacity: 0;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: flex-end;
+        padding: var(--spacing-4);
+        gap: var(--spacing-3);
+    }
+
+    .saved-card:hover .card-overlay {
+        opacity: 1;
+        background: rgba(0, 0, 0, 0.4);
+    }
+
+    .overlay-btn {
+        flex: 1;
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        color: white;
+    }
+
+    .btn-view {
+        background: var(--sky-blue);
+    }
+
+    .btn-view:hover {
+        background: var(--sky-light);
+    }
+
+    .btn-unsave {
+        background: #ef4444;
+    }
+
+    .btn-unsave:hover {
+        background: #dc2626;
+    }
+
+    .card-content {
+        padding: var(--spacing-4);
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .card-location {
+        font-size: 0.75rem;
+        color: var(--sky-blue);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: var(--spacing-2);
+    }
+
+    .card-title {
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: var(--deep-slate);
+        margin: 0 0 var(--spacing-2) 0;
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .card-author {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: var(--spacing-3) 0;
+        padding-top: var(--spacing-3);
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .author-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .author-name {
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: var(--deep-slate);
+    }
+
+    .card-stats {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        color: #94a3b8;
+        margin-top: auto;
+        padding-top: var(--spacing-3);
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .stat {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: var(--spacing-12);
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 2px 8px rgba(30, 41, 59, 0.08);
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: #cbd5e1;
+        margin-bottom: var(--spacing-4);
+    }
+
+    .empty-state h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--deep-slate);
+        margin: 0 0 var(--spacing-2) 0;
+    }
+
+    .empty-state p {
+        color: #64748b;
+        margin: 0 0 var(--spacing-6) 0;
+    }
+
+    .btn-explore {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 24px;
+        background: var(--sky-blue);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .btn-explore:hover {
+        background: var(--sky-light);
+        transform: translateY(-2px);
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: var(--spacing-8);
+    }
+
+    .pagination button {
+        padding: 8px 12px;
+        border: 1px solid #e2e8f0;
+        background: white;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+    }
+
+    .pagination button.active {
+        background: var(--sky-blue);
+        color: white;
+        border-color: var(--sky-blue);
+    }
+
+    .pagination button:hover:not(.active) {
+        border-color: var(--sky-blue);
+        color: var(--sky-blue);
+    }
+
+    /* Toast */
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .toast {
+        background: white;
+        padding: 16px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        border-left: 4px solid;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        animation: slideIn 0.3s ease;
+    }
+
+    .toast.success { border-left-color: var(--success); color: var(--success); }
+    .toast.error { border-left-color: #ef4444; color: #ef4444; }
+
+    @@keyframes slideIn {
+        from { transform: translateX(400px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+</style>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<div class="saved-page">
+    <div class="container">
+        <!-- Header -->
+        <div class="saved-header">
+            <h1><i class="bi bi-bookmark-fill" style="color:var(--sky-blue);"></i> Bài viết đã lưu</h1>
+            <p>Bộ sưu tập du lịch cá nhân của bạn - Lưu giữ những trải nghiệm yêu thích để xem lại bất cứ lúc nào</p>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <div class="filter-group" id="locationFilters">
+                <button class="filter-btn active" onclick="filterByLocation('')">Tất cả</button>
+            </div>
+            <div style="display:flex; gap: var(--spacing-4); flex-wrap: wrap; align-items: center; flex: 1;">
+                <input type="text" id="searchInput" placeholder="Tìm kiếm bài viết..." 
+                    style="padding: 8px 16px; border: 2px solid #e2e8f0; border-radius: 8px; flex: 1; min-width: 200px;"
+                    onkeyup="debounceSearch()">
+                <div class="sort-group">
+                    <label for="sortSelect">Sắp xếp:</label>
+                    <select id="sortSelect" onchange="changeSorting()">
+                        <option value="newest">Mới lưu nhất</option>
+                        <option value="oldest">Cũ nhất</option>
+                        <option value="popular">Nhiều yêu thích</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grid -->
+        <div class="saved-grid" id="savedGrid">
+            <div class="empty-state">
+                <i class="bi bi-hourglass-split"></i>
+                <h3>Đang tải...</h3>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="paginationContainer"></div>
+    </div>
+</div>
+
+<script>
+    const PLACEHOLDER_IMG = 'https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&q=80&w=800';
+    let currentPage = 1;
+    let currentSort = 'newest';
+    let currentLocationFilter = '';
+    let currentSearchTerm = '';
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadSavedBlogs();
+    });
+
+    async function loadSavedBlogs(page = 1) {
+        const grid = document.getElementById('savedGrid');
+        grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><i class="bi bi-hourglass-split"></i><h3>Đang tải...</h3></div>`;
+
+        try {
+            const res = await fetch(`/Blog/GetSavedBlogs?page=${page}&pageSize=12`, { cache: 'no-store' });
+            
+            if (res.status === 401) {
+                grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><i class="bi bi-lock-fill"></i><h3>Vui lòng đăng nhập</h3><p>Bạn cần đăng nhập để xem bài viết đã lưu</p></div>`;
+                return;
+            }
+
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+
+            const data = await res.json();
+
+            if (data.success && data.data.length > 0) {
+                currentPage = page;
+                grid.innerHTML = data.data.map(blog => renderSavedCard(blog)).join('');
+                renderPagination(data.pagination);
+                loadLocations();
+            } else if (data.success && data.data.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column:1/-1;">
+                        <i class="bi bi-bookmark"></i>
+                        <h3>Chưa có bài viết lưu nào</h3>
+                        <p>Hãy khám phá và lưu những bài viết du lịch yêu thích của bạn</p>
+                        <a href="/Home/Blog" class="btn-explore">
+                            <i class="bi bi-compass"></i> Khám phá cộng đồng
+                        </a>
+                    </div>
+                `;
+            } else {
+                throw new Error(data.message || 'Invalid response');
+            }
+        } catch (e) {
+            console.error('Error:', e);
+            grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><i class="bi bi-exclamation-triangle"></i><h3>Lỗi khi tải</h3><p>Vui lòng tải lại trang sau ít phút</p></div>`;
+        }
+    }
+
+    function renderSavedCard(blog) {
+        const img = blog.image || PLACEHOLDER_IMG;
+        const authorName = blog.author || 'Người dùng';
+        const avatar = blog.avatar || ('https://ui-avatars.com/api/?name=' + encodeURIComponent(authorName) + '&background=0EA5E9&color=fff');
+
+        return `
+            <div class="saved-card">
+                <img src="${img}" alt="${blog.title}" class="card-image" onerror="this.src='${PLACEHOLDER_IMG}'">
+                <div class="card-overlay">
+                    <button class="overlay-btn btn-view" onclick="viewBlog(${blog.id})">
+                        <i class="bi bi-eye"></i> Xem
+                    </button>
+                    <button class="overlay-btn btn-unsave" onclick="unsaveBlog(${blog.id})">
+                        <i class="bi bi-bookmark-dash"></i> Bỏ lưu
+                    </button>
+                </div>
+                <div class="card-content">
+                    <div class="card-location">
+                        <i class="bi bi-geo-alt-fill"></i> ${blog.locationName || 'Khám phá'}
+                    </div>
+                    <h3 class="card-title">${blog.title}</h3>
+                    <p class="card-excerpt">${blog.excerpt || blog.content.substring(0, 80) + '...'}</p>
+                    <div class="card-footer">
+                        <div class="card-author">
+                            <img src="${avatar}" alt="${authorName}" class="author-avatar" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(authorName)}&background=0EA5E9&color=fff'">
+                            <div class="author-info">
+                                <div class="author-name">${authorName}</div>
+                                <div class="author-date">${blog.dateSubmitted || new Date().toLocaleDateString('vi-VN')}</div>
+                            </div>
+                        </div>
+                        <div class="card-stats">
+                            <span><i class="bi bi-heart"></i> ${blog.likes || 0}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderPagination(pagination) {
+        const container = document.getElementById('paginationContainer');
+        if (!pagination || pagination.totalPages <= 1) {
+            container.innerHTML = '';
+            return;
+        }
+
+        let html = '<div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">';
+        
+        if (pagination.currentPage > 1) {
+            html += `<button class="page-btn" onclick="loadSavedBlogs(${pagination.currentPage - 1})">← Trước</button>`;
+        }
+
+        for (let i = 1; i <= pagination.totalPages; i++) {
+            if (i === pagination.currentPage) {
+                html += `<button class="page-btn active">${i}</button>`;
+            } else if (i <= 3 || i > pagination.totalPages - 3 || Math.abs(i - pagination.currentPage) <= 2) {
+                html += `<button class="page-btn" onclick="loadSavedBlogs(${i})">${i}</button>`;
+            } else if (i === 4 || i === pagination.totalPages - 3) {
+                html += `<span class="page-ellipsis">...</span>`;
+            }
+        }
+
+        if (pagination.currentPage < pagination.totalPages) {
+            html += `<button class="page-btn" onclick="loadSavedBlogs(${pagination.currentPage + 1})">Sau →</button>`;
+        }
+
+        html += '</div>';
+        container.innerHTML = html;
+    }
+
+    async function loadLocations() {
+        try {
+            const res = await fetch('/Blog/GetSavedLocations', { cache: 'no-store' });
+            if (!res.ok) return;
+
+            const data = await res.json();
+            if (data.success && data.data.length > 0) {
+                const filters = document.getElementById('locationFilters');
+                filters.innerHTML = `<button class="filter-btn active" onclick="filterByLocation('')">Tất cả</button>`;
+                
+                data.data.forEach(loc => {
+                    const btn = document.createElement('button');
+                    btn.className = 'filter-btn';
+                    btn.textContent = loc.name;
+                    btn.onclick = () => filterByLocation(loc.id);
+                    filters.appendChild(btn);
+                });
+            }
+        } catch (e) {
+            console.warn('Cannot load locations:', e);
+        }
+    }
+
+    function filterByLocation(locationId) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        currentLocationFilter = locationId;
+        currentPage = 1;
+        loadSavedBlogs(1);
+    }
+
+    function changeSorting() {
+        currentSort = document.getElementById('sortSelect').value;
+        currentPage = 1;
+        loadSavedBlogs(1);
+    }
+
+    // Search functionality
+    function debounce(fn, delay) {
+        let timeout;
+        return function(...args) {
+            const context = this;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => fn.apply(context, args), delay);
+        };
+    }
+
+    function searchBlogs() {
+        const query = document.getElementById('searchInput').value.trim();
+        currentSearchTerm = query;
+        currentPage = 1;
+        loadSavedBlogs(1);
+    }
+
+    const debounceSearch = debounce(searchBlogs, 300);
+
+    function viewBlog(id) {
+        window.location.href = `/Home/DetailBlog?id=${id}`;
+    }
+
+    async function unsaveBlog(id) {
+        if (!confirm('Bỏ lưu bài viết này?')) return;
+
+        try {
+            const res = await fetch('/Blog/ToggleSaveBlog', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ blogId: id })
+            });
+
+            if (res.status === 401) {
+                showToast('Vui lòng đăng nhập', 'error');
+                return;
+            }
+
+            const data = await res.json();
+            if (data.success) {
+                showToast('Đã bỏ lưu bài viết', 'success');
+                loadSavedBlogs(currentPage);
+            } else {
+                showToast(data.message || 'Lỗi', 'error');
+            }
+        } catch (e) {
+            showToast('Lỗi mạng', 'error');
+        }
+    }
+
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `<i class="bi bi-${type === 'success' ? 'check-circle' : 'x-circle'}"></i><span>${message}</span>`;
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+</script>

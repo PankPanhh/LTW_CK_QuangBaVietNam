@@ -1,0 +1,887 @@
+@{
+    ViewBag.Title = "Chi tiết bài viết - Kiểm duyệt";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+    :root {
+        --deep-slate: #1e293b;
+        --slate: #334155;
+        --sky-blue: #0EA5E9;
+        --sky-light: #38BDF8;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --spacing-4: 1rem;
+        --spacing-6: 1.5rem;
+        --spacing-8: 2rem;
+    }
+
+    .moderation-detail-page {
+        display: flex;
+        gap: var(--spacing-8);
+        padding: var(--spacing-8);
+        background: #f8fafc;
+        min-height: 100vh;
+    }
+
+    .detail-main {
+        flex: 1;
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 2px 12px rgba(30, 41, 59, 0.08);
+    }
+
+    /* Hero Gallery */
+    .detail-gallery {
+        position: relative;
+        width: 100%;
+        height: 400px;
+        background: #e2e8f0;
+        overflow: hidden;
+    }
+
+    .gallery-main-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .gallery-thumbnail-strip {
+        display: flex;
+        gap: 8px;
+        padding: var(--spacing-4);
+        background: rgba(0, 0, 0, 0.7);
+        overflow-x: auto;
+    }
+
+    .gallery-thumb {
+        width: 80px;
+        height: 80px;
+        border-radius: 8px;
+        cursor: pointer;
+        border: 3px solid transparent;
+        transition: all 0.3s ease;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+
+    .gallery-thumb:hover,
+    .gallery-thumb.active {
+        border-color: var(--sky-blue);
+    }
+
+    .detail-content {
+        padding: var(--spacing-8);
+    }
+
+    /* Header Section */
+    .detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: var(--spacing-8);
+        padding-bottom: var(--spacing-6);
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .header-info h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--deep-slate);
+        margin: 0 0 var(--spacing-4) 0;
+        line-height: 1.3;
+    }
+
+    .header-meta {
+        display: flex;
+        gap: var(--spacing-6);
+        align-items: center;
+        flex-wrap: wrap;
+        margin-top: var(--spacing-4);
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        color: #64748b;
+        font-weight: 600;
+    }
+
+    .meta-item i {
+        color: var(--sky-blue);
+        font-size: 1.1rem;
+    }
+
+    .status-pill {
+        padding: 8px 16px;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .status-pending {
+        background: rgba(245, 158, 11, 0.1);
+        color: #92400e;
+    }
+
+    .status-approved {
+        background: rgba(16, 185, 129, 0.1);
+        color: #065f46;
+    }
+
+    .status-rejected {
+        background: rgba(239, 68, 68, 0.1);
+        color: #991b1b;
+    }
+
+    /* Author Section */
+    .author-section {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-4);
+        padding: var(--spacing-6);
+        background: #f1f5f9;
+        border-radius: 12px;
+        margin-bottom: var(--spacing-8);
+    }
+
+    .author-avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .author-info h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        color: var(--deep-slate);
+        font-weight: 700;
+    }
+
+    .author-info p {
+        margin: 4px 0 0 0;
+        color: #64748b;
+        font-size: 0.9rem;
+    }
+
+    /* Content Section */
+    .article-content {
+        color: #475569;
+        line-height: 1.8;
+        font-size: 1rem;
+        margin-bottom: var(--spacing-8);
+    }
+
+    .article-content h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--deep-slate);
+        margin: var(--spacing-6) 0 var(--spacing-3) 0;
+    }
+
+    .article-content p {
+        margin-bottom: var(--spacing-4);
+    }
+
+    /* Rejection History */
+    .rejection-history {
+        background: rgba(239, 68, 68, 0.05);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        border-radius: 12px;
+        padding: var(--spacing-6);
+        margin-bottom: var(--spacing-8);
+    }
+
+    .rejection-history h3 {
+        margin: 0 0 var(--spacing-4) 0;
+        color: #991b1b;
+        font-weight: 700;
+    }
+
+    .rejection-item {
+        padding: var(--spacing-4);
+        background: white;
+        border-radius: 8px;
+        margin-bottom: var(--spacing-3);
+    }
+
+    .rejection-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .rejection-item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--spacing-2);
+    }
+
+    .rejection-reason-text {
+        color: #64748b;
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    /* Right Panel */
+    .detail-sidebar {
+        width: 320px;
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-6);
+    }
+
+    .sidebar-panel {
+        background: white;
+        border-radius: 16px;
+        padding: var(--spacing-6);
+        box-shadow: 0 2px 12px rgba(30, 41, 59, 0.08);
+        position: sticky;
+        top: 100px;
+    }
+
+    .panel-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--deep-slate);
+        margin: 0 0 var(--spacing-4) 0;
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: var(--spacing-3) 0;
+        border-bottom: 1px solid #e2e8f0;
+        font-size: 0.9rem;
+    }
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        color: #64748b;
+        font-weight: 600;
+    }
+
+    .info-value {
+        color: var(--deep-slate);
+        font-weight: 700;
+    }
+
+    .action-btn {
+        width: 100%;
+        padding: 12px 16px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: var(--spacing-3);
+    }
+
+    .action-btn:last-child {
+        margin-bottom: 0;
+    }
+
+    .btn-approve {
+        background: var(--success);
+        color: white;
+    }
+
+    .btn-approve:hover {
+        background: #059669;
+        transform: translateY(-2px);
+    }
+
+    .btn-reject {
+        background: var(--danger);
+        color: white;
+    }
+
+    .btn-reject:hover {
+        background: #dc2626;
+        transform: translateY(-2px);
+    }
+
+    .btn-hide {
+        background: var(--warning);
+        color: white;
+    }
+
+    .btn-hide:hover {
+        background: #d97706;
+        transform: translateY(-2px);
+    }
+
+    .btn-view-public {
+        background: var(--sky-blue);
+        color: white;
+    }
+
+    .btn-view-public:hover {
+        background: var(--sky-light);
+        transform: translateY(-2px);
+    }
+
+    .divider {
+        height: 1px;
+        background: #e2e8f0;
+        margin: var(--spacing-4) 0;
+    }
+
+    /* Toast */
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .toast {
+        background: white;
+        padding: 16px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        border-left: 4px solid;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        animation: slideIn 0.3s ease;
+    }
+
+    .toast.success { border-left-color: var(--success); color: var(--success); }
+    .toast.error { border-left-color: var(--danger); color: var(--danger); }
+
+    @@keyframes slideIn {
+        from { transform: translateX(400px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Modal */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 2000;
+    }
+
+    .modal-overlay.show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+        padding: var(--spacing-6);
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--deep-slate);
+        margin: 0;
+    }
+
+    .modal-body {
+        padding: var(--spacing-6);
+    }
+
+    .modal-footer {
+        padding: var(--spacing-6);
+        border-top: 1px solid #e2e8f0;
+        display: flex;
+        gap: var(--spacing-4);
+        justify-content: flex-end;
+    }
+
+    .reason-input {
+        width: 100%;
+        padding: var(--spacing-4);
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 1rem;
+        resize: vertical;
+        min-height: 120px;
+        outline: none;
+        transition: border-color 0.3s;
+    }
+
+    .reason-input:focus {
+        border-color: var(--sky-blue);
+    }
+
+    .btn-secondary {
+        padding: 10px 20px;
+        border: 2px solid #e2e8f0;
+        background: white;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+    .btn-secondary:hover {
+        border-color: var(--sky-blue);
+        color: var(--sky-blue);
+    }
+</style>
+
+<div class="moderation-detail-page">
+    <!-- Main Content -->
+    <div class="detail-main">
+        <!-- Gallery -->
+        <div class="detail-gallery">
+            <img id="mainImage" src="" alt="" class="gallery-main-image" onerror="this.src='https://images.unsplash.com/photo-1488085061387-422e29b40080?w=1200&h=400&fit=crop'">
+            <div class="gallery-thumbnail-strip" id="thumbnailStrip"></div>
+        </div>
+
+        <!-- Content -->
+        <div class="detail-content">
+            <!-- Header -->
+            <div class="detail-header">
+                <div class="header-info">
+                    <h1 id="blogTitle">--</h1>
+                    <div class="header-meta">
+                        <div class="meta-item">
+                            <i class="bi bi-geo-alt-fill"></i>
+                            <span id="locationName">--</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="bi bi-calendar"></i>
+                            <span id="submitDate">--</span>
+                        </div>
+                        <span class="status-pill" id="statusBadge"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Author -->
+            <div class="author-section">
+                <img id="authorAvatar" src="" alt="" class="author-avatar">
+                <div class="author-info">
+                    <h3 id="authorName">--</h3>
+                    <p id="authorEmail">--</p>
+                </div>
+            </div>
+
+            <!-- Rejection History -->
+            <div id="rejectionHistory" style="display: none;">
+                <div class="rejection-history">
+                    <h3><i class="bi bi-exclamation-circle"></i> Lịch sử từ chối</h3>
+                    <div id="rejectionList"></div>
+                </div>
+            </div>
+
+            <!-- Article Content -->
+            <div class="article-content" id="articleContent">
+                Đang tải nội dung...
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="detail-sidebar">
+        <!-- Info Panel -->
+        <div class="sidebar-panel">
+            <h3 class="panel-title">
+                <i class="bi bi-info-circle"></i>
+                Thông tin bài viết
+            </h3>
+            <div class="info-row">
+                <span class="info-label">Trạng thái:</span>
+                <span class="info-value" id="sidebarStatus">--</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Lượt thích:</span>
+                <span class="info-value" id="likeCount">0</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Bình luận:</span>
+                <span class="info-value" id="commentCount">0</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Ngày đăng:</span>
+                <span class="info-value" id="publishDate">--</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Số lần gửi lại:</span>
+                <span class="info-value" id="resubmitCount">0</span>
+            </div>
+        </div>
+
+        <!-- Actions Panel -->
+        <div class="sidebar-panel">
+            <h3 class="panel-title">
+                <i class="bi bi-sliders"></i>
+                Hành động
+            </h3>
+            <button id="approveBtn" class="action-btn btn-approve" onclick="approveBlog()">
+                <i class="bi bi-check-circle"></i> Duyệt bài
+            </button>
+            <button id="rejectBtn" class="action-btn btn-reject" onclick="openRejectModal()">
+                <i class="bi bi-x-circle"></i> Từ chối
+            </button>
+            <button id="hideBtn" class="action-btn btn-hide" onclick="openHideModal()" style="display: none;">
+                <i class="bi bi-eye-slash"></i> Ẩn bài
+            </button>
+            <button id="restoreBtn" class="action-btn btn-approve" onclick="restoreBlog()" style="display: none;">
+                <i class="bi bi-arrow-counterclockwise"></i> Khôi phục
+            </button>
+            <div class="divider"></div>
+            <button class="action-btn btn-view-public" onclick="viewPublic()">
+                <i class="bi bi-arrow-up-right"></i> Xem trang công khai
+            </button>
+            <button class="action-btn btn-secondary" onclick="goBack()">
+                <i class="bi bi-arrow-left"></i> Quay lại
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Reject Modal -->
+<div class="modal-overlay" id="rejectModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Từ chối bài viết</h2>
+            <button class="modal-close-btn" onclick="closeRejectModal()" style="background:none;border:none;cursor:pointer;font-size:1.5rem;">×</button>
+        </div>
+        <div class="modal-body">
+            <label style="font-weight:700;display:block;margin-bottom:var(--spacing-3);">Lý do từ chối:</label>
+            <textarea id="rejectReason" class="reason-input" placeholder="Ví dụ: Nội dung không phù hợp chủ đề, chứa quảng cáo..."></textarea>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeRejectModal()">Hủy</button>
+            <button class="action-btn btn-reject" onclick="confirmReject()">
+                <i class="bi bi-x-circle"></i> Xác nhận từ chối
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Hide Modal -->
+<div class="modal-overlay" id="hideModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Ẩn bài viết</h2>
+            <button class="modal-close-btn" onclick="closeHideModal()" style="background:none;border:none;cursor:pointer;font-size:1.5rem;">×</button>
+        </div>
+        <div class="modal-body">
+            <label style="font-weight:700;display:block;margin-bottom:var(--spacing-3);">Lý do ẩn bài viết:</label>
+            <textarea id="hideReason" class="reason-input" placeholder="Ví dụ: Bài viết chứa nội dung không phù hợp..."></textarea>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeHideModal()">Hủy</button>
+            <button class="action-btn btn-hide" onclick="confirmHide()">
+                <i class="bi bi-eye-slash"></i> Xác nhận ẩn
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+    let blogId = new URLSearchParams(window.location.search).get('id');
+    let currentBlog = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!blogId) {
+            goBack();
+            return;
+        }
+        loadBlogDetail();
+    });
+
+    async function loadBlogDetail() {
+        try {
+            const res = await fetch(`/Blog/GetBlogForDetail?id=${blogId}`);
+            if (!res.ok) throw new Error('Failed to load blog');
+
+            const data = await res.json();
+            if (data.success) {
+                currentBlog = data.data;
+                renderBlogDetail();
+            } else {
+                showToast(data.message || 'Không thể tải bài viết', 'error');
+                goBack();
+            }
+        } catch (e) {
+            showToast('Lỗi khi tải bài viết', 'error');
+            console.error(e);
+        }
+    }
+
+    function renderBlogDetail() {
+        if (!currentBlog) return;
+
+        // Images
+        if (currentBlog.images && currentBlog.images.length > 0) {
+            document.getElementById('mainImage').src = currentBlog.images[0];
+            const strip = document.getElementById('thumbnailStrip');
+            strip.innerHTML = currentBlog.images.map((img, idx) => `
+                <img src="${img}" alt="" class="gallery-thumb ${idx === 0 ? 'active' : ''}" 
+                     onclick="switchImage(this, '${img}')">
+            `).join('');
+        }
+
+        // Header
+        document.getElementById('blogTitle').textContent = currentBlog.title;
+        document.getElementById('locationName').textContent = currentBlog.locationName || 'Chưa gắn thẻ';
+        document.getElementById('submitDate').textContent = currentBlog.dateSubmitted || '--';
+
+        // Status
+        const statusMap = {
+            'pending': { label: 'Chờ duyệt', class: 'status-pending' },
+            'approved': { label: 'Đã duyệt', class: 'status-approved' },
+            'rejected': { label: 'Bị từ chối', class: 'status-rejected' },
+            'hidden': { label: 'Đã ẩn', class: 'status-rejected' }
+        };
+        const status = (currentBlog.status || 'pending').toLowerCase();
+        const statusInfo = statusMap[status] || statusMap.pending;
+        const badge = document.getElementById('statusBadge');
+        badge.className = `status-pill ${statusInfo.class}`;
+        badge.innerHTML = `<i class="bi bi-${status === 'approved' ? 'check-circle' : status === 'rejected' ? 'x-circle' : status === 'hidden' ? 'eye-slash' : 'hourglass-split'}"></i> ${statusInfo.label}`;
+
+        // Author
+        document.getElementById('authorAvatar').src = currentBlog.avatar;
+        document.getElementById('authorName').textContent = currentBlog.author;
+        document.getElementById('authorEmail').textContent = currentBlog.authorEmail || 'N/A';
+
+        // Sidebar
+        document.getElementById('sidebarStatus').textContent = statusInfo.label;
+        document.getElementById('likeCount').textContent = currentBlog.likes || 0;
+        document.getElementById('commentCount').textContent = currentBlog.comments || 0;
+        document.getElementById('publishDate').textContent = currentBlog.dateSubmitted || '--';
+        document.getElementById('resubmitCount').textContent = currentBlog.resubmitCount || 0;
+
+        // Content
+        document.getElementById('articleContent').innerHTML = `<p>${currentBlog.content}</p>`;
+
+        // Rejection History
+        if (status === 'rejected' && currentBlog.rejectionHistory && currentBlog.rejectionHistory.length > 0) {
+            const historyDiv = document.getElementById('rejectionHistory');
+            const listDiv = document.getElementById('rejectionList');
+            listDiv.innerHTML = currentBlog.rejectionHistory.map(h => `
+                <div class="rejection-item">
+                    <div class="rejection-item-header">
+                        <strong>Lần từ chối #${h.attemptNumber}</strong>
+                        <span style="font-size:0.85rem;color:#94a3b8;">${h.date}</span>
+                    </div>
+                    <div class="rejection-reason-text">${h.reason}</div>
+                </div>
+            `).join('');
+            historyDiv.style.display = 'block';
+        }
+
+        // Update buttons
+        const hideBtn = document.getElementById('hideBtn');
+        const restoreBtn = document.getElementById('restoreBtn');
+        
+        document.getElementById('approveBtn').style.display = 'none';
+        document.getElementById('rejectBtn').style.display = 'none';
+        hideBtn.style.display = 'none';
+        restoreBtn.style.display = 'none';
+
+        if (status === 'pending') {
+            document.getElementById('approveBtn').style.display = 'flex';
+            document.getElementById('rejectBtn').style.display = 'flex';
+        } else if (status === 'approved') {
+            hideBtn.style.display = 'flex';
+        } else if (status === 'hidden') {
+            restoreBtn.style.display = 'flex';
+        }
+    }
+
+    function switchImage(thumb, src) {
+        document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
+        thumb.classList.add('active');
+        document.getElementById('mainImage').src = src;
+    }
+
+    async function approveBlog() {
+        if (!confirm('Xác nhận duyệt bài viết này?')) return;
+
+        try {
+            const res = await fetch('/Blog/ApproveBlog', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: blogId })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                showToast('Duyệt thành công!', 'success');
+                setTimeout(() => goBack(), 1500);
+            } else {
+                showToast(data.message, 'error');
+            }
+        } catch (e) {
+            showToast('Lỗi khi duyệt', 'error');
+        }
+    }
+
+    function openRejectModal() {
+        document.getElementById('rejectModal').classList.add('show');
+    }
+
+    function closeRejectModal() {
+        document.getElementById('rejectModal').classList.remove('show');
+    }
+
+    async function confirmReject() {
+        const reason = document.getElementById('rejectReason').value.trim();
+        if (!reason) {
+            showToast('Vui lòng nhập lý do từ chối', 'error');
+            return;
+        }
+
+        try {
+            const res = await fetch('/Blog/RejectBlog', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: blogId, reason })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                showToast('Từ chối thành công!', 'success');
+                closeRejectModal();
+                setTimeout(() => goBack(), 1500);
+            } else {
+                showToast(data.message, 'error');
+            }
+        } catch (e) {
+            showToast('Lỗi khi từ chối', 'error');
+        }
+    }
+
+    function openHideModal() {
+        document.getElementById('hideReason').value = '';
+        document.getElementById('hideModal').classList.add('show');
+    }
+
+    function closeHideModal() {
+        document.getElementById('hideModal').classList.remove('show');
+    }
+
+    async function confirmHide() {
+        const reason = document.getElementById('hideReason').value.trim();
+        if (!reason) {
+            showToast('Vui lòng nhập lý do ẩn bài', 'error');
+            return;
+        }
+
+        try {
+            const res = await fetch('/Blog/HideBlog', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: blogId, reason })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                showToast('Ẩn bài thành công!', 'success');
+                closeHideModal();
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                showToast(data.message, 'error');
+            }
+        } catch (e) {
+            showToast('Lỗi khi ẩn bài', 'error');
+        }
+    }
+
+    async function restoreBlog() {
+        if (!confirm('Khôi phục bài viết này về trạng thái hiển thị?')) return;
+
+        try {
+            const res = await fetch('/Blog/RestoreBlog', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: blogId })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                showToast('Khôi phục bài thành công!', 'success');
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                showToast(data.message, 'error');
+            }
+        } catch (e) {
+            showToast('Lỗi khi khôi phục bài', 'error');
+        }
+    }
+
+    function viewPublic() {
+        window.open(`/Home/DetailBlog?id=${blogId}`, '_blank');
+    }
+
+    function goBack() {
+        window.history.back();
+    }
+
+    function showToast(message, type) {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `<i class="bi bi-${type === 'success' ? 'check-circle' : 'x-circle'}"></i><span>${message}</span>`;
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 3500);
+    }
+
+    // Close modal on background click
+    document.getElementById('rejectModal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('rejectModal')) {
+            closeRejectModal();
+        }
+    });
+
+    document.getElementById('hideModal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('hideModal')) {
+            closeHideModal();
+        }
+    });
+</script>

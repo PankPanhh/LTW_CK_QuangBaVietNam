@@ -1,7 +1,10 @@
-﻿@{
-    ViewBag.Title = "Hạ Long - Kỳ quan thiên nhiên thế giới";
+@{
+    ViewBag.Title = "Chi tiết bài viết";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<meta charset="utf-8" />
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
 <style>
     :root {
@@ -9,849 +12,1467 @@
         --slate: #334155;
         --sky-blue: #0EA5E9;
         --sky-light: #38BDF8;
-        --slate-light: #cbd5e1;
-        --slate-200: #e2e8f0;
-        --white: #ffffff;
-        --spacing-2: 0.5rem;
-        --spacing-3: 0.75rem;
+        --success: #10b981;
         --spacing-4: 1rem;
         --spacing-6: 1.5rem;
         --spacing-8: 2rem;
-        --spacing-12: 3rem;
-        --spacing-16: 4rem;
     }
 
-    .blog-detail-page {
+    body {
         background: #f8fafc;
     }
 
-    .post-status-banner {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 14px 16px;
-        border-radius: 14px;
-        margin-bottom: var(--spacing-8);
-        font-weight: 600;
-    }
-
-    .post-status-banner.pending {
-        background: rgba(245, 158, 11, 0.12);
-        color: #92400e;
-        border: 1px solid rgba(245, 158, 11, 0.2);
-    }
-
-    .post-status-banner.rejected {
-        background: rgba(239, 68, 68, 0.12);
-        color: #991b1b;
-        border: 1px solid rgba(239, 68, 68, 0.2);
-    }
-
-    .post-status-banner.approved {
-        background: rgba(16, 185, 129, 0.12);
-        color: #065f46;
-        border: 1px solid rgba(16, 185, 129, 0.2);
-    }
-
-    .interaction-disabled {
-        opacity: 0.55;
-        pointer-events: none;
-        filter: grayscale(40%);
-    }
-
-    .interaction-note {
-        margin-top: var(--spacing-4);
-        padding: 14px 16px;
-        border-radius: 12px;
-        background: #fff7ed;
-        color: #9a3412;
-        border: 1px solid #fed7aa;
-        font-weight: 600;
+    .detail-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: var(--spacing-8);
     }
 
     /* Hero Section */
-    .blog-hero {
+    .hero-section {
         position: relative;
         width: 100%;
         height: 500px;
-        background: linear-gradient(135deg, #e0e7ff, #f3e8ff);
+        border-radius: 20px;
         overflow: hidden;
-        margin-bottom: var(--spacing-12);
+        margin-bottom: var(--spacing-8);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     }
 
-    .blog-hero-image {
+    .hero-image {
         width: 100%;
         height: 100%;
         object-fit: cover;
         transition: transform 0.4s ease;
     }
 
-    .blog-hero:hover .blog-hero-image {
+    .hero-section:hover .hero-image {
         transform: scale(1.02);
     }
 
-    .blog-hero-overlay {
+    .hero-overlay {
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        background: linear-gradient(to top, rgba(30, 41, 59, 0.7), rgba(30, 41, 59, 0.3), transparent);
+        background: linear-gradient(to top, rgba(30, 41, 59, 0.8), transparent);
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
-        padding: var(--spacing-12);
-        z-index: 2;
+        padding: var(--spacing-8);
     }
 
-    .blog-hero-content {
-        display: flex;
-        flex-direction: column;
-        gap: var(--spacing-4);
-        max-width: 800px;
+    .hero-content {
+        color: white;
     }
 
-    .blog-hero-category {
+    .hero-category {
         display: inline-block;
-        width: fit-content;
-        padding: var(--spacing-2) var(--spacing-4);
+        padding: 6px 12px;
         background: rgba(14, 165, 233, 0.9);
         border-radius: 999px;
         font-size: 0.75rem;
         font-weight: 700;
-        color: white;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+        margin-bottom: var(--spacing-4);
     }
 
-    .blog-hero-title {
+    .hero-title {
         font-size: 2.5rem;
         font-weight: 800;
-        color: white;
+        margin: 0 0 var(--spacing-4) 0;
         line-height: 1.2;
-        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     }
 
-    .blog-hero-meta {
+    .hero-meta {
         display: flex;
         align-items: center;
         gap: var(--spacing-4);
-        color: rgba(255, 255, 255, 0.9);
-        font-size: 0.9375rem;
-        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+        flex-wrap: wrap;
+        font-size: 0.95rem;
     }
 
-    .blog-hero-meta-item {
+    .meta-item {
         display: flex;
         align-items: center;
-        gap: var(--spacing-2);
+        gap: 6px;
     }
 
-    .blog-hero-meta-item i {
-        font-size: 1.1rem;
+    /* Sticky Action Bar */
+    .action-bar {
+        position: sticky;
+        top: 80px;
+        margin-bottom: 30px;
+        background: white;
+        border-bottom: 1px solid #e2e8f0;
+        padding: var(--spacing-4);
+        z-index: 100;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     }
 
-    .blog-hero-actions {
+    .action-buttons {
         display: flex;
-        gap: var(--spacing-3);
-        margin-top: var(--spacing-4);
+        justify-content: center;
+        gap: var(--spacing-4);
+        flex-wrap: wrap;
     }
 
-    .blog-action-btn {
-        padding: var(--spacing-3) var(--spacing-6);
-        border: 2px solid white;
-        background: transparent;
-        color: white;
+    .action-btn {
+        padding: 10px 20px;
+        border: 2px solid #e2e8f0;
+        background: white;
         border-radius: 8px;
         cursor: pointer;
         font-weight: 600;
-        font-size: 0.9375rem;
-        transition: all 0.3s ease;
         display: flex;
         align-items: center;
-        gap: var(--spacing-2);
-        white-space: nowrap;
+        gap: 8px;
+        transition: all 0.3s ease;
+        color: #475569;
     }
 
-    .blog-action-btn:hover {
-        background: white;
-        color: var(--deep-slate);
-    }
+        .action-btn:hover {
+            border-color: var(--sky-blue);
+            color: var(--sky-blue);
+            background: rgba(14, 165, 233, 0.05);
+        }
 
-    .blog-action-btn.active {
-        background: var(--sky-blue);
-        border-color: var(--sky-blue);
-    }
+        .action-btn.active {
+            background: rgba(14, 165, 233, 0.1);
+            border-color: var(--sky-blue);
+            color: var(--sky-blue);
+        }
 
-    /* Main Content Layout */
-    .blog-content-wrapper {
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+    /* Main Content */
+    .content-wrapper {
         display: grid;
         grid-template-columns: 1fr 320px;
         gap: var(--spacing-8);
-        padding: 0 var(--spacing-6);
-        margin-bottom: var(--spacing-16);
+        margin-bottom: var(--spacing-8);
     }
 
-    .blog-main-content {
-        max-width: 800px;
-        margin: 0 auto;
-    }
-
-    /* Article Content */
-    .article-text {
-        color: #475569;
+    .article-content {
+        background: white;
+        padding: var(--spacing-8);
+        border-radius: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         line-height: 1.8;
-        font-size: 1.0625rem;
+        color: #475569;
     }
 
-    .article-text h2 {
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: var(--deep-slate);
-        margin: var(--spacing-8) 0 var(--spacing-4) 0;
-        line-height: 1.3;
-    }
+        .article-content h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--deep-slate);
+            margin: var(--spacing-8) 0 var(--spacing-4) 0;
+        }
 
-    .article-text h3 {
-        font-size: 1.375rem;
-        font-weight: 700;
-        color: var(--deep-slate);
-        margin: var(--spacing-6) 0 var(--spacing-3) 0;
-    }
+        .article-content p {
+            margin: 0 0 var(--spacing-4) 0;
+        }
 
-    .article-text p {
-        margin: 0 0 var(--spacing-4) 0;
-    }
+        .article-content strong {
+            color: var(--deep-slate);
+            font-weight: 700;
+        }
 
-    .article-text ul, .article-text ol {
-        margin: var(--spacing-4) 0;
-        padding-left: var(--spacing-8);
-    }
-
-    .article-text li {
-        margin-bottom: var(--spacing-2);
-    }
-
-    .article-text strong {
-        color: var(--deep-slate);
-        font-weight: 700;
-    }
-
-    .article-text em {
-        color: var(--sky-blue);
-        font-style: italic;
-    }
-
-    /* Article Images */
     .article-image {
         width: 100%;
-        height: auto;
         border-radius: 12px;
         margin: var(--spacing-8) 0;
         cursor: pointer;
         transition: all 0.3s ease;
-        box-shadow: 0 4px 20px rgba(30, 41, 59, 0.1);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
     }
 
-    .article-image:hover {
-        transform: scale(1.01);
-        box-shadow: 0 8px 32px rgba(30, 41, 59, 0.15);
-    }
-
-    .article-image-caption {
-        font-size: 0.875rem;
-        color: #94a3b8;
-        text-align: center;
-        margin-top: var(--spacing-2);
-        font-style: italic;
-    }
+        .article-image:hover {
+            transform: scale(1.01);
+        }
 
     /* Sidebar */
-    .blog-sidebar {
+    .sidebar {
         display: flex;
         flex-direction: column;
-        gap: var(--spacing-8);
+        gap: var(--spacing-6);
     }
 
     .sidebar-card {
         background: white;
-        border-radius: 16px;
         padding: var(--spacing-6);
-        box-shadow: 0 2px 12px rgba(30, 41, 59, 0.08);
-        position: sticky;
-        top: 100px;
+        border-radius: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     }
 
-    .sidebar-card-title {
-        font-size: 1.125rem;
+    .card-title {
         font-weight: 700;
         color: var(--deep-slate);
         margin: 0 0 var(--spacing-4) 0;
         display: flex;
         align-items: center;
-        gap: var(--spacing-2);
+        gap: 8px;
     }
 
-    .sidebar-card-title i {
-        color: var(--sky-blue);
-    }
+        .card-title i {
+            color: var(--sky-blue);
+        }
 
     .sidebar-item {
         padding: var(--spacing-3) 0;
-        border-bottom: 1px solid var(--slate-200);
+        border-bottom: 1px solid #e2e8f0;
         cursor: pointer;
         transition: all 0.3s ease;
     }
 
-    .sidebar-item:last-child {
-        border-bottom: none;
-    }
+        .sidebar-item:last-child {
+            border-bottom: none;
+        }
 
-    .sidebar-item:hover {
-        padding-left: var(--spacing-2);
-        color: var(--sky-blue);
-    }
+        .sidebar-item:hover {
+            padding-left: 8px;
+            color: var(--sky-blue);
+        }
 
-    .sidebar-item-name {
+    .item-title {
         font-weight: 600;
         color: var(--deep-slate);
-        margin-bottom: var(--spacing-1);
-        font-size: 0.9375rem;
+        margin-bottom: 4px;
+        font-size: 0.95rem;
     }
 
-    .sidebar-item-meta {
-        font-size: 0.8125rem;
+    .item-meta {
+        font-size: 0.8rem;
         color: #94a3b8;
     }
 
-    .sidebar-view-more {
+    .view-more-btn {
         width: 100%;
-        padding: var(--spacing-3) var(--spacing-4);
+        padding: 10px;
         background: rgba(14, 165, 233, 0.1);
         color: var(--sky-blue);
         border: 2px solid rgba(14, 165, 233, 0.2);
         border-radius: 8px;
         cursor: pointer;
         font-weight: 600;
-        font-size: 0.875rem;
-        transition: all 0.3s ease;
         margin-top: var(--spacing-4);
+        transition: all 0.3s ease;
     }
 
-    .sidebar-view-more:hover {
-        background: rgba(14, 165, 233, 0.2);
-        border-color: var(--sky-blue);
+        .view-more-btn:hover {
+            background: rgba(14, 165, 233, 0.2);
+            border-color: var(--sky-blue);
+        }
+
+    /* Comments Section */
+    .comments-section {
+        background: white;
+        padding: var(--spacing-8);
+        border-radius: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        margin-top: var(--spacing-8);
+        position: relative;
     }
 
-    /* Article Footer */
-    .article-footer {
-        border-top: 2px solid var(--slate-200);
-        border-bottom: 2px solid var(--slate-200);
-        padding: var(--spacing-8) 0;
-        margin: var(--spacing-12) 0;
-    }
-
-    .article-footer-actions {
+    .comment-input-area {
         display: flex;
         gap: var(--spacing-4);
+        margin-bottom: var(--spacing-8);
+        position: relative;
+    }
+
+    .comment-input-wrapper {
+        flex: 1;
+        position: relative;
+    }
+
+    .comment-textarea {
+        width: 100%;
+        min-height: 80px;
+        padding: 12px 16px;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        resize: vertical;
+        font-family: inherit;
+        font-size: 0.95rem;
+        transition: all 0.3s;
+    }
+
+        .comment-textarea:focus {
+            outline: none;
+            border-color: var(--sky-blue);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+
+    .comment-submit-btn {
+        margin-top: 8px;
+        padding: 8px 16px;
+        background: var(--sky-blue);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        float: right;
+    }
+
+        .comment-submit-btn:hover {
+            background: #0284c7;
+        }
+
+        .comment-submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+    .comment-login-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(4px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         justify-content: center;
+        border-radius: 12px;
+        z-index: 10;
+        gap: 12px;
+    }
+
+        .comment-login-overlay p {
+            margin: 0;
+            font-weight: 600;
+            color: var(--deep-slate);
+        }
+
+    .comment-item {
+        padding: var(--spacing-4) 0;
+        border-bottom: 1px solid #f1f5f9;
+        display: flex;
+        gap: var(--spacing-4);
+    }
+
+        .comment-item.reply {
+            margin-left: 3rem;
+            border-bottom: none;
+            padding-bottom: 0;
+            padding-top: var(--spacing-3);
+        }
+
+        .comment-item:last-child {
+            border-bottom: none;
+        }
+
+    .comment-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+
+    .reply .comment-avatar {
+        width: 32px;
+        height: 32px;
+    }
+
+    .comment-body {
+        flex: 1;
+    }
+
+    .comment-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 4px;
         flex-wrap: wrap;
     }
 
-    .footer-action-btn {
+    .comment-author {
+        font-weight: 700;
+        color: var(--deep-slate);
+    }
+
+    .comment-badge {
+        font-size: 0.7rem;
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: rgba(14, 165, 233, 0.1);
+        color: var(--sky-blue);
+        font-weight: 700;
+    }
+
+    .comment-date {
+        font-size: 0.8rem;
+        color: #94a3b8;
+        margin-left: auto;
+    }
+
+    .comment-text {
+        color: #475569;
+        line-height: 1.5;
+        font-size: 0.95rem;
+    }
+
+    .comment-actions {
         display: flex;
-        align-items: center;
-        gap: var(--spacing-2);
-        padding: var(--spacing-4) var(--spacing-6);
-        background: white;
-        border: 2px solid var(--slate-200);
-        border-radius: 12px;
+        gap: 16px;
+        margin-top: 8px;
+        font-size: 0.85rem;
+    }
+
+    .comment-action-btn {
+        background: none;
+        border: none;
+        color: #94a3b8;
         cursor: pointer;
         font-weight: 600;
-        font-size: 0.9375rem;
-        color: var(--slate);
-        transition: all 0.3s ease;
+        padding: 0;
+        transition: color 0.2s;
     }
 
-    .footer-action-btn:hover {
-        border-color: var(--sky-blue);
-        color: var(--sky-blue);
-        background: rgba(14, 165, 233, 0.05);
+        .comment-action-btn:hover {
+            color: var(--sky-blue);
+        }
+
+        .comment-action-btn.delete:hover {
+            color: #ef4444;
+        }
+
+    .reply-input-area {
+        margin-top: 12px;
+        display: none;
+        flex-direction: column;
+        align-items: flex-end;
     }
 
-    .footer-action-btn i {
-        font-size: 1.25rem;
+        .reply-input-area.show {
+            display: flex;
+        }
+
+    .comment-skeleton {
+        display: flex;
+        gap: var(--spacing-4);
+        padding: var(--spacing-4) 0;
+        animation: pulse 1.5s infinite;
     }
 
-    .footer-action-btn.active {
-        background: rgba(14, 165, 233, 0.1);
-        border-color: var(--sky-blue);
-        color: var(--sky-blue);
+    .skeleton-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #e2e8f0;
     }
 
-    .footer-action-btn:disabled {
-        cursor: not-allowed;
-        opacity: 0.6;
+    .skeleton-line {
+        height: 12px;
+        background: #e2e8f0;
+        border-radius: 4px;
+        margin-bottom: 8px;
     }
 
-    /* Modal */
+        .skeleton-line.short {
+            width: 40%;
+        }
+
+        .skeleton-line.long {
+            width: 100%;
+        }
+
+    @@keyframes pulse {
+        0%, 100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.5;
+        }
+    }
+
+    /* Loading & Empty States */
+    .loading {
+        text-align: center;
+        padding: var(--spacing-12);
+    }
+
+        .loading i {
+            font-size: 3rem;
+            color: #cbd5e1;
+            animation: spin 1s linear infinite;
+        }
+
+    @@keyframes spin {
+        from {
+            transform: rotate(0);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: var(--spacing-12);
+        background: white;
+        border-radius: 16px;
+    }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: #cbd5e1;
+            margin-bottom: var(--spacing-4);
+        }
+
+    /* Toast */
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .toast {
+        background: white;
+        padding: 16px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        border-left: 4px solid;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+        .toast.success {
+            border-left-color: var(--success);
+            color: var(--success);
+        }
+
+        .toast.error {
+            border-left-color: #ef4444;
+            color: #ef4444;
+        }
+
+    /* Image Modal */
     .image-modal {
         display: none;
         position: fixed;
-        z-index: 2000;
-        left: 0;
         top: 0;
+        left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.95);
-        animation: fadeIn 0.3s ease;
-    }
-
-    .image-modal.show {
-        display: flex;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 2000;
         align-items: center;
         justify-content: center;
     }
 
-    .image-modal-content {
-        position: relative;
+        .image-modal.show {
+            display: flex;
+        }
+
+    .modal-img {
         max-width: 90%;
         max-height: 90vh;
-        animation: zoomIn 0.3s ease;
+        border-radius: 8px;
     }
 
-    .image-modal-content img {
+    .modal-close {
+        position: absolute;
+        top: 20px;
+        right: 40px;
+        color: white;
+        font-size: 2rem;
+        cursor: pointer;
+        background: none;
+        border: none;
+    }
+
+    /* Gallery Styles */
+    .blog-gallery {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: var(--spacing-4);
+        margin-bottom: var(--spacing-8);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    }
+
+        .blog-gallery.gallery-single .gallery-image:first-child {
+            grid-column: 1 / -1;
+            aspect-ratio: 16 / 9;
+        }
+
+        .blog-gallery.gallery-double {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .blog-gallery.gallery-multi {
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        }
+
+    .gallery-image {
+        position: relative;
+        cursor: pointer;
+        overflow: hidden;
+        background: #f1f5f9;
+        aspect-ratio: 1;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+
+        .gallery-image:hover {
+            transform: scale(1.02);
+        }
+
+        .gallery-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-image:hover img {
+            transform: scale(1.05);
+        }
+
+    .gallery-image-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+
+    .gallery-image:hover .gallery-image-overlay {
+        background: rgba(0, 0, 0, 0.3);
+        opacity: 1;
+    }
+
+    .gallery-image-icon {
+        font-size: 2rem;
+        color: white;
+    }
+
+    /* Lightbox */
+    .lightbox-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
         width: 100%;
         height: 100%;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(10px);
+    }
+
+        .lightbox-modal.show {
+            display: flex;
+        }
+
+    .lightbox-container {
+        position: relative;
+        width: 90%;
+        max-width: 1200px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .lightbox-image {
+        max-width: 100%;
+        max-height: 85vh;
         object-fit: contain;
         border-radius: 8px;
     }
 
-    .image-modal-close {
-        position: absolute;
-        top: -40px;
-        right: 0;
-        font-size: 2rem;
+    .lightbox-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        margin-top: var(--spacing-4);
         color: white;
-        cursor: pointer;
-        background: none;
+    }
+
+    .lightbox-btn {
+        background: rgba(255, 255, 255, 0.2);
         border: none;
-        transition: all 0.3s ease;
+        color: white;
         width: 50px;
         height: 50px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 1.2rem;
         display: flex;
         align-items: center;
         justify-content: center;
+        transition: all 0.3s ease;
     }
 
-    .image-modal-close:hover {
-        color: var(--sky-blue);
-        transform: scale(1.2);
+        .lightbox-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+    .lightbox-counter {
+        font-size: 1rem;
+        font-weight: 600;
     }
 
-    @@keyframes fadeIn {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
-        }
+    .lightbox-close {
+        position: absolute;
+        top: -50px;
+        right: 0;
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 2rem;
+        cursor: pointer;
+        transition: transform 0.3s;
     }
 
-    @@keyframes zoomIn {
-        from {
-            transform: scale(0.8);
-            opacity: 0;
+        .lightbox-close:hover {
+            transform: rotate(90deg);
         }
-        to {
-            transform: scale(1);
-            opacity: 1;
-        }
+
+    .gallery-thumbnails {
+        display: flex;
+        gap: var(--spacing-3);
+        margin-top: var(--spacing-4);
+        overflow-x: auto;
+        padding-bottom: var(--spacing-3);
     }
 
-    /* Responsive */
+    .gallery-thumbnail {
+        width: 60px;
+        height: 60px;
+        border-radius: 8px;
+        cursor: pointer;
+        border: 3px solid transparent;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+    }
+
+        .gallery-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .gallery-thumbnail.active {
+            border-color: var(--sky-blue);
+        }
+
     @@media (max-width: 1024px) {
-        .blog-content-wrapper {
+        .content-wrapper {
             grid-template-columns: 1fr;
         }
 
-        .blog-hero-title {
-            font-size: 2rem;
-        }
-
-        .article-text {
-            font-size: 1rem;
+        .hero-title {
+            font-size: 1.75rem;
         }
     }
 
     @@media (max-width: 768px) {
-        .blog-hero {
-            height: 350px;
-            margin-bottom: var(--spacing-8);
+        .detail-container {
+            padding: var(--spacing-4);
         }
 
-        .blog-hero-overlay {
-            padding: var(--spacing-6);
+        .hero-section {
+            height: 300px;
         }
 
-        .blog-hero-title {
-            font-size: 1.5rem;
+        .hero-overlay {
+            padding: var(--spacing-4);
         }
 
-        .blog-hero-actions {
+        .action-buttons {
             flex-direction: column;
-            gap: var(--spacing-2);
         }
 
-        .blog-action-btn {
+        .action-btn {
             width: 100%;
             justify-content: center;
         }
 
-        .blog-content-wrapper {
-            padding: 0 var(--spacing-4);
+        .blog-gallery.gallery-double {
+            grid-template-columns: 1fr;
         }
 
-        .article-footer-actions {
-            gap: var(--spacing-2);
+        .blog-gallery.gallery-multi {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
         }
 
-        .footer-action-btn {
-            flex: 1;
-            flex-direction: column;
-            gap: var(--spacing-1);
-            padding: var(--spacing-3) var(--spacing-2);
-            font-size: 0.8125rem;
-        }
-
-        .footer-action-btn i {
-            font-size: 1.125rem;
+        .lightbox-image {
+            max-height: 70vh;
         }
     }
 </style>
 
-<!-- Hero Section -->
-<section class="blog-hero">
-    <img src="https://images.unsplash.com/photo-1528127269322-539801943592?w=1200&h=600&fit=crop" alt="Vịnh Hạ Long" class="blog-hero-image">
-    <div class="blog-hero-overlay">
-        <div class="blog-hero-content">
-            <span class="blog-hero-category">Thiên Nhiên</span>
-            <h1 class="blog-hero-title">Hạ Long - Kỳ quan thiên nhiên thế giới</h1>
-            <div class="blog-hero-meta">
-                <div class="blog-hero-meta-item">
-                    <i class="bi bi-calendar-event"></i>
-                    <span>15 Tháng 12, 2024</span>
+<div class="toast-container" id="toastContainer"></div>
+
+<div class="detail-container">
+    <!-- Hero Section -->
+    <div class="hero-section" id="heroSection">
+        <img id="heroImage" src="" alt="" class="hero-image">
+        <div class="hero-overlay">
+            <div class="hero-content">
+                <span class="hero-category"><i class="bi bi-geo-alt"></i> <span id="locationName"></span></span>
+                <h1 class="hero-title" id="blogTitle"></h1>
+                <div class="hero-meta">
+                    <div class="meta-item">
+                        <img id="authorAvatar" src="" alt="" style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
+                        <span id="authorName"></span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="bi bi-calendar-event"></i>
+                        <span id="dateSubmitted"></span>
+                    </div>
                 </div>
-                <div class="blog-hero-meta-item">
-                    <i class="bi bi-person-circle"></i>
-                    <span>Tác giả: Nguyễn Văn A</span>
-                </div>
-            </div>
-            <div class="blog-hero-actions">
-                <button class="blog-action-btn" onclick="toggleFavorite(this)">
-                    <i class="bi bi-heart"></i> Yêu thích
-                </button>
-                <button class="blog-action-btn" onclick="shareArticle()">
-                    <i class="bi bi-share"></i> Chia sẻ
-                </button>
             </div>
         </div>
     </div>
-</section>
 
-<!-- Main Content -->
-<div class="container-fluid">
-    <div class="blog-content-wrapper">
-        <!-- Article Content -->
-        <main class="blog-main-content">
-            <div id="postStatusBanner" class="post-status-banner approved" style="display:none;"></div>
-            <article class="article-text" id="articleContent">
-                <p>Vịnh Hạ Long, nằm ở phía đông bắc của Việt Nam, là một trong những di sản thiên nhiên thế giới được UNESCO công nhận. Với hơn 1600 hòn đảo đá vôi nổi trên mặt nước xanh ngọc, Hạ Long tạo nên một bức tranh thiên nhiên kỳ vĩ mà ít nơi nào trên thế giới có thể sánh được.</p>
+    <!-- Sticky Action Bar -->
+    <div class="action-bar">
+        <div class="action-buttons">
+            <button class="action-btn" id="likeBtn" onclick="toggleLike()">
+                <i class="bi bi-heart"></i> <span id="likeText">Thích</span> (<span id="likeCount">0</span>)
+            </button>
+            <button class="action-btn" id="saveBtn" onclick="toggleSave()">
+                <i class="bi bi-bookmark"></i> Lưu
+            </button>
+            <button class="action-btn" onclick="shareArticle()">
+                <i class="bi bi-share"></i> Chia sẻ
+            </button>
+            <button class="action-btn" onclick="viewLocation()">
+                <i class="bi bi-map"></i> Xem bản đồ
+            </button>
+        </div>
+    </div>
 
-                <h2>Vẻ đẹp kỳ vĩ của thiên nhiên</h2>
-                <p>Mỗi hòn đảo trong vịnh là một <strong>kiến trúc tự nhiên độc đáo</strong>, được hình thành trong suốt hàng triệu năm qua. Những vách đá vôi cao hàng chục mét, những hang động bí ẩn, và những bãi cát trắng hoang sơ tạo nên một cảnh tượng không tưởng.</p>
+    <!-- Main Content -->
+    <div class="content-wrapper">
+        <!-- Article -->
+        <main>
+            <!-- Gallery -->
+            <div class="blog-gallery" id="blogGallery" style="display: none;"></div>
 
-                <img src="https://images.unsplash.com/photo-1528127269322-539801943592?w=800&h=400&fit=crop" alt="Vịnh Hạ Long lúc bình minh" class="article-image">
-                <p class="article-image-caption">Vịnh Hạ Long trong ánh sáng bình minh - một cảnh tượng tuyệt mỹ</p>
+            <article class="article-content" id="articleContent"></article>
 
-                <h3>Những hòn đảo nổi tiếng</h3>
-                <p>Trong vịnh Hạ Long, có nhiều hòn đảo nổi tiếng mà du khách không nên bỏ lỡ:</p>
-                <ul>
-                    <li><strong>Hòn Gà:</strong> Với hình dáng giống con gà, hòn đảo này trở thành biểu tượng của Hạ Long</li>
-                    <li><strong>Hang Sơn Đông:</strong> Hang động lớn nhất vịnh, với những tạo hình đá tự nhiên tuyệt đẹp</li>
-                    <li><strong>Đảo Tuần Châu:</strong> Là trung tâm du lịch hiện đại với nhiều hoạt động thú vị</li>
-                </ul>
+            <!-- Comments -->
+            <div class="comments-section" id="commentsSection">
+                <h3 class="card-title"><i class="bi bi-chat-dots"></i> Bình luận cộng đồng</h3>
 
-                <h2>Trải nghiệm du lịch tuyệt vời</h2>
-                <p>Du khách đến Hạ Long có thể tham gia vào <em>nhiều hoạt động hấp dẫn</em>:</p>
-                <ul>
-                    <li>Đi du thuyền khám phá những hòn đảo</li>
-                    <li>Thăm các hang động bí ẩn</li>
-                    <li>Tắm biển trên những bãi cát hoang sơ</li>
-                    <li>Tham gia các hoạt động thể thao nước</li>
-                </ul>
+                <div class="comment-input-area" id="mainCommentInput">
+                    <img src="https://ui-avatars.com/api/?name=User&background=0EA5E9&color=fff" alt="" id="currentUserAvatar" class="comment-avatar">
+                    <div class="comment-input-wrapper">
+                        <textarea id="mainCommentText" class="comment-textarea" placeholder="Chia sẻ cảm nhận của bạn..."></textarea>
+                        <button class="comment-submit-btn" onclick="submitComment(null, 'mainCommentText')">
+                            Gửi bình luận
+                        </button>
 
-                <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=400&fit=crop" alt="Du thuyền trên Vịnh Hạ Long" class="article-image">
-                <p class="article-image-caption">Du thuyền hạng sang là cách tuyệt nhất để khám phá Hạ Long</p>
-
-                <h2>Thời gian tốt nhất để đi</h2>
-                <p>Mùa đẹp nhất để ghé thăm Hạ Long là <strong>tháng 9 đến tháng 11</strong>, khi thời tiết mát mẻ và trời ít mưa. Tuy nhiên, bất kỳ thời điểm nào trong năm cũng có sức hấp dẫn riêng của nó.</p>
-
-                <p>Hạ Long không chỉ là một điểm đến du lịch, mà còn là một hành trình khám phá thiên nhiên tuyệt vời của Việt Nam. Nếu bạn chưa bao giờ đến đây, hãy sắp xếp thời gian soonest possible để không bỏ lỡ kỳ quan này!</p>
-            </article>
-
-            <!-- Article Footer -->
-            <div class="article-footer" id="articleFooter">
-                <div class="article-footer-actions" id="articleFooterActions">
-                    <button class="footer-action-btn" onclick="toggleLike(this)">
-                        <i class="bi bi-hand-thumbs-up"></i>
-                        <span>Thích</span>
-                    </button>
-                    <button class="footer-action-btn" onclick="toggleSave(this)">
-                        <i class="bi bi-bookmark"></i>
-                        <span>Lưu</span>
-                    </button>
-                    <button class="footer-action-btn" onclick="shareArticle()">
-                        <i class="bi bi-share"></i>
-                        <span>Chia sẻ</span>
-                    </button>
+                        <div class="comment-login-overlay" id="commentLoginOverlay" style="display: none;">
+                            <p>Đăng nhập để tham gia bình luận và tương tác cùng cộng đồng</p>
+                            <a href="/Auth/Login" class="action-btn" style="background: var(--sky-blue); color: white; border: none; padding: 8px 16px; border-radius: 8px; text-decoration: none;">
+                                Đăng nhập ngay
+                            </a>
+                        </div>
+                    </div>
                 </div>
-                <div class="interaction-note" id="interactionNote" style="display:none;"></div>
+
+                <div id="commentsList">
+                    <!-- Skeletons -->
+                    <div class="comment-skeleton">
+                        <div class="skeleton-avatar"></div>
+                        <div style="flex:1"><div class="skeleton-line short"></div><div class="skeleton-line long"></div></div>
+                    </div>
+                </div>
             </div>
         </main>
 
         <!-- Sidebar -->
-        <aside class="blog-sidebar">
-            <!-- Related Locations -->
-            <div class="sidebar-card">
-                <h3 class="sidebar-card-title">
-                    <i class="bi bi-geo-alt-fill"></i>
-                    Địa điểm liên quan
-                </h3>
-                <div class="sidebar-item" onclick="navigateToLocation(1)">
-                    <div class="sidebar-item-name">Vịnh Hạ Long</div>
-                    <div class="sidebar-item-meta"><i class="bi bi-geo-alt"></i> Quảng Ninh</div>
-                </div>
-                <div class="sidebar-item" onclick="navigateToLocation(2)">
-                    <div class="sidebar-item-name">Đảo Cát Bà</div>
-                    <div class="sidebar-item-meta"><i class="bi bi-geo-alt"></i> Quảng Ninh</div>
-                </div>
-                <div class="sidebar-item" onclick="navigateToLocation(3)">
-                    <div class="sidebar-item-name">Hang Sơn Đông</div>
-                    <div class="sidebar-item-meta"><i class="bi bi-geo-alt"></i> Quảng Ninh</div>
-                </div>
-                <button class="sidebar-view-more" onclick="showMoreLocations()">Xem thêm →</button>
+        <aside class="sidebar">
+            <!-- Related Blogs -->
+            <div class="sidebar-card" id="relatedBlogsCard" style="display:none;">
+                <h3 class="card-title"><i class="bi bi-journal-text"></i> Bài viết cùng địa điểm</h3>
+                <div id="relatedBlogsList"></div>
             </div>
 
-            <!-- Related Articles -->
+            <!-- Related Locations -->
             <div class="sidebar-card">
-                <h3 class="sidebar-card-title">
-                    <i class="bi bi-journal-text"></i>
-                    Gợi ý bài viết khác
-                </h3>
-                <div class="sidebar-item" onclick="navigateToArticle(2)">
-                    <div class="sidebar-item-name">Phở Hà Nội - Linh hồn ẩm thực</div>
-                    <div class="sidebar-item-meta">12 Tháng 12, 2024</div>
+                <h3 class="card-title"><i class="bi bi-geo-alt-fill"></i> Địa điểm liên quan</h3>
+                <div id="relatedLocationsList">
+                    <div style="text-align:center;padding:20px;color:#94a3b8;">
+                        <i class="bi bi-hourglass-split"></i> Đang tải...
+                    </div>
                 </div>
-                <div class="sidebar-item" onclick="navigateToArticle(3)">
-                    <div class="sidebar-item-name">Phố cổ Hội An rực rỡ</div>
-                    <div class="sidebar-item-meta">10 Tháng 12, 2024</div>
-                </div>
-                <div class="sidebar-item" onclick="navigateToArticle(4)">
-                    <div class="sidebar-item-name">Đà Lạt - Thành phố sương mù</div>
-                    <div class="sidebar-item-meta">08 Tháng 12, 2024</div>
-                </div>
-                <button class="sidebar-view-more" onclick="showMoreArticles()">Xem thêm →</button>
             </div>
         </aside>
     </div>
 </div>
 
-<!-- Image Modal -->
-<div class="image-modal" id="imageModal">
-    <div class="image-modal-content">
-        <button class="image-modal-close" onclick="closeImageModal()">×</button>
-        <img id="modalImage" src="" alt="">
+<!-- Lightbox Modal -->
+<div class="lightbox-modal" id="lightboxModal">
+    <div class="lightbox-container">
+        <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+        <img id="lightboxImage" src="" alt="" class="lightbox-image" onclick="event.stopPropagation()">
+        <div class="lightbox-controls">
+            <button class="lightbox-btn" onclick="prevGalleryImage()" title="Ảnh trước">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+            <div class="lightbox-counter">
+                <span id="lightboxCounter">1 / 1</span>
+            </div>
+            <button class="lightbox-btn" onclick="nextGalleryImage()" title="Ảnh tiếp">
+                <i class="bi bi-chevron-right"></i>
+            </button>
+        </div>
+        <div class="gallery-thumbnails" id="lightboxThumbnails"></div>
     </div>
 </div>
 
 <script>
-    var isPostApproved = false;
-    var isUserLoggedIn = @((Session["nguoiDung"] != null).ToString().ToLower());
+    const PLACEHOLDER = 'https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&q=80&w=800';
+    let blogData = null;
+    let isLoggedIn = @((Session["nguoiDung"] != null).ToString().ToLower());
+    let currentGalleryIndex = 0;
+    let galleryImages = [];
 
-    function requireLoginForInteraction() {
-        showToast('Đăng nhập để sử dụng tính năng này', 'Vui lòng đăng nhập để tương tác với bài viết.', 'info');
-        return false;
+    async function readJsonResponse(res) {
+        const contentType = res.headers.get('content-type') || '';
+        if (!contentType.includes('application/json')) {
+            const text = await res.text();
+            throw new Error((text || '').trim().startsWith('<') ? 'Server returned HTML instead of JSON.' : 'Server returned a non-JSON response.');
+        }
+
+        return await res.json();
     }
 
-    function setPostState(status, message) {
-        var normalized = (status || 'pending').toString().toLowerCase();
-        var banner = document.getElementById('postStatusBanner');
-        var note = document.getElementById('interactionNote');
-        var articleContent = document.getElementById('articleContent');
-        var footerActions = document.getElementById('articleFooterActions');
-        var buttonLabel = '';
-        var bannerClass = '';
-        var allowInteraction = normalized === 'approved' && isUserLoggedIn;
-
-        if (normalized === 'approved') {
-            buttonLabel = 'Bài viết đã được duyệt và đang hiển thị công khai.';
-            bannerClass = 'approved';
-        } else if (normalized === 'rejected') {
-            buttonLabel = 'Bài viết bị từ chối. Vui lòng kiểm tra lại nội dung.';
-            bannerClass = 'rejected';
+    document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const blogId = urlParams.get('id');
+        if (blogId) {
+            loadBlogDetail(blogId);
         } else {
-            buttonLabel = 'Bài viết đang chờ duyệt. Các chức năng tương tác tạm thời được ẩn.';
-            bannerClass = 'pending';
+            showError('Không tìm thấy bài viết');
         }
-
-        banner.className = 'post-status-banner ' + bannerClass;
-        banner.innerHTML = '<i class="bi bi-info-circle-fill"></i><span>' + buttonLabel + '</span>';
-        banner.style.display = 'flex';
-        note.textContent = message || buttonLabel;
-        note.style.display = allowInteraction ? 'none' : 'block';
-        articleContent.classList.toggle('interaction-disabled', !allowInteraction);
-        footerActions.classList.toggle('interaction-disabled', !allowInteraction);
-        isPostApproved = normalized === 'approved';
-
-        footerActions.querySelectorAll('button').forEach(function (btn) {
-            btn.disabled = !allowInteraction;
-            if (!allowInteraction) {
-                btn.onclick = requireLoginForInteraction;
-            }
-        });
-    }
-
-    setPostState('pending', 'Bài viết này chỉ hiển thị đầy đủ chức năng khi ở trạng thái Đã duyệt.');
-
-    // Toggle Favorite in Hero
-    function toggleFavorite(btn) {
-        if (!isUserLoggedIn) {
-            requireLoginForInteraction();
-            return;
-        }
-        if (!isPostApproved) {
-            showToast('Bài viết đang chờ duyệt', 'Tương tác này chỉ khả dụng với bài đã duyệt.', 'info');
-            return;
-        }
-        btn.classList.toggle('active');
-        var isFavorite = btn.classList.contains('active');
-        showToast(
-            'Bài viết yêu thích',
-            isFavorite ? 'Đã thêm bài viết vào yêu thích!' : 'Đã bỏ yêu thích!',
-            'success'
-        );
-    }
-
-    // Toggle Like
-    function toggleLike(btn) {
-        if (!isUserLoggedIn) {
-            requireLoginForInteraction();
-            return;
-        }
-        if (!isPostApproved) {
-            showToast('Bài viết đang chờ duyệt', 'Tương tác này chỉ khả dụng với bài đã duyệt.', 'info');
-            return;
-        }
-        btn.classList.toggle('active');
-        var isLiked = btn.classList.contains('active');
-        showToast(
-            'Thích bài viết',
-            isLiked ? 'Cảm ơn bạn đã thích bài viết!' : 'Đã bỏ thích!',
-            'success'
-        );
-    }
-
-    // Toggle Save
-    function toggleSave(btn) {
-        if (!isUserLoggedIn) {
-            requireLoginForInteraction();
-            return;
-        }
-        if (!isPostApproved) {
-            showToast('Bài viết đang chờ duyệt', 'Tương tác này chỉ khả dụng với bài đã duyệt.', 'info');
-            return;
-        }
-        btn.classList.toggle('active');
-        var isSaved = btn.classList.contains('active');
-        showToast(
-            'Lưu bài viết',
-            isSaved ? 'Bài viết đã được lưu!' : 'Đã xóa khỏi danh sách lưu!',
-            'success'
-        );
-    }
-
-    // Share Article
-    function shareArticle() {
-        var url = window.location.href;
-        var text = document.querySelector('.blog-hero-title').innerText;
-
-        if (navigator.share) {
-            navigator.share({
-                title: 'VietScape',
-                text: text,
-                url: url
-            });
-        } else {
-            navigator.clipboard.writeText(url).then(() => {
-                showToast('Chia sẻ', 'Đã sao chép liên kết bài viết!', 'success');
-            });
-        }
-    }
-
-    // Open Image Modal
-    document.querySelectorAll('.article-image').forEach(img => {
-        img.addEventListener('click', function() {
-            var modal = document.getElementById('imageModal');
-            var modalImage = document.getElementById('modalImage');
-            modalImage.src = this.src;
-            modal.classList.add('show');
-        });
     });
 
-    // Close Image Modal
-    function closeImageModal() {
-        var modal = document.getElementById('imageModal');
+    async function loadBlogDetail(blogId) {
+        try {
+            const res = await fetch(`/Blog/GetBlogDetail?id=${blogId}`, { cache: 'no-store' });
+            const data = await readJsonResponse(res);
+
+            if (!data.success) {
+                showError(data.message || 'Lỗi khi tải bài viết');
+                return;
+            }
+
+            blogData = data.data;
+            renderBlog();
+        } catch (e) {
+            console.error('Error:', e);
+            showError('Lỗi khi tải bài viết');
+        }
+    }
+
+    function renderBlog() {
+        const b = blogData;
+
+        // Hero
+        document.getElementById('heroImage').src = b.images[0] || PLACEHOLDER;
+        document.getElementById('heroImage').onerror = () => { document.getElementById('heroImage').src = PLACEHOLDER; };
+        document.getElementById('blogTitle').innerText = b.title;
+        document.getElementById('locationName').innerText = b.locationName;
+        document.getElementById('authorName').innerText = b.author;
+        document.getElementById('authorAvatar').src = b.avatar;
+        document.getElementById('authorAvatar').onerror = () => {
+            document.getElementById('authorAvatar').src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(b.author) + '&background=0EA5E9&color=fff';
+        };
+        document.getElementById('dateSubmitted').innerText = b.dateSubmitted;
+
+        // Action buttons
+        document.getElementById('likeCount').innerText = b.likes;
+        const likeBtn = document.getElementById('likeBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        if (b.isLiked) likeBtn.classList.add('active');
+        if (b.isSaved) saveBtn.classList.add('active');
+
+        // Article content
+        document.getElementById('articleContent').innerHTML = b.content.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>');
+
+        // Blog Gallery
+        if (b.images && b.images.length > 1) {
+            const galleryHtml = b.images.map((img, index) => `
+                <div class="gallery-image" onclick="openLightbox(${index})">
+                    <img src="${img}" alt="">
+                    <div class="gallery-image-overlay">
+                        <i class="bi bi-eye gallery-image-icon"></i>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('blogGallery').innerHTML = galleryHtml;
+            document.getElementById('blogGallery').style.display = 'grid';
+        }
+
+        // Related blogs
+        if (b.relatedBlogs && b.relatedBlogs.length > 0) {
+            const relatedHtml = b.relatedBlogs.map(blog => `
+                <div class="sidebar-item" onclick="viewBlog(${blog.id})">
+                    <div class="item-title">${blog.title}</div>
+                    <div class="item-meta"><i class="bi bi-heart"></i> ${blog.likes} yêu thích</div>
+                </div>
+            `).join('');
+            document.getElementById('relatedBlogsList').innerHTML = relatedHtml;
+            document.getElementById('relatedBlogsCard').style.display = 'block';
+        }
+
+        // Comments
+        loadComments(b.id);
+
+        // Show/hide login overlay
+        if (!isLoggedIn) {
+            document.getElementById('commentLoginOverlay').style.display = 'flex';
+            document.getElementById('mainCommentText').disabled = true;
+        }
+
+        // Related locations
+        if (b.locationId) {
+            loadRelatedLocations(b.locationId);
+        }
+
+        renderGallery();
+    }
+
+    function renderGallery() {
+        const galleryContainer = document.getElementById('blogGallery');
+        const images = blogData.images || [];
+
+        if (images.length === 0) {
+            galleryContainer.style.display = 'none';
+            return;
+        }
+
+        galleryImages = images;
+        galleryContainer.style.display = 'grid';
+
+        // Determine layout based on image count
+        if (images.length === 1) {
+            galleryContainer.classList = 'blog-gallery gallery-single';
+        } else if (images.length === 2) {
+            galleryContainer.classList = 'blog-gallery gallery-double';
+        } else {
+            galleryContainer.classList = 'blog-gallery gallery-multi';
+        }
+
+        galleryContainer.innerHTML = images.map((img, idx) => `
+            <div class="gallery-image" onclick="openLightbox(${idx})">
+                <img src="${img}" alt="Gallery image ${idx + 1}" onerror="this.src='${PLACEHOLDER}'">
+                <div class="gallery-image-overlay">
+                    <div class="gallery-image-icon">
+                        <i class="bi bi-fullscreen"></i>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    async function loadRelatedLocations(locationId) {
+        const container = document.getElementById('relatedLocationsList');
+
+        try {
+            const res = await fetch(`/Blog/GetRelatedLocations?locationId=${locationId}`, { cache: 'no-store' });
+            const data = await readJsonResponse(res);
+
+            if (!data.success || !Array.isArray(data.data) || data.data.length === 0) {
+                container.innerHTML = '<div style="text-align:center;padding:20px;color:#94a3b8;">Không có địa điểm liên quan</div>';
+                return;
+            }
+
+            container.innerHTML = data.data.map(loc => `
+                <div class="sidebar-item" onclick="viewLocationById(${loc.id})">
+                    <div class="item-title">${loc.name || 'Địa điểm'}</div>
+                    <div class="item-meta">${loc.region || ''}</div>
+                </div>
+            `).join('');
+        } catch (e) {
+            console.error('Error loading related locations:', e);
+            container.innerHTML = '<div style="text-align:center;padding:20px;color:#94a3b8;">Không tải được địa điểm liên quan</div>';
+        }
+    }
+
+    function openLightbox(index) {
+        currentGalleryIndex = index;
+        const modal = document.getElementById('lightboxModal');
+        modal.classList.add('show');
+        updateLightbox();
+    }
+
+    function closeLightbox() {
+        const modal = document.getElementById('lightboxModal');
         modal.classList.remove('show');
     }
 
-    // Close modal when clicking outside
-    document.getElementById('imageModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeImageModal();
+    function updateLightbox() {
+        const img = document.getElementById('lightboxImage');
+        const counter = document.getElementById('lightboxCounter');
+        const thumbnails = document.getElementById('lightboxThumbnails');
+
+        img.src = galleryImages[currentGalleryIndex];
+        counter.textContent = `${currentGalleryIndex + 1} / ${galleryImages.length}`;
+
+        // Update thumbnails
+        thumbnails.innerHTML = galleryImages.map((imgUrl, idx) => `
+            <div class="gallery-thumbnail ${idx === currentGalleryIndex ? 'active' : ''}" onclick="currentGalleryIndex = ${idx}; updateLightbox();">
+                <img src="${imgUrl}" alt="Thumbnail ${idx + 1}" onerror="this.src='${PLACEHOLDER}'">
+            </div>
+        `).join('');
+    }
+
+    function nextGalleryImage() {
+        currentGalleryIndex = (currentGalleryIndex + 1) % galleryImages.length;
+        updateLightbox();
+    }
+
+    function prevGalleryImage() {
+        currentGalleryIndex = (currentGalleryIndex - 1 + galleryImages.length) % galleryImages.length;
+        updateLightbox();
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        const modal = document.getElementById('lightboxModal');
+        if (!modal.classList.contains('show')) return;
+
+        if (e.key === 'ArrowRight') nextGalleryImage();
+        if (e.key === 'ArrowLeft') prevGalleryImage();
+        if (e.key === 'Escape') closeLightbox();
+    });
+
+    // Close lightbox on background click
+    document.getElementById('lightboxModal').addEventListener('click', (e) => {
+        if (e.target.id === 'lightboxModal') closeLightbox();
+    });
+
+    function toggleLike() {
+        if (!isLoggedIn) {
+            showToast('Đăng nhập để sử dụng tính năng này', 'error');
+            return;
+        }
+
+        fetch('/Blog/ToggleBlogLike', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ blogId: blogData.id })
+        })
+            .then(r => r.json())
+            .then(d => {
+                if (d.success) {
+                    document.getElementById('likeBtn').classList.toggle('active');
+                    document.getElementById('likeCount').innerText = d.likes;
+                    showToast('Cập nhật thành công', 'success');
+                }
+            })
+            .catch(() => showToast('Lỗi', 'error'));
+    }
+
+    function toggleSave() {
+        if (!isLoggedIn) {
+            showToast('Đăng nhập để sử dụng tính năng này', 'error');
+            return;
+        }
+
+        fetch('/Blog/ToggleSaveBlog', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ blogId: blogData.id })
+        })
+            .then(r => r.json())
+            .then(d => {
+                if (d.success) {
+                    document.getElementById('saveBtn').classList.toggle('active');
+                    showToast(d.message, 'success');
+                }
+            })
+            .catch(() => showToast('Lỗi', 'error'));
+    }
+
+    function shareArticle() {
+        const url = window.location.href;
+        if (navigator.share) {
+            navigator.share({
+                title: blogData.title,
+                text: blogData.title,
+                url: url
+            });
+        } else {
+            navigator.clipboard.writeText(url);
+            showToast('Ðã sao chép liên kết', 'success');
+        }
+    }
+
+    function viewLocation() {
+        if (blogData.locationId) {
+            window.location.href = `/Home/DetailPlace?id=${blogData.locationId}`;
+        }
+    }
+
+    function viewBlog(id) {
+        window.location.href = `/Home/DetailBlog?id=${id}`;
+    }
+
+    function viewLocationById(id) {
+        window.location.href = `/Home/DetailPlace?id=${id}`;
+    }
+
+    const imageModal = document.getElementById('imageModal');
+    if (imageModal) {
+        imageModal.addEventListener('click', (e) => {
+            if (e.target.id === 'imageModal') closeImageModal();
+        });
+    }
+
+    function showToast(msg, type = 'success') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `<i class="bi bi-${type === 'success' ? 'check-circle' : 'x-circle'}"></i><span>${msg}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    function showError(msg) {
+        document.getElementById('articleContent').innerHTML = `
+            <div class="empty-state">
+                <i class="bi bi-exclamation-triangle"></i>
+                <h3>Lỗi</h3>
+                <p>${msg}</p>
+                <a href="/Home/Blog" style="color:var(--sky-blue);font-weight:700;text-decoration:none;">? Quay lại</a>
+            </div>
+        `;
+    }
+
+    // --- COMMENTS LOGIC ---
+    let commentsData = [];
+
+    async function loadComments(blogId) {
+        try {
+            const res = await fetch(`/Blog/GetComments?id=${blogId}`);
+            const data = await res.json();
+            if (data.success) {
+                commentsData = data.data || [];
+                renderCommentsList();
+            }
+        } catch (e) {
+            console.error('Error loading comments', e);
+        }
+    }
+
+    function renderCommentsList() {
+        const container = document.getElementById('commentsList');
+        if (commentsData.length === 0) {
+            container.innerHTML = `<div style="text-align:center; padding: 20px; color: #94a3b8;">Chưa có bình luận nào. Hãy là người đầu tiên chia sẻ cảm nhận!</div>`;
+            return;
+        }
+
+        let html = '';
+        commentsData.forEach(c => {
+            html += generateCommentHtml(c, false);
+            if (c.replies && c.replies.length > 0) {
+                c.replies.forEach(r => {
+                    html += generateCommentHtml(r, true);
+                });
+            }
+        });
+        container.innerHTML = html;
+    }
+
+    function generateCommentHtml(c, isReply) {
+        const replyClass = isReply ? 'reply' : '';
+
+        // Xử lý comment bị ẩn/xoá đối với người xem là owner
+        if (c.status !== 'visible') {
+            if (c.isOwner) {
+                return `
+                    <div class="comment-item ${replyClass}" id="comment-${c.id}" style="background: #f8fafc; opacity: 0.8; border-radius: 8px; padding: 12px; margin-bottom: 12px; border: 1px dashed #cbd5e1;">
+                        <div style="display: flex; gap: 8px; align-items: flex-start;">
+                            <i class="bi bi-exclamation-triangle" style="color: #f59e0b; font-size: 1.2rem;"></i>
+                            <div>
+                                <div style="font-weight: 600; color: #475569; margin-bottom: 4px;">Bình luận của bạn đã bị quản trị viên ${c.status === 'deleted' ? 'xoá' : 'ẩn'}</div>
+                                <div style="font-size: 0.85rem; color: #64748b;">Lý do: ${c.reason || 'Vi phạm chính sách cộng đồng'}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                return ''; // Backend đã filter, nhưng cứ return empty string cho an toàn
+            }
+        }
+
+        const badgeHtml = c.isAuthor ? `<span class="comment-badge"><i class="bi bi-pen"></i> Tác giả</span>` : '';
+        let replyBtn = `<button class="comment-action-btn" onclick="toggleReplyBox(${c.id})">Trả lời</button>`;
+
+        // Menu 3 chấm
+        let menuHtml = `
+            <div style="position:relative; display:inline-block; margin-left: auto;">
+                <button class="comment-action-btn" onclick="toggleCommentMenu(${c.id})"><i class="bi bi-three-dots"></i></button>
+                <div id="comment-menu-${c.id}" class="comment-menu" style="display:none; position:absolute; top:100%; right:0; background:white; border:1px solid #e2e8f0; border-radius:8px; box-shadow:0 4px 6px rgba(0,0,0,0.05); z-index:100; min-width:130px; padding: 4px 0;">
+                    <a href="javascript:void(0)" onclick="reportComment(${c.id})" style="display:block; padding:8px 16px; color:#475569; text-decoration:none; font-size:0.85rem; font-weight: 500;">Báo cáo</a>
+                    ${c.isOwner ? `<a href="javascript:void(0)" onclick="deleteComment(${c.id})" style="display:block; padding:8px 16px; color:#ef4444; text-decoration:none; font-size:0.85rem; font-weight: 500;">Xoá bình luận</a>` : ''}
+                </div>
+            </div>
+        `;
+
+        return `
+            <div class="comment-item ${replyClass}" id="comment-${c.id}">
+                <img src="${c.avatar}" alt="" class="comment-avatar" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(c.author)}&background=0EA5E9&color=fff'">
+                <div class="comment-body">
+                    <div class="comment-header">
+                        <span class="comment-author">${c.author}</span>
+                        ${badgeHtml}
+                        <span class="comment-date">${c.date}</span>
+                    </div>
+                    <div class="comment-text">${c.content}</div>
+                    <div class="comment-actions">
+                        ${!isReply ? replyBtn : ''}
+                        ${menuHtml}
+                    </div>
+                    ${!isReply ? `
+                    <div class="reply-input-area" id="reply-box-${c.id}">
+                        <textarea id="reply-text-${c.id}" class="comment-textarea" placeholder="Viết phản hồi..." style="min-height:60px;"></textarea>
+                        <button class="comment-submit-btn" onclick="submitComment(${c.id}, 'reply-text-${c.id}')" style="margin-top: 8px;">Gửi phản hồi</button>
+                    </div>` : ''}
+                </div>
+            </div>
+        `;
+    }
+
+    function toggleCommentMenu(id) {
+        const menu = document.getElementById(`comment-menu-${id}`);
+        const isShowing = menu.style.display === 'block';
+        // Ẩn tất cả menu khác
+        document.querySelectorAll('.comment-menu').forEach(m => m.style.display = 'none');
+        if (!isShowing) menu.style.display = 'block';
+    }
+
+    // Đóng menu khi click ra ngoài
+    document.addEventListener('click', function (e) {
+        if (!e.target.closest('.comment-actions')) {
+            document.querySelectorAll('.comment-menu').forEach(m => m.style.display = 'none');
         }
     });
 
-    // Navigate to Location
-    function navigateToLocation(locationId) {
-        showToast('Chuyển hướng', 'Đang chuyển đến trang bản đồ...', 'info');
-        setTimeout(() => {
-            window.location.href = '/Home/Map#location-' + locationId;
-        }, 500);
-    }
-
-    // Navigate to Article
-    function navigateToArticle(articleId) {
-        showToast('Tải bài viết', 'Đang tải bài viết...', 'info');
-        setTimeout(() => {
-            window.location.href = '/Home/DetailBlog?id=' + articleId;
-        }, 500);
-    }
-
-    // Show More Locations
-    function showMoreLocations() {
-        showToast('Xem thêm', 'Hiển thị các địa điểm liên quan khác...', 'info');
-    }
-
-    // Show More Articles
-    function showMoreArticles() {
-        showToast('Xem thêm', 'Hiển thị các bài viết liên quan khác...', 'info');
-    }
-
-    // Keyboard - close modal with ESC
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            closeImageModal();
+    function reportComment(id) {
+        if (!isLoggedIn) {
+            showToast('Bạn cần đăng nhập để báo cáo', 'error');
+            return;
         }
-    });
+        showToast('Đã gửi báo cáo cho quản trị viên', 'success');
+        document.getElementById(`comment-menu-${id}`).style.display = 'none';
+    }
+
+    function toggleReplyBox(id) {
+        if (!isLoggedIn) {
+            showToast('Bạn cần đăng nhập để bình luận', 'error');
+            return;
+        }
+        const box = document.getElementById(`reply-box-${id}`);
+        if (box) box.classList.toggle('show');
+    }
+
+    async function submitComment(parentId, textareaId) {
+        if (!isLoggedIn) {
+            showToast('Bạn cần đăng nhập để bình luận', 'error');
+            return;
+        }
+
+        const input = document.getElementById(textareaId);
+        const content = input.value.trim();
+        if (!content) {
+            showToast('Vui lòng nhập nội dung bình luận', 'error');
+            return;
+        }
+
+        try {
+            const btn = input.nextElementSibling;
+            btn.disabled = true;
+            btn.innerHTML = 'Đang gửi...';
+
+            const payload = new URLSearchParams();
+            payload.append('blogId', blogData.id);
+            payload.append('content', content);
+            if (parentId) payload.append('parentId', parentId);
+
+            const res = await fetch('/Blog/AddComment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                body: payload.toString()
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                showToast(data.message || 'Đã đăng bình luận thành công', 'success');
+                input.value = '';
+                if (parentId) toggleReplyBox(parentId);
+
+                // Reload comment list to reflect tree structure
+                loadComments(blogData.id);
+            } else {
+                showToast(data.message, 'error');
+            }
+        } catch (e) {
+            showToast('Lỗi khi đăng bình luận', 'error');
+        } finally {
+            const btn = document.getElementById(textareaId).nextElementSibling;
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = parentId ? 'Gửi phản hồi' : 'Gửi bình luận';
+            }
+        }
+    }
+
+    async function deleteComment(id) {
+        if (!confirm('Bạn có chắc chắn muốn xoá bình luận này?')) return;
+
+        try {
+            const res = await fetch('/Blog/DeleteComment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                showToast('Đã xoá bình luận', 'success');
+                // Reload comments
+                loadComments(blogData.id);
+            } else {
+                showToast(data.message, 'error');
+            }
+        } catch (e) {
+            showToast('Lỗi khi xoá bình luận', 'error');
+        }
+    }
 </script>

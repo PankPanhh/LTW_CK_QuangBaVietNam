@@ -15,7 +15,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
 
         private static string GetConnectionString()
         {
-            var appConnection = ConfigurationManager.ConnectionStrings["QL_DL_LTWConnectionString"];
+            var appConnection = ConfigurationManager.ConnectionStrings["QBConnectionString"];
             if (appConnection != null && !string.IsNullOrWhiteSpace(appConnection.ConnectionString))
             {
                 return appConnection.ConnectionString;
