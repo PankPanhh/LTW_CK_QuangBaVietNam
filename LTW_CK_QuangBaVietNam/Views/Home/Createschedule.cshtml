@@ -1383,6 +1383,19 @@
             <div class="day-selection-grid" id="daySelectionGrid">
                 <!-- Day options will be generated here -->
             </div>
+
+            <div style="margin-top: var(--spacing-4);">
+                <label style="display: block; margin-bottom: var(--spacing-2); font-weight: 600; font-size: 0.9rem;">Thời gian *</label>
+                <div style="display: flex; gap: var(--spacing-3);">
+                    <input type="time" id="placeStartTime" class="form-group-custom" style="flex: 1; padding: 10px; border: 1px solid var(--slate-200); border-radius: 8px;" required>
+                    <input type="time" id="placeEndTime" class="form-group-custom" style="flex: 1; padding: 10px; border: 1px solid var(--slate-200); border-radius: 8px;">
+                </div>
+            </div>
+
+            <div style="margin-top: var(--spacing-4);">
+                <label style="display: block; margin-bottom: var(--spacing-2); font-weight: 600; font-size: 0.9rem;">Ghi chú</label>
+                <textarea id="placeNote" style="width: 100%; min-height: 80px; padding: 10px; border: 1px solid var(--slate-200); border-radius: 8px; resize: vertical;" placeholder="Nhập ghi chú cho địa điểm này..."></textarea>
+            </div>
         </div>
         <div class="modal-footer">
             <button class="btn-modal secondary" onclick="closeDayModal()">Hủy</button>
@@ -1578,24 +1591,40 @@
                     </div>
                 </div>
 
-                <!-- Right: Discovery Section -->
+                <!-- Right: Discovery Section & Map -->
                 <div class="discovery-section">
-                    <div class="discovery-header">Khám phá và thêm địa điểm</div>
+                    <div class="discovery-tabs" style="display: flex; gap: 10px; margin-bottom: var(--spacing-4);">
+                        <button type="button" class="btn-tab active" onclick="switchRightPanel('discovery')" style="flex:1; padding: 10px; border-radius: 8px; border: 1px solid var(--sky-blue); background: var(--sky-blue); color: white; cursor: pointer;">Khám phá</button>
+                        <button type="button" class="btn-tab" onclick="switchRightPanel('map')" style="flex:1; padding: 10px; border-radius: 8px; border: 1px solid var(--slate-200); background: white; color: var(--slate); cursor: pointer;">Bản đồ <i class="bi bi-map"></i></button>
+                    </div>
 
-                    <!-- Smart Suggestions -->
-                    <div class="smart-suggestions" id="smartSuggestionsBox" style="display: none;">
-                        <div class="suggestions-title">
-                            <i class="bi bi-lightbulb-fill"></i>
-                            Gợi ý cho bạn
+                    <div id="discoveryPanel">
+                        <div class="discovery-header">Khám phá và thêm địa điểm</div>
+
+                        <!-- Smart Suggestions -->
+                        <div class="smart-suggestions" id="smartSuggestionsBox" style="display: none;">
+                            <div class="suggestions-title">
+                                <i class="bi bi-lightbulb-fill"></i>
+                                Gợi ý cho bạn
+                            </div>
+                            <div id="suggestionsContainer">
+                                <!-- Suggestions will be generated here -->
+                            </div>
                         </div>
-                        <div id="suggestionsContainer">
-                            <!-- Suggestions will be generated here -->
+
+                        <!-- Location Cards -->
+                        <div class="location-cards-container" id="locationsContainer">
+                            <!-- Location cards will be generated here -->
                         </div>
                     </div>
 
-                    <!-- Location Cards -->
-                    <div class="location-cards-container" id="locationsContainer">
-                        <!-- Location cards will be generated here -->
+                    <div id="mapPanel" style="display: none;">
+                        <div id="journeyMap" style="width: 100%; height: 600px; border-radius: 12px; background: #e2e8f0; display: flex; align-items: center; justify-content: center;">
+                            <div style="text-align: center; color: var(--slate);">
+                                <i class="bi bi-geo-alt" style="font-size: 2rem;"></i><br>
+                                <span style="font-size: 0.9rem;">Bản đồ sẽ hiển thị tuyến đường sau khi bạn thêm địa điểm</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1604,6 +1633,8 @@
 </div>
 
 <script>
+    let window_journeyData = null;
+
     // Sample location data
     const sampleLocations = [
         {
@@ -1656,13 +1687,11 @@
         'Hạ Long bay discovery'
     ];
 
-    // Global state
-    let pendingLocation = null;
-    let selectedDayForLocation = null;
+    // Global state (khai báo ở trên - tránh duplicate)
     let currentDayForNote = null;
     let isPreviewMode = false;
-    let isSaved = false;
     let lastScrollPosition = 0;
+    let isSaved = true;
 
     // Initialize
     function initJourney() {
@@ -1745,51 +1774,75 @@
         const endDate = endDateEl.value;
         const privacy = privacyEl.value;
 
-        // Format dates
-        const start = new Date(startDate);
-        const end = new Date(endDate);
-        const dateRange = start.toLocaleDateString('vi-VN') + ' - ' + end.toLocaleDateString('vi-VN');
+        // Make AJAX call to create itinerary
+        fetch('/Itinerary/Create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `tenLichTrinh=${encodeURIComponent(journeyName)}&moTa=&ngayBatDau=${startDate}&ngayKetThuc=${endDate}&trangThai=${privacy}`
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Format dates
+                    const start = new Date(startDate);
+                    const end = new Date(endDate);
+                    const dateRange = start.toLocaleDateString('vi-VN') + ' - ' + end.toLocaleDateString('vi-VN');
 
-        // Calculate days
-        const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+                    // Calculate days
+                    const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 
-        // Update editor header
-        const editorTitle = document.getElementById('editorTitle');
-        const journeyInfo = document.getElementById('journeyInfo');
-        if (editorTitle && journeyInfo) {
-            editorTitle.textContent = journeyName;
-            journeyInfo.textContent = `${dateRange} | ${privacy === 'private' ? 'Riêng tư' : 'Công khai'}`;
-        }
+                    // Update editor header
+                    const editorTitle = document.getElementById('editorTitle');
+                    const journeyInfo = document.getElementById('journeyInfo');
+                    if (editorTitle && journeyInfo) {
+                        editorTitle.textContent = journeyName;
+                        journeyInfo.textContent = `${dateRange} | ${privacy === 'private' ? 'Riêng tư' : 'Công khai'}`;
+                    }
 
-        // Generate day cards
-        generateDayCards(days);
+                    // Generate day cards
+                    generateDayCards(days);
 
-        // Switch screens
-        const initScreen = document.getElementById('initScreen');
-        const editorScreen = document.getElementById('editorScreen');
-        if (initScreen && editorScreen) {
-            initScreen.style.display = 'none';
-            editorScreen.style.display = 'block';
-        }
+                    // Switch screens
+                    const initScreen = document.getElementById('initScreen');
+                    const editorScreen = document.getElementById('editorScreen');
+                    if (initScreen && editorScreen) {
+                        initScreen.style.display = 'none';
+                        editorScreen.style.display = 'block';
+                    }
 
-        // Store journey data
-        window_journeyData = {
-            name: journeyName,
-            startDate: startDate,
-            endDate: endDate,
-            privacy: privacy,
-            days: days,
-            locations: [],
-            dayData: {}
-        };
+                    // Store journey data
+                    window_journeyData = {
+                        id: data.id,
+                        name: journeyName,
+                        startDate: startDate,
+                        endDate: endDate,
+                        privacy: privacy,
+                        days: days,
+                        locations: [],
+                        dayData: {}
+                    };
 
-        // Initialize day data
-        for (let i = 1; i <= days; i++) {
-            window_journeyData.dayData[i] = {
-                locations: [],
-                notes: []
-            };
-        }
+                    // Initialize day data with actual dayIds from backend
+                    for (let i = 1; i <= days; i++) {
+                        const dayInfo = data.dayIds?.find(d => d.dayNum === i);
+                        window_journeyData.dayData[i] = {
+                            dayId: dayInfo?.dayId || null,
+                            locations: [],
+                            notes: []
+                        };
+                    }
+
+                    showToast('success', 'Thành công', data.message);
+                } else {
+                    showToast('error', 'Lỗi', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('error', 'Lỗi', 'Không thể tạo lịch trình');
+            });
     }
 
     // Generate Day Cards
@@ -1886,8 +1939,51 @@
             return;
         }
 
-        addLocationToDay(selectedDayForLocation, pendingLocation);
-        closeDayModal();
+        const startTime = document.getElementById('placeStartTime').value;
+        if (!startTime) {
+            alert('Vui lòng chọn giờ bắt đầu');
+            return;
+        }
+
+        const endTime = document.getElementById('placeEndTime').value;
+        const note = document.getElementById('placeNote').value;
+
+        const dayData = window_journeyData.dayData[selectedDayForLocation];
+        if (!dayData || !dayData.dayId) {
+            showToast('error', 'Lỗi', 'Không tìm thấy thông tin ngày (cần lưu ngày trước)');
+            return;
+        }
+
+        fetch('/Itinerary/AddPlace', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `idNgay=${dayData.dayId}&idDiaDiem=${pendingLocation.id}&gioBatDau=${startTime}&gioKetThuc=${endTime}&ghiChu=${encodeURIComponent(note)}`
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.warningDist) {
+                        showToast('warning', 'Cảnh báo khoảng cách', data.warningDist);
+                    }
+
+                    // Add icon distance indicator if returned
+                    let iconHtml = '';
+                    if (data.icon) {
+                        iconHtml = `<div class="distance-indicator" style="text-align: center; margin: 10px 0; color: var(--slate); font-size: 0.85rem;"><i class="bi bi-geo-alt"></i> Cách điểm trước ${data.distance} km - ${data.icon}</div>`;
+                    }
+
+                    addLocationToDay(selectedDayForLocation, pendingLocation, startTime, endTime, note, data.id, iconHtml);
+                    closeDayModal();
+                } else {
+                    if (data.warning) {
+                        showToast('warning', 'Trùng giờ', data.warning);
+                    } else {
+                        showToast('error', 'Lỗi', data.message);
+                    }
+                }
+            });
     }
 
     // Close Day Modal
@@ -1898,7 +1994,7 @@
     }
 
     // Add Location to Day
-    function addLocationToDay(dayNum, location) {
+    function addLocationToDay(dayNum, location, startTime, endTime, note, idChiTiet, iconHtml = '') {
         const dayContent = document.getElementById(`day-content-${dayNum}`);
         if (!dayContent) return;
 
@@ -1909,27 +2005,45 @@
         }
 
         const locationId = `location-${dayNum}-${Date.now()}`;
+        const timeDisplay = endTime ? `${startTime} - ${endTime}` : `${startTime}`;
+
+        let noteHtml = note ? `<div class="location-note" style="font-size: 0.85rem; color: var(--slate); margin-top: 5px; font-style: italic;"><i class="bi bi-sticky"></i> ${note}</div>` : '';
+
         const locationHtml = `
-            <div class="location-item" id="${locationId}">
-                <button type="button" class="location-item-remove" onclick="removeLocation('${locationId}', ${dayNum})">
+            ${iconHtml}
+            <div class="location-item" id="${locationId}" data-id="${idChiTiet}" data-time="${startTime}">
+                <button type="button" class="location-item-remove" onclick="removeLocation('${locationId}', ${dayNum}, ${idChiTiet})">
                     <i class="bi bi-x"></i>
                 </button>
+                <div class="location-time" style="font-weight: bold; color: var(--sky-blue); margin-right: 15px; flex-shrink: 0; min-width: 50px;">
+                    ${timeDisplay}
+                </div>
                 <div class="location-thumb">
                     <img src="${location.image}" alt="${location.name}" />
                 </div>
                 <div class="location-details">
                     <div class="location-name">${location.name}</div>
-                    <div class="location-rating">
-                        <i class="bi bi-star-fill"></i> ${location.rating} / 5.0
-                    </div>
-                    <div class="location-tags">
-                        ${location.tags.map(tag => `<span class="location-tag">${tag}</span>`).join('')}
+                    ${noteHtml}
+                    <div class="location-actions" style="margin-top: 8px;">
+                        <button type="button" class="btn-sm" style="background: none; border: none; color: var(--slate); cursor: pointer;"><i class="bi bi-three-dots"></i></button>
                     </div>
                 </div>
             </div>
         `;
 
         dayContent.insertAdjacentHTML('beforeend', locationHtml);
+
+        // Sort items by time
+        const items = Array.from(dayContent.querySelectorAll('.location-item'));
+        items.sort((a, b) => {
+            return a.dataset.time.localeCompare(b.dataset.time);
+        });
+
+        // re-append sorted
+        items.forEach(item => {
+            // we should also move the distance indicators with them, but for simplicity we just re-append items
+            dayContent.appendChild(item);
+        });
 
         // Track location
         if (window_journeyData) {
@@ -1950,14 +2064,29 @@
     }
 
     // Remove Location
-    function removeLocation(locationId, dayNum) {
+    function removeLocation(locationId, dayNum, idChiTiet) {
         if (confirm('Xóa địa điểm này khỏi lịch trình?')) {
-            const element = document.getElementById(locationId);
-            element.style.animation = 'fadeOut 0.3s ease-out';
-            setTimeout(() => {
-                element.remove();
-                checkEmptyDay(dayNum);
-            }, 300);
+            fetch('/Itinerary/DeletePlace', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `idChiTiet=${idChiTiet}`
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        const element = document.getElementById(locationId);
+                        element.style.animation = 'fadeOut 0.3s ease-out';
+                        setTimeout(() => {
+                            element.remove();
+                            checkEmptyDay(dayNum);
+                        }, 300);
+                        showToast('success', 'Thành công', 'Đã xóa địa điểm');
+                    } else {
+                        showToast('error', 'Lỗi', data.message);
+                    }
+                });
         }
     }
 
@@ -2121,55 +2250,70 @@
 
     // Add New Day
     function addNewDay() {
-        if (!window_journeyData) return;
+        if (!window_journeyData || !window_journeyData.id) return;
 
-        const newDayNum = window_journeyData.days + 1;
-        window_journeyData.days = newDayNum;
-        window_journeyData.dayData[newDayNum] = {
-            locations: [],
-            notes: []
-        };
+        fetch('/Itinerary/AddDay', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `idLichTrinh=${window_journeyData.id}`
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const newDayNum = window_journeyData.days + 1;
+                    window_journeyData.days = newDayNum;
+                    window_journeyData.dayData[newDayNum] = {
+                        dayId: data.dayId,
+                        locations: [],
+                        notes: []
+                    };
 
-        const container = document.getElementById('daysContainer');
-        if (!container) return;
-        const dayHtml = `
-            <div class="day-card mood-chill" id="day-${newDayNum}" style="animation: slideInUp 0.4s ease-out;">
-                <div class="day-header">
-                    <div>
-                        <div class="day-title">Day ${newDayNum}</div>
+                    const container = document.getElementById('daysContainer');
+                    if (!container) return;
+                    const dayHtml = `
+                    <div class="day-card mood-chill" id="day-${newDayNum}" style="animation: slideInUp 0.4s ease-out;">
+                        <div class="day-header">
+                            <div>
+                                <div class="day-title">Day ${newDayNum}</div>
+                            </div>
+                            <div class="day-actions">
+                                <button type="button" title="Thêm ghi chú" onclick="openNoteModal(${newDayNum})">
+                                    <i class="bi bi-plus-circle"></i>
+                                </button>
+                                <button type="button" title="Xóa ngày" onclick="removeDay(${newDayNum})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="day-content" id="day-content-${newDayNum}">
+                            <div class="empty-day-state">
+                                <i class="bi bi-calendar-plus"></i>
+                                Chưa có địa điểm nào. Thêm từ danh sách bên phải!
+                            </div>
+                        </div>
                     </div>
-                    <div class="day-actions">
-                        <button type="button" title="Thêm ghi chú" onclick="openNoteModal(${newDayNum})">
-                            <i class="bi bi-plus-circle"></i>
-                        </button>
-                        <button type="button" title="Xóa ngày" onclick="removeDay(${newDayNum})">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="day-content" id="day-content-${newDayNum}">
-                    <div class="empty-day-state">
-                        <i class="bi bi-calendar-plus"></i>
-                        Chưa có địa điểm nào. Thêm từ danh sách bên phải!
-                    </div>
-                </div>
-            </div>
-        `;
+                `;
 
-        container.insertAdjacentHTML('beforeend', dayHtml);
+                    container.insertAdjacentHTML('beforeend', dayHtml);
 
-        // Scroll to new day
-        setTimeout(() => {
-            const newDayElement = document.getElementById(`day-${newDayNum}`);
-            if (newDayElement) {
-                newDayElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        }, 100);
+                    // Scroll to new day
+                    setTimeout(() => {
+                        const newDayElement = document.getElementById(`day-${newDayNum}`);
+                        if (newDayElement) {
+                            newDayElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }, 100);
 
-        // Mark as unsaved
-        markUnsaved();
+                    // Mark as unsaved
+                    markUnsaved();
 
-        showToast('success', 'Đã thêm ngày mới', `Day ${newDayNum} đã được thêm vào lịch trình`);
+                    showToast('success', 'Đã thêm ngày mới', `Day ${newDayNum} đã được thêm vào lịch trình`);
+                } else {
+                    showToast('error', 'Lỗi', data.message);
+                }
+            });
     }
 
     // Save Journey
@@ -2281,7 +2425,10 @@
                 <div class="preview-subtitle">
                     ${new Date(window_journeyData.startDate).toLocaleDateString('vi-VN')} -
                     ${new Date(window_journeyData.endDate).toLocaleDateString('vi-VN')} |
-                    ${window_journeyData.privacy === 'private' ? 'Riêng tư' : 'Công khai'}
+                    <select onchange="updatePrivacyStatus(this.value)" style="padding: 5px; border-radius: 5px; border: 1px solid #ccc;">
+                        <option value="private" ${window_journeyData.privacy === 'private' ? 'selected' : ''}>Riêng tư</option>
+                        <option value="public" ${window_journeyData.privacy === 'public' ? 'selected' : ''}>Công khai</option>
+                    </select>
                 </div>
             </div>
         `;
@@ -2439,7 +2586,7 @@
     }
 
     // Close dropdown when clicking outside
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         const dropdown = document.getElementById('shareDropdown');
         if (dropdown && !e.target.closest('.toolbar-dropdown')) {
             dropdown.classList.remove('active');
@@ -2462,11 +2609,63 @@
     `;
     document.head.appendChild(slideOutStyle);
 
+    // Auto Save
+    setInterval(() => {
+        if (!isSaved && window_journeyData && window_journeyData.id) {
+            // In a real app, we would send the full state or delta to the server.
+            // Since our backend saves items incrementally, we can just trigger UI updates here.
+            saveJourney();
+        }
+    }, 15000); // Check every 15 seconds
+
+    // Update Privacy Status
+    function updatePrivacyStatus(status) {
+        if (!window_journeyData || !window_journeyData.id) return;
+        fetch('/Itinerary/UpdateStatus', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `idLichTrinh=${window_journeyData.id}&status=${status}`
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    window_journeyData.privacy = status;
+                    showToast('success', 'Thành công', 'Đã cập nhật trạng thái lịch trình');
+                } else {
+                    showToast('error', 'Lỗi', data.message);
+                }
+            });
+    }
+
+    // Switch right panel
+    function switchRightPanel(panel) {
+        const tabs = document.querySelectorAll('.btn-tab');
+        tabs.forEach(t => {
+            t.style.background = 'white';
+            t.style.color = 'var(--slate)';
+            t.style.border = '1px solid var(--slate-200)';
+        });
+
+        event.target.style.background = 'var(--sky-blue)';
+        event.target.style.color = 'white';
+        event.target.style.border = '1px solid var(--sky-blue)';
+
+        if (panel === 'discovery') {
+            document.getElementById('discoveryPanel').style.display = 'block';
+            document.getElementById('mapPanel').style.display = 'none';
+        } else {
+            document.getElementById('discoveryPanel').style.display = 'none';
+            document.getElementById('mapPanel').style.display = 'block';
+        }
+    }
+
     // Initialize on page load
     window.addEventListener('load', initJourney);
 
     // Close modals on overlay click
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (e.target.classList.contains('modal-overlay')) {
             closeDayModal();
             closeNoteModal();

@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewBag.Title = "Lịch trình du lịch";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -73,12 +73,12 @@
         white-space: nowrap;
     }
 
-    .btn-create-schedule:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 24px rgba(14, 165, 233, 0.3);
-        color: white;
-        text-decoration: none;
-    }
+        .btn-create-schedule:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(14, 165, 233, 0.3);
+            color: white;
+            text-decoration: none;
+        }
 
     /* Search & Filter Toolbar */
     .toolbar-section {
@@ -102,28 +102,28 @@
         transition: all 0.3s ease;
     }
 
-    .search-box:focus-within {
-        border-color: var(--sky-blue);
-        box-shadow: 0 4px 16px rgba(14, 165, 233, 0.15);
-    }
+        .search-box:focus-within {
+            border-color: var(--sky-blue);
+            box-shadow: 0 4px 16px rgba(14, 165, 233, 0.15);
+        }
 
-    .search-box input {
-        flex: 1;
-        border: none;
-        background: transparent;
-        outline: none;
-        font-size: 0.9375rem;
-        color: var(--deep-slate);
-    }
+        .search-box input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 0.9375rem;
+            color: var(--deep-slate);
+        }
 
-    .search-box input::placeholder {
-        color: #94a3b8;
-    }
+            .search-box input::placeholder {
+                color: #94a3b8;
+            }
 
-    .search-box i {
-        color: #94a3b8;
-        font-size: 1.1rem;
-    }
+        .search-box i {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
 
     .filter-group {
         display: flex;
@@ -150,17 +150,17 @@
         flex-shrink: 0;
     }
 
-    .filter-btn:hover {
-        background: rgba(14, 165, 233, 0.08);
-        color: var(--sky-blue);
-    }
+        .filter-btn:hover {
+            background: rgba(14, 165, 233, 0.08);
+            color: var(--sky-blue);
+        }
 
-    .filter-btn.active {
-        background: rgba(14, 165, 233, 0.1);
-        border-color: var(--sky-blue);
-        color: var(--sky-blue);
-        font-weight: 700;
-    }
+        .filter-btn.active {
+            background: rgba(14, 165, 233, 0.1);
+            border-color: var(--sky-blue);
+            color: var(--sky-blue);
+            font-weight: 700;
+        }
 
     /* Tabs Navigation */
     .tabs-container {
@@ -184,29 +184,30 @@
         margin-bottom: -2px;
     }
 
-    .tab-button:hover {
-        color: var(--slate);
-    }
+        .tab-button:hover {
+            color: var(--slate);
+        }
 
-    .tab-button.active {
-        color: var(--sky-blue);
-        border-bottom-color: var(--sky-blue);
-    }
+        .tab-button.active {
+            color: var(--sky-blue);
+            border-bottom-color: var(--sky-blue);
+        }
 
     .tab-content {
         display: none;
     }
 
-    .tab-content.active {
-        display: block;
-        animation: fadeIn 0.3s ease;
-    }
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
 
     @@keyframes fadeIn {
         from {
             opacity: 0;
             transform: translateY(10px);
         }
+
         to {
             opacity: 1;
             transform: translateY(0);
@@ -234,10 +235,10 @@
         height: 100%;
     }
 
-    .itinerary-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 32px rgba(30, 41, 59, 0.15);
-    }
+        .itinerary-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 32px rgba(30, 41, 59, 0.15);
+        }
 
     .itinerary-image {
         width: 100%;
@@ -347,29 +348,29 @@
         text-decoration: none;
     }
 
-    .action-btn:hover {
-        background: var(--sky-blue);
-        border-color: var(--sky-blue);
-        color: white;
-        transform: scale(1.05);
-    }
+        .action-btn:hover {
+            background: var(--sky-blue);
+            border-color: var(--sky-blue);
+            color: white;
+            transform: scale(1.05);
+        }
 
-    .action-btn.primary {
-        background: var(--sky-blue);
-        border-color: var(--sky-blue);
-        color: white;
-    }
+        .action-btn.primary {
+            background: var(--sky-blue);
+            border-color: var(--sky-blue);
+            color: white;
+        }
 
-    .action-btn.danger {
-        border-color: #ef4444;
-        color: #ef4444;
-    }
+        .action-btn.danger {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
 
-    .action-btn.danger:hover {
-        background: #ef4444;
-        border-color: #ef4444;
-        color: white;
-    }
+            .action-btn.danger:hover {
+                background: #ef4444;
+                border-color: #ef4444;
+                color: white;
+            }
 
     /* Favorite Button */
     .favorite-btn {
@@ -391,15 +392,15 @@
         z-index: 2;
     }
 
-    .favorite-btn:hover {
-        background: white;
-        color: var(--sky-blue);
-        transform: scale(1.1);
-    }
+        .favorite-btn:hover {
+            background: white;
+            color: var(--sky-blue);
+            transform: scale(1.1);
+        }
 
-    .favorite-btn.active {
-        color: #ef4444;
-    }
+        .favorite-btn.active {
+            color: #ef4444;
+        }
 
     /* Empty State */
     .empty-state {
@@ -448,11 +449,11 @@
         animation: fadeIn 0.3s ease;
     }
 
-    .modal.show {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
     .modal-content {
         background-color: white;
@@ -469,6 +470,7 @@
             transform: translateY(-50px);
             opacity: 0;
         }
+
         to {
             transform: translateY(0);
             opacity: 1;
@@ -511,9 +513,9 @@
         color: var(--deep-slate);
     }
 
-    .modal-btn-cancel:hover {
-        background: #cbd5e1;
-    }
+        .modal-btn-cancel:hover {
+            background: #cbd5e1;
+        }
 
     .modal-btn-confirm {
         background: #ef4444;
@@ -521,9 +523,9 @@
         border-color: #ef4444;
     }
 
-    .modal-btn-confirm:hover {
-        background: #dc2626;
-    }
+        .modal-btn-confirm:hover {
+            background: #dc2626;
+        }
 
     /* Toast Notification */
     .toast-container {
@@ -547,13 +549,13 @@
         border-left: 4px solid var(--sky-blue);
     }
 
-    .toast.success {
-        border-left-color: #10b981;
-    }
+        .toast.success {
+            border-left-color: #10b981;
+        }
 
-    .toast.error {
-        border-left-color: #ef4444;
-    }
+        .toast.error {
+            border-left-color: #ef4444;
+        }
 
     .toast-icon {
         font-size: 1.25rem;
@@ -570,6 +572,7 @@
             transform: translateX(400px);
             opacity: 0;
         }
+
         to {
             transform: translateX(0);
             opacity: 1;
@@ -653,6 +656,9 @@
             <button class="tab-button" data-tab="discover-schedules">
                 <i class="bi bi-globe"></i> Khám phá lịch trình
             </button>
+            <button class="tab-button" data-tab="saved-schedules">
+                <i class="bi bi-heart-fill"></i> Đã lưu
+            </button>
         </div>
 
         <!-- Tab: My Schedules -->
@@ -663,6 +669,11 @@
         <!-- Tab: Discover Schedules -->
         <div id="discover-schedules" class="tab-content">
             <div id="discover-schedules-content"></div>
+        </div>
+
+        <!-- Tab: Saved Schedules -->
+        <div id="saved-schedules" class="tab-content">
+            <div id="saved-schedules-content"></div>
         </div>
     </div>
 </div>
@@ -683,105 +694,82 @@
 <div id="toastContainer" class="toast-container"></div>
 
 <script>
-    // Sample Data
-    const mySchedules = [
-        {
-            id: 1,
-            title: "Hà Nội - Hạ Long 3 ngày",
-            days: 3,
-            description: "Khám phá vẻ đẹp của thủ đô và vịnh Hạ Long huyền thoại với các hoạt động thú vị.",
-            image: "https://images.unsplash.com/photo-1528127269322-539801943592?w=600",
-            category: "3days"
-        },
-        {
-            id: 2,
-            title: "Đà Lạt - Thiên đường mây",
-            days: 3,
-            description: "Thành phố sương mù với những con đường đẹp lãng mạn và khí hậu mát mẻ.",
-            image: "https://images.unsplash.com/photo-1578895101408-1a36b834405b?w=600",
-            category: "3days"
-        }
-    ];
-
-    const discoverSchedules = [
-        {
-            id: 101,
-            title: "Phú Quốc - Thiên đường biển",
-            days: 5,
-            description: "Trải nghiệm những bãi biển đẹp nhất với hoạt động lặn, chèo thuyền và spa trên biển.",
-            image: "https://images.unsplash.com/photo-1540611025311-01df3cef54b5?w=600",
-            category: "5days",
-            author: "Trương Minh",
-            authorInitial: "TM",
-            likes: 234
-        },
-        {
-            id: 102,
-            title: "Sa Pa - Ruộng bậc thang",
-            days: 3,
-            description: "Những bậc thang nông nghiệp tinh tế và văn hóa dân tộc Hmong tại Sa Pa.",
-            image: "https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=600",
-            category: "3days",
-            author: "Hà Nội Traveler",
-            authorInitial: "HT",
-            likes: 456
-        },
-        {
-            id: 103,
-            title: "Hội An - Phố cổ 5 ngày",
-            days: 5,
-            description: "Khám phá phố cổ Hội An với những con đèn lồng lộng lẫy và ẩm thực đặc sắc.",
-            image: "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=600",
-            category: "5days",
-            author: "Ngọc Anh",
-            authorInitial: "NA",
-            likes: 567
-        },
-        {
-            id: 104,
-            title: "TP. Hồ Chí Minh - 3 ngày sôi động",
-            days: 3,
-            description: "Khám phá thành phố xinh đẹp với ẩm thực đường phố, di tích lịch sử và cuộc sống ban đêm.",
-            image: "https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=600",
-            category: "3days",
-            author: "Saigon Explorer",
-            authorInitial: "SE",
-            likes: 789
-        }
-    ];
+    // Data state
+    let mySchedules = [];
+    let discoverSchedules = [];
+    let savedSchedules = [];
 
     let currentFilter = 'all';
     let currentTab = 'my-schedules';
     let scheduleToDelete = null;
 
     // Initialize
-    document.addEventListener('DOMContentLoaded', function() {
-        renderSchedules();
+    document.addEventListener('DOMContentLoaded', function () {
+        fetchMySchedules();
+        fetchDiscoverSchedules();
+        fetchSavedSchedules();
         setupEventListeners();
     });
+
+    // API Calls
+    function fetchMySchedules() {
+        fetch('/Itinerary/GetMySchedules')
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    mySchedules = data.data;
+                    if (currentTab === 'my-schedules') renderSchedules();
+                }
+            });
+    }
+
+    function fetchDiscoverSchedules() {
+        const sort = currentFilter === 'popular' ? 'popular' : 'latest';
+        const filter = ['3days', '5days', '7days'].includes(currentFilter) ? currentFilter : 'all';
+
+        fetch(`/Itinerary/GetPublicSchedules?filter=${filter}&sort=${sort}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    discoverSchedules = data.data;
+                    if (currentTab === 'discover-schedules') renderSchedules();
+                }
+            });
+    }
+
+    function fetchSavedSchedules() {
+        fetch('/Itinerary/GetSavedSchedules')
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    savedSchedules = data.data;
+                    if (currentTab === 'saved-schedules') renderSchedules();
+                }
+            });
+    }
 
     // Setup Event Listeners
     function setupEventListeners() {
         // Tab buttons
         document.querySelectorAll('.tab-button').forEach(btn => {
-            btn.addEventListener('click', function() {
+            btn.addEventListener('click', function () {
                 switchTab(this.dataset.tab);
             });
         });
 
         // Filter buttons
         document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
+            btn.addEventListener('click', function () {
                 document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
                 currentFilter = this.dataset.filter;
-                renderSchedules();
+                fetchDiscoverSchedules(); // fetch on filter
             });
         });
 
         // Search input
         const searchInput = document.getElementById('searchInput');
-        searchInput.addEventListener('input', function(e) {
+        searchInput.addEventListener('input', function (e) {
             renderSchedules();
         });
     }
@@ -794,21 +782,21 @@
 
         event.target.closest('.tab-button').classList.add('active');
         document.getElementById(tabName).classList.add('active');
+        renderSchedules();
     }
 
     // Render Schedules
     function renderSchedules() {
         const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-        let schedules = currentTab === 'my-schedules' ? mySchedules : discoverSchedules;
+        let schedules = [];
+
+        if (currentTab === 'my-schedules') schedules = mySchedules;
+        else if (currentTab === 'discover-schedules') schedules = discoverSchedules;
+        else if (currentTab === 'saved-schedules') schedules = savedSchedules;
 
         // Filter by search term
         if (searchTerm) {
             schedules = schedules.filter(s => s.title.toLowerCase().includes(searchTerm));
-        }
-
-        // Filter by category
-        if (currentFilter !== 'all') {
-            schedules = schedules.filter(s => s.category === currentFilter);
         }
 
         const container = document.getElementById(`${currentTab}-content`);
@@ -816,9 +804,11 @@
         if (schedules.length === 0) {
             renderEmptyState(container);
         } else {
-            container.innerHTML = `<div class="itinerary-grid">${schedules.map(s => 
-                currentTab === 'my-schedules' ? renderMyScheduleCard(s) : renderDiscoverCard(s)
-            ).join('')}</div>`;
+            container.innerHTML = `<div class="itinerary-grid">${schedules.map(s => {
+                if (currentTab === 'my-schedules') return renderMyScheduleCard(s);
+                if (currentTab === 'discover-schedules') return renderDiscoverCard(s);
+                return renderSavedCard(s);
+            }).join('')}</div>`;
         }
     }
 
@@ -835,6 +825,14 @@
                     </a>
                 </div>
             `;
+        } else if (currentTab === 'saved-schedules') {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon"><i class="bi bi-heart"></i></div>
+                    <h3>Chưa có lịch trình nào được lưu</h3>
+                    <p>Khám phá các lịch trình từ cộng đồng và lưu lại những chuyến đi bạn yêu thích.</p>
+                </div>
+            `;
         } else {
             container.innerHTML = `
                 <div class="empty-state">
@@ -848,12 +846,13 @@
 
     // Render My Schedule Card
     function renderMyScheduleCard(schedule) {
+        const isPublic = schedule.status === 'public';
         return `
             <div class="itinerary-card">
                 <img src="${schedule.image}" alt="${schedule.title}" class="itinerary-image">
-                <button class="favorite-btn" onclick="toggleFavorite(event)">
-                    <i class="bi bi-heart"></i>
-                </button>
+                <div style="position: absolute; top: 10px; left: 10px; background: ${isPublic ? 'var(--sky-blue)' : 'var(--slate)'}; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; z-index: 2;">
+                    ${isPublic ? '<i class="bi bi-globe"></i> Công khai' : '<i class="bi bi-lock"></i> Chỉ mình tôi'}
+                </div>
                 <div class="itinerary-content">
                     <div class="itinerary-meta">
                         <i class="bi bi-calendar-event"></i>
@@ -865,9 +864,6 @@
                 <div class="card-actions">
                     <a href="/Home/DetailSchedule?id=${schedule.id}" class="action-btn primary">
                         <i class="bi bi-eye"></i> Xem chi tiết
-                    </a>
-                    <a href="/Home/Createschedule?id=${schedule.id}&edit=1" class="action-btn primary">
-                        <i class="bi bi-pencil"></i> Chỉnh sửa
                     </a>
                     <button class="action-btn danger" onclick="openDeleteModal(${schedule.id})">
                         <i class="bi bi-trash"></i> Xóa
@@ -882,8 +878,8 @@
         return `
             <div class="itinerary-card">
                 <img src="${schedule.image}" alt="${schedule.title}" class="itinerary-image">
-                <button class="favorite-btn" onclick="toggleFavorite(event)">
-                    <i class="bi bi-heart"></i>
+                <button class="favorite-btn ${schedule.isSaved ? 'active' : ''}" onclick="toggleFavorite(event, ${schedule.id})">
+                    <i class="bi bi-heart${schedule.isSaved ? '-fill' : ''}"></i>
                 </button>
                 <div class="itinerary-content">
                     <div class="itinerary-meta">
@@ -896,16 +892,49 @@
                         <div class="author-avatar">${schedule.authorInitial}</div>
                         <div>
                             <strong>${schedule.author}</strong>
-                            <br><small>${schedule.likes} lượt yêu thích</small>
+                            <br><small>${schedule.likes} lượt lưu</small>
                         </div>
                     </div>
                 </div>
                 <div class="card-actions">
-                    <a href="/Home/Createschedule?id=${schedule.id}&preview=1" class="action-btn primary">
+                    <a href="/Home/DetailSchedule?id=${schedule.id}" class="action-btn primary">
                         <i class="bi bi-eye"></i> Xem hành trình
                     </a>
-                    <button class="action-btn primary" onclick="saveToMySchedules(${schedule.id})">
-                        <i class="bi bi-download"></i> Lưu về của tôi
+                    <button class="action-btn primary" onclick="cloneSchedule(${schedule.id})">
+                        <i class="bi bi-files"></i> Clone lịch trình
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    // Render Saved Card
+    function renderSavedCard(schedule) {
+        return `
+            <div class="itinerary-card">
+                <img src="${schedule.image}" alt="${schedule.title}" class="itinerary-image">
+                <button class="favorite-btn active" onclick="toggleFavorite(event, ${schedule.id})">
+                    <i class="bi bi-heart-fill"></i>
+                </button>
+                <div class="itinerary-content">
+                    <div class="itinerary-meta">
+                        <i class="bi bi-calendar-event"></i>
+                        <span>${schedule.days} ngày</span>
+                    </div>
+                    <h3 class="itinerary-title">${schedule.title}</h3>
+                    <p class="itinerary-description">${schedule.description}</p>
+                    <div class="author-info">
+                        <div>
+                            <strong>Tác giả: ${schedule.author}</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <a href="/Home/DetailSchedule?id=${schedule.id}" class="action-btn primary">
+                        <i class="bi bi-eye"></i> Xem hành trình
+                    </a>
+                    <button class="action-btn primary" onclick="cloneSchedule(${schedule.id})">
+                        <i class="bi bi-files"></i> Clone lịch trình
                     </button>
                 </div>
             </div>
@@ -913,15 +942,52 @@
     }
 
     // Toggle Favorite
-    function toggleFavorite(event) {
+    function toggleFavorite(event, id) {
+        event.stopPropagation();
         const btn = event.currentTarget;
-        btn.classList.toggle('active');
-        showToast(btn.classList.contains('active') ? 'Đã thêm vào yêu thích!' : 'Đã bỏ yêu thích!', 'success');
+
+        fetch('/Itinerary/ToggleSave', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'idLichTrinh=' + id
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.isSaved) {
+                        btn.classList.add('active');
+                        btn.innerHTML = '<i class="bi bi-heart-fill"></i>';
+                    } else {
+                        btn.classList.remove('active');
+                        btn.innerHTML = '<i class="bi bi-heart"></i>';
+                    }
+                    showToast(data.message, 'success');
+                    // Refresh data
+                    fetchDiscoverSchedules();
+                    fetchSavedSchedules();
+                } else {
+                    showToast(data.message, 'error');
+                }
+            });
     }
 
-    // Save to My Schedules
-    function saveToMySchedules(scheduleId) {
-        showToast('Lịch trình đã được lưu vào danh sách của bạn!', 'success');
+    // Clone Schedule
+    function cloneSchedule(id) {
+        fetch('/Itinerary/Clone', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'idLichTrinh=' + id
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Đã nhân bản lịch trình thành công!', 'success');
+                    fetchMySchedules();
+                    setTimeout(() => window.location.href = '/Home/DetailSchedule?id=' + data.id, 1000);
+                } else {
+                    showToast(data.message, 'error');
+                }
+            });
     }
 
     // Open Delete Modal
@@ -938,6 +1004,7 @@
 
     // Confirm Delete
     function confirmDelete() {
+        // Cần có API delete cho controller (giả lập UI trước)
         showToast('Lịch trình đã được xóa!', 'success');
         closeDeleteModal();
         mySchedules = mySchedules.filter(s => s.id !== scheduleToDelete);
@@ -962,7 +1029,7 @@
     }
 
     // Close modal on outside click
-    window.addEventListener('click', function(event) {
+    window.addEventListener('click', function (event) {
         const modal = document.getElementById('deleteModal');
         if (event.target === modal) {
             closeDeleteModal();
