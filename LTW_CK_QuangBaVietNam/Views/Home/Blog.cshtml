@@ -1,7 +1,10 @@
-﻿@{
+@{
     ViewBag.Title = "Blog - Du lịch, Văn hóa và Ẩm thực Việt Nam";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
+<!-- Thêm Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
 <style>
     :root {
@@ -12,27 +15,29 @@
         --slate-light: #cbd5e1;
         --slate-200: #e2e8f0;
         --white: #ffffff;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
         --spacing-2: 0.5rem;
         --spacing-3: 0.75rem;
         --spacing-4: 1rem;
         --spacing-6: 1.5rem;
         --spacing-8: 2rem;
-        --spacing-12: 3rem;
-        --spacing-16: 4rem;
     }
 
     .blog-page {
         background: #f8fafc;
-        padding: var(--spacing-12) 0;
+        padding: var(--spacing-8) 0;
+        min-height: 80vh;
     }
 
-    /* Blog Header Section */
+    /* Container Header */
     .blog-header {
         text-align: center;
-        margin-bottom: var(--spacing-16);
-        padding: var(--spacing-12);
+        margin-bottom: var(--spacing-8);
+        padding: var(--spacing-8);
         background: linear-gradient(135deg, rgba(14, 165, 233, 0.08), rgba(56, 189, 248, 0.08));
-        border-radius: 20px;
+        border-radius: 24px;
         border: 1px solid rgba(14, 165, 233, 0.1);
     }
 
@@ -41,204 +46,90 @@
         font-weight: 800;
         color: var(--deep-slate);
         margin: 0 0 var(--spacing-4) 0;
-        line-height: 1.2;
     }
 
     .blog-header p {
-        font-size: 1.125rem;
+        font-size: 1.1rem;
         color: #64748b;
-        margin: 0;
         max-width: 700px;
-        margin-left: auto;
-        margin-right: auto;
-        line-height: 1.8;
+        margin: 0 auto;
     }
 
-    /* Search & Filter Toolbar */
-    .blog-toolbar {
+    /* Navigation Tabs */
+    .blog-tabs {
         display: flex;
-        gap: var(--spacing-3);
-        margin-bottom: var(--spacing-12);
+        justify-content: center;
+        gap: var(--spacing-4);
+        margin-bottom: var(--spacing-8);
+        border-bottom: 2px solid var(--slate-200);
+        padding-bottom: var(--spacing-4);
         flex-wrap: wrap;
     }
 
-    .search-box {
-        flex: 1;
-        min-width: 250px;
-        background: white;
-        border-radius: 12px;
-        padding: var(--spacing-3) var(--spacing-4);
-        display: flex;
-        align-items: center;
-        gap: var(--spacing-3);
-        border: 2px solid var(--slate-200);
-        box-shadow: 0 2px 8px rgba(30, 41, 59, 0.08);
-        transition: all 0.3s ease;
-    }
-
-    .search-box:focus-within {
-        border-color: var(--sky-blue);
-        box-shadow: 0 4px 16px rgba(14, 165, 233, 0.15);
-    }
-
-    .search-box input {
-        flex: 1;
+    .tab-btn {
+        padding: 10px 24px;
         border: none;
         background: transparent;
-        outline: none;
-        font-size: 0.9375rem;
-        color: var(--deep-slate);
-    }
-
-    .search-box input::placeholder {
-        color: #94a3b8;
-    }
-
-    .search-box i {
-        color: #94a3b8;
         font-size: 1.1rem;
-    }
-
-    .filter-group {
-        display: flex;
-        gap: var(--spacing-2);
-        background: white;
-        border-radius: 12px;
-        padding: var(--spacing-2);
-        box-shadow: 0 2px 8px rgba(30, 41, 59, 0.08);
-        overflow-x: auto;
-        border: 2px solid var(--slate-200);
-    }
-
-    .filter-btn {
-        padding: var(--spacing-3) var(--spacing-4);
-        border: 2px solid transparent;
-        background: transparent;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: 600;
-        font-size: 0.875rem;
-        color: var(--slate);
-        transition: all 0.3s ease;
-        white-space: nowrap;
-        flex-shrink: 0;
-    }
-
-    .filter-btn:hover {
-        background: rgba(14, 165, 233, 0.08);
-        color: var(--sky-blue);
-    }
-
-    .filter-btn.active {
-        background: rgba(14, 165, 233, 0.1);
-        border-color: var(--sky-blue);
-        color: var(--sky-blue);
         font-weight: 700;
-    }
-
-    /* Featured Post */
-    .featured-post {
-        margin-bottom: var(--spacing-16);
-        border-radius: 20px;
-        overflow: hidden;
+        color: #94a3b8;
+        cursor: pointer;
         position: relative;
-        height: 450px;
-        background: var(--slate-200);
-        box-shadow: 0 12px 40px rgba(30, 41, 59, 0.15);
+        transition: all 0.3s ease;
     }
 
-    .featured-post-image {
+    .tab-btn:hover { color: var(--sky-blue); }
+
+    .tab-btn.active {
+        color: var(--sky-blue);
+    }
+
+    .tab-btn.active::after {
+        content: '';
         position: absolute;
-        top: 0;
+        bottom: -18px;
         left: 0;
         width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.4s ease;
+        height: 4px;
+        background: var(--sky-blue);
+        border-radius: 4px 4px 0 0;
     }
 
-    .featured-post:hover .featured-post-image {
-        transform: scale(1.05);
-    }
-
-    .featured-post-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(135deg, rgba(30, 41, 59, 0.4), rgba(14, 165, 233, 0.3));
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-        padding: var(--spacing-12);
-        transition: all 0.4s ease;
-        z-index: 1;
-    }
-
-    .featured-post:hover .featured-post-overlay {
-        background: linear-gradient(135deg, rgba(30, 41, 59, 0.5), rgba(14, 165, 233, 0.4));
-    }
-
-    .featured-post-content {
-        display: flex;
-        flex-direction: column;
-        gap: var(--spacing-3);
-    }
-
-    .featured-post-category {
-        display: inline-block;
-        width: fit-content;
-        padding: var(--spacing-2) var(--spacing-4);
-        background: rgba(14, 165, 233, 0.9);
+    .tab-action-btn {
+        padding: 10px 24px;
+        background: var(--sky-blue);
+        color: white;
+        border: none;
         border-radius: 999px;
-        font-size: 0.75rem;
         font-weight: 700;
-        color: white;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .featured-post-title {
-        font-size: 2rem;
-        font-weight: 800;
-        color: white;
-        margin: 0;
-        line-height: 1.3;
-        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    }
-
-    .featured-post-excerpt {
-        font-size: 1rem;
-        color: rgba(255, 255, 255, 0.95);
-        line-height: 1.6;
-        margin: 0;
-        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-    }
-
-    .featured-post-link {
-        display: inline-flex;
+        cursor: pointer;
+        display: flex;
         align-items: center;
-        gap: var(--spacing-2);
-        margin-top: var(--spacing-4);
-        color: white;
-        font-weight: 700;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        width: fit-content;
+        gap: 8px;
+        transition: 0.3s;
+        margin-left: auto;
     }
 
-    .featured-post-link:hover {
-        transform: translateX(4px);
-        color: var(--sky-light);
+    .tab-action-btn:hover {
+        background: var(--sky-light);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+    }
+
+    /* Tab Contents */
+    .tab-content { display: none; animation: fadeIn 0.4s ease; }
+    .tab-content.active { display: block; }
+
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 
     /* Blog Grid */
     .blog-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
         gap: var(--spacing-6);
-        margin-bottom: var(--spacing-12);
     }
 
     /* Blog Card */
@@ -250,7 +141,7 @@
         transition: all 0.3s ease;
         display: flex;
         flex-direction: column;
-        height: 100%;
+        position: relative;
     }
 
     .blog-card:hover {
@@ -258,16 +149,38 @@
         box-shadow: 0 12px 32px rgba(30, 41, 59, 0.15);
     }
 
+    /* Trạng thái duyệt (Dành cho tab Bài của tôi) */
+    .status-badge {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: white;
+        z-index: 10;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .status-pending { background: var(--warning); }
+    .status-approved { background: var(--success); }
+    .status-rejected { background: var(--danger); }
+    .status-hidden { background: #475569; }
+    
+    .blog-card.is-pending { opacity: 0.9; }
+    .blog-card.is-rejected, .blog-card.is-hidden { 
+        opacity: 0.65;
+        filter: grayscale(60%);
+    }
+
     .blog-card-image {
         width: 100%;
         height: 220px;
         object-fit: cover;
-        background: linear-gradient(135deg, #e0e7ff, #f3e8ff);
-        transition: transform 0.4s ease;
-    }
-
-    .blog-card:hover .blog-card-image {
-        transform: scale(1.05);
+        background: #f1f5f9;
     }
 
     .blog-card-content {
@@ -279,69 +192,102 @@
     }
 
     .blog-card-meta {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 0.8125rem;
-        color: #94a3b8;
-    }
-
-    .blog-card-category {
-        display: inline-block;
-        padding: var(--spacing-2) var(--spacing-3);
-        background: rgba(14, 165, 233, 0.1);
-        border-radius: 6px;
+        font-size: 0.8rem;
         color: var(--sky-blue);
-        font-weight: 600;
-        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .blog-card-title {
         font-size: 1.25rem;
-        font-weight: 700;
+        font-weight: 800;
         color: var(--deep-slate);
         margin: 0;
         line-height: 1.4;
     }
 
     .blog-card-excerpt {
-        font-size: 0.9375rem;
+        font-size: 0.9rem;
         color: #64748b;
         line-height: 1.6;
         margin: 0;
         flex: 1;
         display: -webkit-box;
-        -webkit-line-clamp: 2;
+        -webkit-line-clamp: 3;
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
 
-    .blog-card-footer {
+    .blog-card-author {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        padding-top: var(--spacing-4);
+        gap: 10px;
+        padding: var(--spacing-4) 0;
         border-top: 1px solid var(--slate-200);
     }
 
-    .blog-card-date {
-        font-size: 0.8125rem;
+    .blog-card-author-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .blog-card-author-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .author-name {
+        font-weight: 700;
+        color: var(--deep-slate);
+        font-size: 0.85rem;
+    }
+
+    .author-date {
+        font-size: 0.75rem;
+        color: #94a3b8;
+    }
+
+    .blog-card-stats {
+        display: flex;
+        gap: var(--spacing-4);
+        align-items: center;
+        justify-content: space-between;
+        padding-top: var(--spacing-4);
+        border-top: 1px solid var(--slate-200);
+        margin-top: auto;
+    }
+
+    .stat {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.85rem;
         color: #94a3b8;
     }
 
     .blog-card-link {
-        display: inline-flex;
-        align-items: center;
-        gap: var(--spacing-2);
         color: var(--sky-blue);
         font-weight: 700;
         text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
         transition: all 0.3s ease;
     }
 
-    .blog-card-link:hover {
+    .blog-card-link:hover { 
         color: var(--sky-light);
-        transform: translateX(4px);
+        gap: 10px;
+    }
+
+    .blog-card-link.is-locked {
+        color: #94a3b8;
+        cursor: not-allowed;
+        pointer-events: none;
     }
 
     /* Empty State */
@@ -351,346 +297,1375 @@
         background: white;
         border-radius: 16px;
         box-shadow: 0 2px 8px rgba(30, 41, 59, 0.08);
+        grid-column: 1 / -1;
     }
 
-    .empty-state-icon {
-        font-size: 3.5rem;
+    .empty-state i {
+        font-size: 4rem;
         color: #cbd5e1;
         margin-bottom: var(--spacing-4);
     }
 
-    .empty-state h3 {
+    .my-blog-note {
+        background: rgba(14, 165, 233, 0.08);
+        border: 1px solid rgba(14, 165, 233, 0.12);
+        color: #0f4c75;
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin-bottom: var(--spacing-6);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+    }
+
+    .reject-reason-box {
+        background: rgba(239, 68, 68, 0.08);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        border-radius: 8px;
+        padding: var(--spacing-4);
+        margin-top: var(--spacing-4);
+        color: #991b1b;
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+
+    .reject-reason-label {
+        font-weight: 700;
+        display: block;
+        margin-bottom: 6px;
+    }
+
+    .edit-resubmit-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: var(--spacing-4);
+        padding: 10px 20px;
+        background: var(--sky-blue);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .edit-resubmit-btn:hover {
+        background: var(--sky-light);
+        transform: translateY(-2px);
+    }
+
+    /* Form */
+    .create-form-container {
+        background: white;
+        padding: var(--spacing-8);
+        border-radius: 20px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .form-group { margin-bottom: var(--spacing-4); }
+    .form-label { display: block; font-weight: 700; margin-bottom: 8px; color: var(--deep-slate); }
+    .form-control {
+        width: 100%; padding: 12px 16px; border: 2px solid var(--slate-200);
+        border-radius: 12px; font-size: 1rem; outline: none; transition: 0.3s;
+        font-family: inherit;
+    }
+    .form-control:focus { border-color: var(--sky-blue); }
+    textarea.form-control { resize: vertical; min-height: 150px; }
+
+    /* Gallery Upload Styles */
+    .gallery-upload-area {
+        border: 2px dashed rgba(14, 165, 233, 0.3);
+        border-radius: 16px;
+        padding: var(--spacing-8);
+        text-align: center;
+        transition: all 0.3s ease;
+        background: rgba(14, 165, 233, 0.02);
+        cursor: pointer;
+    }
+
+    .gallery-upload-area.drag-over {
+        border-color: var(--sky-blue);
+        background: rgba(14, 165, 233, 0.08);
+    }
+
+    .gallery-upload-placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--spacing-4);
+    }
+
+    .gallery-upload-icon {
+        font-size: 3rem;
+        color: var(--sky-blue);
+    }
+
+    .gallery-upload-text {
+        color: #64748b;
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+
+    .gallery-upload-text strong {
+        color: var(--deep-slate);
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .gallery-upload-buttons {
+        display: flex;
+        gap: var(--spacing-4);
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: var(--spacing-4);
+    }
+
+    .btn-upload-type {
+        padding: 10px 20px;
+        border: 2px solid var(--sky-blue);
+        background: white;
+        color: var(--sky-blue);
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+    }
+
+    .btn-upload-type:hover {
+        background: rgba(14, 165, 233, 0.1);
+    }
+
+    .btn-upload-type:active {
+        transform: scale(0.98);
+    }
+
+    .gallery-preview {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: var(--spacing-4);
+        margin-top: var(--spacing-6);
+    }
+
+    .gallery-item {
+        position: relative;
+        border-radius: 12px;
+        overflow: hidden;
+        aspect-ratio: 1;
+        background: #f1f5f9;
+        cursor: grab;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .gallery-item:active {
+        cursor: grabbing;
+    }
+
+    .gallery-item.drag-disabled {
+        cursor: default;
+    }
+
+    .gallery-item:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .gallery-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .gallery-item-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .gallery-item:hover .gallery-item-overlay {
+        opacity: 1;
+    }
+
+    .gallery-item-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: none;
+        background: rgba(255, 255, 255, 0.9);
+        color: #1e293b;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+    }
+
+    .gallery-item-btn:hover {
+        background: white;
+        transform: scale(1.1);
+    }
+
+    .gallery-item-btn.btn-delete:hover {
+        background: #ef4444;
+        color: white;
+    }
+
+    .gallery-item-btn.btn-cover {
+        background: var(--sky-blue);
+        color: white;
+    }
+
+    .gallery-item-btn.btn-cover.active {
+        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.3);
+    }
+
+    .gallery-item-badge {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: var(--sky-blue);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+
+    .gallery-stats {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: var(--spacing-4);
+        padding: var(--spacing-4);
+        background: rgba(14, 165, 233, 0.05);
+        border-radius: 8px;
+        font-size: 0.9rem;
+        color: #475569;
+    }
+
+    .gallery-progress {
+        width: 100%;
+        height: 4px;
+        background: #e2e8f0;
+        border-radius: 999px;
+        overflow: hidden;
+        margin-top: 8px;
+    }
+
+    .gallery-progress-bar {
+        height: 100%;
+        background: var(--sky-blue);
+        transition: width 0.3s ease;
+    }
+
+    /* Hidden file input */
+    #blogImages, #blogCameraCapture {
+        display: none;
+    }
+
+    /* Loading state */
+    .is-uploading {
+        opacity: 0.6;
+        pointer-events: none;
+    }
+
+    /* Custom Toast */
+    .toast-container {
+        position: fixed; top: 20px; right: 20px; z-index: 9999;
+        display: flex; flex-direction: column; gap: 10px;
+    }
+    .custom-toast {
+        background: white; padding: 16px 24px; border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-left: 5px solid;
+        display: flex; align-items: center; gap: 12px; font-weight: 600;
+        animation: slideInRight 0.3s ease forwards;
+    }
+    .toast-success { border-color: var(--success); color: var(--success); }
+    .toast-error { border-color: var(--danger); color: var(--danger); }
+    .toast-info { border-color: var(--sky-blue); color: var(--sky-blue); }
+
+    @@keyframes slideInRight {
+        from { transform: translateX(400px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: var(--spacing-4);
+        margin-top: var(--spacing-6);
+    }
+
+    .blog-card-actions {
+        display: flex;
+        gap: var(--spacing-4);
+        margin-top: var(--spacing-4);
+        padding-top: var(--spacing-4);
+        border-top: 1px solid var(--slate-200);
+    }
+
+    .btn-like,
+    .btn-save {
+        flex: 1;
+        padding: 10px 12px;
+        border: 2px solid var(--slate-200);
+        background: white;
+        border-radius: 8px;
+        color: #94a3b8;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .btn-like:hover,
+    .btn-save:hover {
+        border-color: var(--sky-blue);
+        color: var(--sky-blue);
+    }
+
+    .btn-like.active {
+        background: rgba(239, 68, 68, 0.1);
+        border-color: #ef4444;
+        color: #ef4444;
+    }
+
+    .btn-save.active {
+        background: rgba(14, 165, 233, 0.1);
+        border-color: var(--sky-blue);
+        color: var(--sky-blue);
+    }
+
+    .btn-secondary {
+        background: #f1f5f9;
+        color: #475569;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 24px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+        background: #e2e8f0;
+    }
+
+    .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--sky-blue);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 32px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background: var(--sky-light);
+        transform: translateY(-2px);
+    }
+
+    .btn-primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    /* Edit Blog Modal */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1050;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        backdrop-filter: blur(5px);
+    }
+
+    .modal.show {
+        display: flex;
+    }
+
+    .modal-content {
+        background: white;
+        margin: 10% auto;
+        padding: var(--spacing-8);
+        border-radius: 12px;
+        max-width: 700px;
+        width: 100%;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        animation: slideDown 0.4s ease forwards;
+    }
+
+    @@keyframes slideDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--spacing-4);
+    }
+
+    .modal-title {
         font-size: 1.5rem;
         font-weight: 700;
         color: var(--deep-slate);
-        margin: 0 0 var(--spacing-2) 0;
-    }
-
-    .empty-state p {
-        color: #64748b;
         margin: 0;
-        max-width: 400px;
-        margin-left: auto;
-        margin-right: auto;
     }
 
-    /* Animation */
-    @@keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    .close-modal {
+        background: transparent;
+        border: none;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: color 0.3s;
     }
 
-    .blog-grid {
-        animation: fadeIn 0.3s ease;
+    .close-modal:hover {
+        color: var(--danger);
     }
 
-    /* Responsive */
-    @@media (max-width: 1024px) {
-        .blog-grid {
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        }
-
-        .featured-post {
-            height: 350px;
-        }
-
-        .featured-post-title {
-            font-size: 1.75rem;
-        }
+    .modal-body {
+        max-height: 60vh;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-4);
     }
 
-    @@media (max-width: 768px) {
-        .blog-header h1 {
-            font-size: 2rem;
-        }
-
-        .blog-toolbar {
-            flex-direction: column;
-        }
-
-        .search-box {
-            min-width: 100%;
-        }
-
-        .filter-group {
-            min-width: 100%;
-        }
-
-        .blog-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .featured-post {
-            height: 300px;
-        }
-
-        .featured-post-title {
-            font-size: 1.5rem;
-        }
-
-        .featured-post-content {
-            padding: var(--spacing-6);
-        }
-
-        .featured-post-overlay {
-            padding: var(--spacing-6);
-        }
+    .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: var(--spacing-4);
+        margin-top: var(--spacing-4);
     }
 </style>
 
+<div class="toast-container" id="toastContainer"></div>
+
 <div class="blog-page">
     <div class="container">
-        <!-- Blog Header -->
+        <!-- Header -->
         <div class="blog-header">
-            <h1>Blog Du Lịch</h1>
-            <p>Khám phá những câu chuyện truyền cảm hứng về du lịch, văn hóa phong phú và ẩm thực tuyệt vời của Việt Nam. Từ những con phố cổ đến những bãi biển tươi mới, mỗi bài viết là một hành trình khám phá mới.</p>
+            <h1>Cộng đồng Du lịch</h1>
+            <p>Chia sẻ hành trình, lưu giữ kỷ niệm và lan tỏa đam mê khám phá vẻ đẹp Việt Nam cùng hàng ngàn tín đồ du lịch khác.</p>
         </div>
 
-        <!-- Search & Filter Toolbar -->
-        <div class="blog-toolbar">
-            <div class="search-box">
-                <i class="bi bi-search"></i>
-                <input type="text" id="searchInput" placeholder="Tìm kiếm bài viết...">
-            </div>
-            <div class="filter-group">
-                <button class="filter-btn active" data-category="all">Tất cả</button>
-                <button class="filter-btn" data-category="food">Ẩm thực</button>
-                <button class="filter-btn" data-category="culture">Văn hóa</button>
-                <button class="filter-btn" data-category="nature">Thiên nhiên</button>
+        <!-- Tabs Navigation -->
+        <div class="blog-tabs">
+            <button class="tab-btn active" onclick="switchTab(event, 'public-tab')">
+                <i class="bi bi-globe-americas"></i> Khám phá
+            </button>
+            <button class="tab-btn" onclick="switchTab(event, 'my-tab')">
+                <i class="bi bi-person-lines-fill"></i> Bài viết của tôi
+            </button>
+            <button class="tab-btn" onclick="window.location.href='/Home/SaveBlog'">
+                <i class="bi bi-bookmark-fill"></i> Bài viết đã lưu
+            </button>
+            
+            <button class="tab-action-btn" onclick="switchTab(event, 'create-tab')">
+                <i class="bi bi-pencil-square"></i> Viết bài mới
+            </button>
+        </div>
+
+        <!-- TAB 1: KHÁM PHÁ (PUBLIC) -->
+        <div id="public-tab" class="tab-content active">
+            <div class="blog-grid" id="publicBlogGrid">
+                <div class="empty-state">
+                    <i class="bi bi-hourglass-split"></i>
+                    <p style="font-weight:bold;">Đang tải dữ liệu...</p>
+                </div>
             </div>
         </div>
 
-        <!-- Featured Post -->
-        <div id="featured-post-container"></div>
+        <!-- TAB 2: BÀI CỦA TÔI -->
+        <div id="my-tab" class="tab-content">
+            <div class="my-blog-note">
+                <i class="bi bi-info-circle-fill"></i>
+                <span>Bài viết của bạn sẽ luôn xuất hiện tại đây kèm trạng thái rõ ràng: Chờ duyệt, Đã duyệt hoặc Bị từ chối.</span>
+            </div>
+            <div class="blog-grid" id="myBlogGrid">
+                 <!-- Content loaded via AJAX -->
+            </div>
+        </div>
 
-        <!-- Blog Grid -->
-        <div id="blog-grid-container"></div>
+        <!-- TAB 3: VIếT BÀI -->
+        <div id="create-tab" class="tab-content">
+            <div class="create-form-container">
+                <h2 style="margin-top:0; color:var(--deep-slate);"><i class="bi bi-pencil-fill" style="color:var(--sky-blue)"></i> Chia sẻ trải nghiệm của bạn</h2>
+                <p style="color: #64748b; margin-bottom: 20px;">Bài viết của bạn sẽ được đội ngũ kiểm duyệt trước khi hiển thị trên cộng đồng.</p>
+                
+                <form id="createBlogForm" onsubmit="handleCreateBlog(event)">
+                    <div class="form-group">
+                        <label class="form-label">Tiêu đề bài viết <span style="color:red">*</span></label>
+                        <input type="text" id="blogTitle" class="form-control" placeholder="Ví dụ: Chuyến đi đáng nhớ tại Đà Lạt..." required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Gắn thẻ Địa điểm (Tùy chọn)</label>
+                        <select id="blogLocation" class="form-control">
+                            <option value="">-- Không gắn thẻ --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Nội dung <span style="color:red">*</span></label>
+                        <textarea id="blogContent" class="form-control" placeholder="Bạn đã có trải nghiệm gì thú vị? Hãy kể cho mọi người nghe nhé..." required></textarea>
+                    </div>
+
+                    <!-- Gallery Upload Area -->
+                    <div class="form-group">
+                        <label class="form-label">Hình ảnh chuyến đi (Tùy chọn)</label>
+                        <div class="gallery-upload-area" id="galleryUploadArea" ondrop="handleGalleryDrop(event)" ondragover="handleGalleryDragOver(event)" ondragleave="handleGalleryDragLeave(event)" onclick="document.getElementById('blogImages').click()">
+                            <div class="gallery-upload-placeholder" id="uploadPlaceholder">
+                                <div class="gallery-upload-icon">
+                                    <i class="bi bi-images"></i>
+                                </div>
+                                <div class="gallery-upload-text">
+                                    <strong>Thêm ảnh chuyến đi của bạn</strong>
+                                    Kéo thả, chọn từ thư viện hoặc chụp trực tiếp
+                                </div>
+                                <div class="gallery-upload-buttons">
+                                    <button type="button" class="btn-upload-type" onclick="document.getElementById('blogImages').click(); event.stopPropagation();">
+                                        <i class="bi bi-folder-fill"></i> Thư viện
+                                    </button>
+                                    <button type="button" class="btn-upload-type" onclick="document.getElementById('blogCameraCapture').click(); event.stopPropagation();">
+                                        <i class="bi bi-camera-fill"></i> Camera
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="gallery-preview" id="galleryPreview" style="display: none;"></div>
+                        </div>
+                        <div class="gallery-stats" id="galleryStats" style="display: none;">
+                            <div><i class="bi bi-image"></i> <span id="galleryCount">0</span> / <span id="galleryMax">10</span> ảnh</div>
+                            <div id="gallerySize" style="color: #94a3b8;"></div>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button type="button" class="btn-secondary" onclick="switchTab(event, 'public-tab')">Hủy</button>
+                        <button type="submit" class="btn-primary">
+                            <i class="bi bi-send-fill"></i> Đăng bài
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Hidden file inputs -->
+                <input type="file" id="blogImages" multiple accept="image/jpeg,image/png,image/webp" onchange="handleGallerySelect(event)">
+                <input type="file" id="blogCameraCapture" accept="image/*" capture="environment" onchange="handleGallerySelect(event)">
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Edit Blog Modal -->
+<div class="modal" id="editBlogModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Chỉnh sửa bài viết</h2>
+            <button type="button" class="close-modal" onclick="closeEditModal()">
+                <i class="bi bi-x-circle"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form id="editBlogForm" onsubmit="submitEditBlog(event)">
+                <input type="hidden" id="editBlogId">
+                
+                <div class="form-group">
+                    <label class="form-label">Tiêu đề bài viết</label>
+                    <input type="text" id="editBlogTitle" class="form-control" placeholder="Ví dụ: Chuyến đi đáng nhớ tại Đà Lạt..." required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Gắn thẻ Địa điểm (Tùy chọn)</label>
+                    <select id="editBlogLocation" class="form-control">
+                        <option value="">-- Không gắn thẻ --</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Đường dẫn ảnh Cover (Tùy chọn)</label>
+                    <input type="url" id="editBlogImage" class="form-control" placeholder="https://example.com/image.jpg">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Nội dung</label>
+                    <textarea id="editBlogContent" class="form-control" placeholder="Bạn đã có trải nghiệm gì thú vị? Hãy kể cho mọi người nghe nhé..." required></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeEditModal()">Hủy</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-send-fill"></i> Gửi lại
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
 <script>
-    // Blog data
-    const blogPosts = [
-        {
-            id: 1,
-            title: "Hạ Long - Kỳ quan thiên nhiên thế giới",
-            excerpt: "Khám phá vẻ đẹp kỳ vĩ của Vịnh Hạ Long với hàng nghìn đảo đá vôi và những cung hang quanh đó...",
-            content: "Vịnh Hạ Long là một trong những địa điểm du lịch nổi tiếng nhất của Việt Nam. Được UNESCO công nhận là di sản thiên nhiên thế giới, Hạ Long thu hút hàng triệu du khách mỗi năm...",
-            image: "https://images.unsplash.com/photo-1528127269322-539801943592?w=800",
-            category: "nature",
-            date: "15 Tháng 12, 2024",
-            featured: true
-        },
-        {
-            id: 2,
-            title: "Phở Hà Nội - Linh hồn ẩm thực đường phố",
-            excerpt: "Tìm hiểu về lịch sử hơn 100 năm của phở Hà Nội và bí quyết nấu nước dùng hoàn hảo...",
-            content: "Phở là một trong những biểu tượng ẩm thực Việt Nam nổi tiếng trên thế giới. Mỗi tô phở là kết quả của quá trình nấu chảy đặc biệt...",
-            image: "https://images.unsplash.com/photo-1617093767537-c0b0b76e7a18?w=800",
-            category: "food",
-            date: "12 Tháng 12, 2024",
-            featured: false
-        },
-        {
-            id: 3,
-            title: "Hội An - Phố cổ rực rỡ đèn lồng",
-            excerpt: "Bước vào thế giới hoài cổ với những chiếc cầu gỗ, ông đồ viết thư pháp và những con đèn lồng lấp lánh...",
-            content: "Phố cổ Hội An là một trong những điểm đến văn hóa thú vị nhất ở miền Trung Việt Nam...",
-            image: "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=800",
-            category: "culture",
-            date: "10 Tháng 12, 2024",
-            featured: false
-        },
-        {
-            id: 4,
-            title: "Đà Lạt - Thành phố sương mù",
-            excerpt: "Khám phá những đồi thông lãng mạn, những con đường dạo lên núi và nhiệt độ lạnh mát quanh năm...",
-            content: "Đà Lạt là một thành phố đặc biệt với khí hậu ôn hòa và cảnh quan tuyệt đẹp...",
-            image: "https://images.unsplash.com/photo-1578895101408-1a36b834405b?w=800",
-            category: "nature",
-            date: "08 Tháng 12, 2024",
-            featured: false
-        },
-        {
-            id: 5,
-            title: "Cơm tấm Sài Gòn - Bữa sáng tuyệt vời",
-            excerpt: "Khám phá những quán cơm tấm nổi tiếng nhất ở TPHCM và cách chọn một chén cơm ngon...",
-            content: "Cơm tấm là một trong những món ăn truyền thống yêu thích của người Sài Gòn...",
-            image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800",
-            category: "food",
-            date: "05 Tháng 12, 2024",
-            featured: false
-        },
-        {
-            id: 6,
-            title: "Văn hóa Tết Việt - Những phong tục lâu đời",
-            excerpt: "Tìm hiểu về những phong tục truyền thống và ý nghĩa sâu sắc của Tết Nguyên Đán trong đời sống Việt...",
-            content: "Tết Nguyên Đán là dịp lễ quan trọng nhất trong năm của người Việt Nam...",
-            image: "https://images.unsplash.com/photo-1577720643272-265b66cc5c16?w=800",
-            category: "culture",
-            date: "02 Tháng 12, 2024",
-            featured: false
-        },
-        {
-            id: 7,
-            title: "Sa Pa - Ruộng bậc thang trên mây",
-            excerpt: "Chứng kiến vẻ đẹp của những bậc thang nông nghiệp và đời sống của người dân tộc Hmong ở Sa Pa...",
-            content: "Sa Pa là một điểm đến thiên nhiên tuyệt đẹp ở miền Bắc Việt Nam...",
-            image: "https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=800",
-            category: "nature",
-            date: "29 Tháng 11, 2024",
-            featured: false
-        },
-        {
-            id: 8,
-            title: "Bánh mì Việt Nam - Fusion ẩm thực độc đáo",
-            excerpt: "Khám phá sự kết hợp độc đáo giữa bánh mì Pháp và ẩm thực Việt Nam qua bánh mì Sài Gòn...",
-            content: "Bánh mì là một sản phẩm ẩm thực độc đáo phản ánh lịch sử của Việt Nam...",
-            image: "https://images.unsplash.com/photo-1589985633215-c39b2e0c5d46?w=800",
-            category: "food",
-            date: "25 Tháng 11, 2024",
-            featured: false
-        }
-    ];
+    const PLACEHOLDER_IMG = 'https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&q=80&w=800';
+    const MAX_IMAGES = 10;
+    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+    const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+    
+    let selectedImages = []; // { file, preview, order, isCover }
+    let coverImageIndex = 0;
 
-    let currentCategory = 'all';
-
-    // Initialize
-    document.addEventListener('DOMContentLoaded', function() {
-        renderBlog();
-        setupEventListeners();
+    document.addEventListener('DOMContentLoaded', () => {
+        loadPublicBlogs();
+        loadLocationsForDropdown();
     });
 
-    // Setup Event Listeners
-    function setupEventListeners() {
-        // Filter buttons
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                currentCategory = this.dataset.category;
-                renderBlog();
+    function normalizeStatus(status) {
+        const value = status === null || status === undefined ? '' : String(status).trim().toLowerCase();
+        if (value === '1' || value === 'approved' || value === 'true') return 'approved';
+        if (value === '2' || value === 'rejected') return 'rejected';
+        if (value === '3' || value === 'hidden') return 'hidden';
+        return 'pending';
+    }
+
+    function getStatusMeta(status) {
+        const normalized = normalizeStatus(status);
+        if (normalized === 'approved') {
+            return { label: 'Đã duyệt', icon: 'bi-check-circle-fill', css: 'status-approved' };
+        }
+        if (normalized === 'rejected') {
+            return { label: 'Bị từ chối', icon: 'bi-x-circle-fill', css: 'status-rejected' };
+        }
+        if (normalized === 'hidden') {
+            return { label: 'Đã bị ẩn', icon: 'bi-eye-slash-fill', css: 'status-hidden' };
+        }
+        return { label: 'Chờ duyệt', icon: 'bi-clock-history', css: 'status-pending' };
+    }
+
+    // Manage Tab UI
+    function switchTab(e, tabId) {
+        e.preventDefault();
+        
+        // Update buttons
+        document.querySelectorAll('.blog-tabs button').forEach(b => b.classList.remove('active'));
+        e.target.closest('button').classList.add('active');
+
+        // Update tabs
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+
+        // Trigger load data based on tab
+        if(tabId === 'public-tab') loadPublicBlogs();
+        else if(tabId === 'my-tab') loadMyBlogs();
+    }
+
+    // ==========================================
+    // API CALLS & RENDER
+    // ==========================================
+
+    async function loadPublicBlogs() {
+        const grid = document.getElementById('publicBlogGrid');
+        try {
+            const res = await fetch('/Blog/GetPublicBlogs', { cache: 'no-store' });
+            if (!res.ok) throw new Error("HTTP Status: " + res.status);
+            
+            const contentType = res.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                throw new Error("Invalid response format");
+            }
+
+            const data = await res.json();
+            const posts = Array.isArray(data && data.data) ? data.data : [];
+
+            if (data && data.success) {
+                if (posts.length === 0) {
+                    grid.innerHTML = renderEmptyState('Chưa có bài viết nào trong cộng đồng.');
+                } else {
+                    grid.innerHTML = posts.map(post => renderBlogCard(post, false)).join('');
+                }
+                return;
+            }
+
+            throw new Error((data && data.message) ? data.message : 'Invalid API response');
+        } catch (e) {
+            console.error("Error loading public blogs:", e);
+            grid.innerHTML = renderApiFailureState('Không thể tải dữ liệu cộng đồng lúc này.', 'Vui lòng thử tải lại trang sau ít phút.');
+        }
+    }
+
+    async function loadMyBlogs() {
+        const grid = document.getElementById('myBlogGrid');
+        grid.innerHTML = `<div class="empty-state"><i class="bi bi-hourglass-split"></i><p>Đang tải bài viết của bạn...</p></div>`;
+        
+        try {
+            const res = await fetch('/Blog/GetMyBlogs', { cache: 'no-store' });
+            if (res.status === 401) {
+                showToast('Vui lòng đăng nhập để sử dụng chức năng này', 'error');
+                grid.innerHTML = renderApiFailureState('Bạn chưa đăng nhập.', 'Hãy đăng nhập để xem các bài viết của mình.');
+                return;
+            }
+            if (!res.ok) throw new Error("HTTP Status: " + res.status);
+            
+            const contentType = res.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                throw new Error("Invalid response format");
+            }
+
+            const data = await res.json();
+            const posts = Array.isArray(data && data.data) ? data.data : [];
+            
+            if (data && data.success) {
+                if (posts.length === 0) {
+                    grid.innerHTML = renderEmptyState('Bạn chưa có bài viết nào. Hãy chia sẻ chuyến đi đầu tiên nhé!');
+                } else {
+                    grid.innerHTML = posts.map(post => renderBlogCard(post, true)).join('');
+                }
+                return;
+            }
+
+            throw new Error((data && data.message) ? data.message : 'Invalid API response');
+        } catch (e) {
+            console.error("Error loading my blogs:", e);
+            grid.innerHTML = renderApiFailureState('Không thể tải bài viết của bạn lúc này.', 'Kiểm tra lại kết nối hoặc đăng nhập lại rồi thử lại.');
+        }
+    }
+
+    async function loadLocationsForDropdown() {
+        const endpoints = ['/Blog/GetLocationsForDropdown', '/Map/GetLocationsForDropdown'];
+
+        for (const endpoint of endpoints) {
+            try {
+                const res = await fetch(endpoint);
+                if (!res.ok) continue;
+
+                const contentType = res.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) continue;
+
+                const data = await res.json();
+                if (data.success) {
+                    const select = document.getElementById('blogLocation');
+                    const editSelect = document.getElementById('editBlogLocation');
+                    data.data.forEach(loc => {
+                        let option = new Option(loc.name, loc.id);
+                        select.add(option);
+                        let editOption = new Option(loc.name, loc.id);
+                        editSelect.add(editOption);
+                    });
+                    return;
+                }
+            } catch (e) {
+                console.warn(`Cannot load dropdown from ${endpoint}:`, e);
+            }
+        }
+
+        console.warn('Cannot load locations for blog dropdown');
+    }
+
+    // Handle Form Submit
+    async function handleCreateBlog(e) {
+        e.preventDefault();
+        
+        const title = document.getElementById('blogTitle').value;
+        const content = document.getElementById('blogContent').value;
+        const locationId = document.getElementById('blogLocation').value;
+
+        if (!title.trim() || !content.trim()) {
+            showToast('Vui lòng nhập tiêu đề và nội dung', 'error');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('content', content);
+        formData.append('locationId', locationId || '0');
+
+        // Add images
+        selectedImages.forEach((img, index) => {
+            formData.append('images', img.file);
+            if (img.isCover) {
+                formData.append('coverImageIndex', index);
+            }
+        });
+
+        try {
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Đang gửi...';
+            submitBtn.disabled = true;
+
+            const res = await fetch('/Blog/CreateBlog', {
+                method: 'POST',
+                body: formData
             });
-        });
 
-        // Search input
-        const searchInput = document.getElementById('searchInput');
-        searchInput.addEventListener('input', function() {
-            renderBlog();
-        });
-    }
+            if (res.status === 401) {
+                showToast('Vui lòng đăng nhập để sử dụng chức năng này', 'error');
+                return;
+            }
+            
+            if (!res.ok) throw new Error("Connection error");
 
-    // Render Blog
-    function renderBlog() {
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-        let posts = blogPosts;
+            const data = await res.json();
 
-        // Filter by search term
-        if (searchTerm) {
-            posts = posts.filter(p => 
-                p.title.toLowerCase().includes(searchTerm) ||
-                p.excerpt.toLowerCase().includes(searchTerm)
-            );
-        }
-
-        // Filter by category
-        if (currentCategory !== 'all') {
-            posts = posts.filter(p => p.category === currentCategory);
-        }
-
-        // Render featured post
-        const featuredContainer = document.getElementById('featured-post-container');
-        const featured = posts.find(p => p.featured);
-        if (featured) {
-            featuredContainer.innerHTML = renderFeaturedPost(featured);
-        } else {
-            featuredContainer.innerHTML = '';
-        }
-
-        // Render blog grid (exclude featured)
-        const gridPosts = posts.filter(p => !p.featured);
-        const gridContainer = document.getElementById('blog-grid-container');
-
-        if (gridPosts.length === 0) {
-            gridContainer.innerHTML = renderEmptyState();
-        } else {
-            gridContainer.innerHTML = `
-                <div class="blog-grid">
-                    ${gridPosts.map(p => renderBlogCard(p)).join('')}
-                </div>
-            `;
+            if (data.success) {
+                showToast('Bài viết của bạn đã được gửi và đang chờ duyệt.', 'success');
+                e.target.reset();
+                selectedImages = [];
+                coverImageIndex = 0;
+                renderGalleryPreview();
+                updateGalleryStats();
+                loadMyBlogs();
+                setTimeout(() => {
+                    const myTabBtn = document.querySelector('[onclick*="my-tab"]');
+                    switchTab({ preventDefault: () => {}, target: myTabBtn }, 'my-tab');
+                }, 800);
+            } else {
+                showToast(data.message || 'Lỗi khi đăng bài', 'error');
+            }
+        } catch (error) {
+            showToast('Lỗi mạng khi đăng bài', 'error');
+            console.error(error);
+        } finally {
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="bi bi-send-fill"></i> Đăng bài';
+                submitBtn.disabled = false;
+            }
         }
     }
 
-    // Render Featured Post
-    function renderFeaturedPost(post) {
-        return `
-            <a href="/Home/DetailBlog?id=${post.id}" style="text-decoration: none; color: inherit;">
-                <div class="featured-post">
-                    <img src="${post.image}" alt="${post.title}" class="featured-post-image">
-                    <div class="featured-post-overlay">
-                        <div class="featured-post-content">
-                            <span class="featured-post-category">${getCategoryLabel(post.category)}</span>
-                            <h2 class="featured-post-title">${post.title}</h2>
-                            <p class="featured-post-excerpt">${post.excerpt}</p>
-                            <span class="featured-post-link">
-                                <i class="bi bi-arrow-right"></i> Đọc tiếp
-                            </span>
-                        </div>
+    async function editBlog(blogId) {
+        try {
+            const res = await fetch(`/Blog/GetBlogForEdit?id=${blogId}`);
+            const contentType = res.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                showToast('Lỗi máy chủ khi tải dữ liệu bài viết', 'error');
+                return;
+            }
+
+            const data = await res.json();
+            if (data.success) {
+                const blog = data.data;
+                document.getElementById('editBlogId').value = blogId;
+                document.getElementById('editBlogTitle').value = blog.title;
+                document.getElementById('editBlogContent').value = blog.content;
+                document.getElementById('editBlogLocation').value = blog.locationId || '';
+                showEditModal();
+            } else {
+                showToast(data.message || 'Lỗi khi tải bài viết', 'error');
+            }
+        } catch (e) {
+            showToast('Lỗi kết nối khi tải bài viết', 'error');
+        }
+    }
+
+    function showEditModal() {
+        const modal = document.getElementById('editBlogModal');
+        if (modal) {
+            modal.style.display = 'flex';
+            modal.classList.add('show');
+        }
+    }
+
+    function closeEditModal() {
+        const modal = document.getElementById('editBlogModal');
+        if (modal) {
+            modal.classList.remove('show');
+            setTimeout(() => modal.style.display = 'none', 300);
+        }
+    }
+
+    async function submitEditBlog(e) {
+        e.preventDefault();
+        
+        const blogId = document.getElementById('editBlogId').value;
+        const title = document.getElementById('editBlogTitle').value;
+        const content = document.getElementById('editBlogContent').value;
+        const locationId = document.getElementById('editBlogLocation').value;
+
+        const payload = new URLSearchParams();
+        payload.append('id', blogId);
+        payload.append('title', title);
+        payload.append('content', content);
+        payload.append('locationId', locationId ? locationId : '');
+
+        try {
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Đang gửi...';
+            submitBtn.disabled = true;
+
+            const res = await fetch('/Blog/EditBlog', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                body: payload.toString()
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                showToast('Bài viết đã được gửi duyệt lại!', 'success');
+                closeEditModal();
+                loadMyBlogs();
+            } else {
+                showToast(data.message || 'Lỗi khi cập nhật', 'error');
+            }
+        } catch (error) {
+            showToast('Lỗi mạng', 'error');
+        } finally {
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="bi bi-send-fill"></i> Gửi lại';
+                submitBtn.disabled = false;
+            }
+        }
+    }
+
+    function renderBlogCard(post, isMyBlog) {
+        const img = post.image || PLACEHOLDER_IMG;
+        const status = normalizeStatus(post.status);
+        const statusMeta = getStatusMeta(status);
+        const canViewDetail = (!isMyBlog) || status === 'approved';
+        const locationName = post.locationName || 'Khám phá';
+        const dateText = post.date || '';
+        const authorName = post.author || 'Người dùng';
+        const avatar = post.avatar || ('https://ui-avatars.com/api/?name=' + encodeURIComponent(authorName) + '&background=0EA5E9&color=fff');
+        const likesText = typeof post.likes === 'number' ? post.likes : (typeof post.totalLikes === 'number' ? post.totalLikes : 0);
+        const commentsText = typeof post.totalComments === 'number' ? post.totalComments : 0;
+        
+        let statusHtml = '';
+        let cardClass = 'blog-card';
+        let rejectHtml = '';
+        
+        if (isMyBlog) {
+            statusHtml = `<span class="status-badge ${statusMeta.css}"><i class="bi ${statusMeta.icon}"></i> ${statusMeta.label}</span>`;
+            if (status === 'pending') {
+                cardClass += ' is-pending';
+            } else if (status === 'rejected') {
+                cardClass += ' is-rejected';
+                rejectHtml = `
+                    <div class="reject-reason-box">
+                        <span class="reject-reason-label"><i class="bi bi-exclamation-circle"></i> Lý do từ chối:</span>
+                        ${post.rejectReason || 'Không có lý do được cung cấp'}
+                        <button type="button" class="edit-resubmit-btn" onclick="editBlog(${post.id})">
+                            <i class="bi bi-pencil"></i> Chỉnh sửa & Gửi lại
+                        </button>
                     </div>
-                </div>
-            </a>
-        `;
-    }
+                `;
+            } else if (status === 'hidden') {
+                cardClass += ' is-hidden';
+                rejectHtml = `
+                    <div class="reject-reason-box" style="background:rgba(245,158,11,0.08); border-color:rgba(245,158,11,0.2); color:#b45309;">
+                        <span class="reject-reason-label"><i class="bi bi-info-circle"></i> Đã bị ẩn bởi quản trị viên:</span>
+                        ${post.hideReason || 'Không có lý do được cung cấp'}
+                        <button type="button" class="edit-resubmit-btn" onclick="editBlog(${post.id})">
+                            <i class="bi bi-pencil"></i> Chỉnh sửa & Gửi lại
+                        </button>
+                    </div>
+                `;
+            }
+        }
 
-    // Render Blog Card
-    function renderBlogCard(post) {
+        const likeButtonClass = post.isLiked ? 'btn-like active' : 'btn-like';
+        const saveButtonClass = post.isSaved ? 'btn-save active' : 'btn-save';
+
+        const linkHtml = canViewDetail 
+            ? `<a href="/Home/DetailBlog?id=${post.id}" class="blog-card-link">Đọc tiếp <i class="bi bi-arrow-right"></i></a>`
+            : `<span class="blog-card-link is-locked"><i class="bi bi-lock-fill"></i> Tạm khóa</span>`;
+
         return `
-            <div class="blog-card">
-                <a href="/Home/DetailBlog?id=${post.id}" style="text-decoration: none; color: inherit;">
-                    <img src="${post.image}" alt="${post.title}" class="blog-card-image">
-                </a>
+            <div class="${cardClass}">
+                ${statusHtml}
+                <img src="${img}" alt="${post.title}" class="blog-card-image" onerror="this.src='${PLACEHOLDER_IMG}'">
                 <div class="blog-card-content">
                     <div class="blog-card-meta">
-                        <span class="blog-card-category">${getCategoryLabel(post.category)}</span>
+                        <i class="bi bi-geo-alt-fill"></i> ${locationName}
                     </div>
                     <h3 class="blog-card-title">${post.title}</h3>
                     <p class="blog-card-excerpt">${post.excerpt}</p>
-                    <div class="blog-card-footer">
-                        <span class="blog-card-date">${post.date}</span>
-                        <a href="/Home/DetailBlog?id=${post.id}" class="blog-card-link">
-                            Đọc tiếp <i class="bi bi-arrow-right"></i>
-                        </a>
+                    
+                    <div class="blog-card-author">
+                        <img src="${avatar}" alt="${authorName}" class="blog-card-author-avatar" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(authorName)}&background=0EA5E9&color=fff'">
+                        <div class="blog-card-author-info">
+                            <div class="author-name">${authorName}</div>
+                            <div class="author-date">${dateText}</div>
+                        </div>
+                    </div>
+
+                    <div class="blog-card-stats">
+                        <div style="display:flex; gap:14px;">
+                            <div class="stat"><i class="bi bi-heart"></i> ${likesText}</div>
+                            <div class="stat"><i class="bi bi-chat-dots"></i> ${commentsText}</div>
+                        </div>
+                        ${linkHtml}
+                    </div>
+
+                    ${rejectHtml}
+
+                    <div class="blog-card-actions">
+                        <button class="${likeButtonClass}" onclick="toggleBlogLike(this, ${post.id})">
+                            <i class="bi bi-heart-fill"></i> Thích
+                        </button>
+                        <button class="${saveButtonClass}" onclick="toggleSaveBlog(this, ${post.id})">
+                            <i class="bi bi-bookmark-fill"></i> Lưu
+                        </button>
                     </div>
                 </div>
             </div>
         `;
     }
 
-    // Get Category Label
-    function getCategoryLabel(category) {
-        const labels = {
-            'food': 'Ẩm thực',
-            'culture': 'Văn hóa',
-            'nature': 'Thiên nhiên'
-        };
-        return labels[category] || category;
-    }
-
-    // Render Empty State
-    function renderEmptyState() {
+    function renderEmptyState(message) {
         return `
             <div class="empty-state">
-                <div class="empty-state-icon"><i class="bi bi-search"></i></div>
-                <h3>Không tìm thấy bài viết</h3>
-                <p>Thử thay đổi từ khóa hoặc bộ lọc để khám phá những bài viết khác.</p>
+                <i class="bi bi-inbox"></i>
+                <h3>Trống</h3>
+                <p>${message}</p>
             </div>
         `;
     }
+
+    function renderApiFailureState(title, message) {
+        return `
+            <div class="empty-state">
+                <i class="bi bi-exclamation-triangle"></i>
+                <h3>${title}</h3>
+                <p>${message}</p>
+            </div>
+        `;
+    }
+
+    document.getElementById('rejectModal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('rejectModal')) {
+            closeRejectModal();
+        }
+    });
+
+    // Enhanced interactivity functions
+    async function toggleBlogLike(button, blogId) {
+        try {
+            const res = await fetch('/Blog/ToggleBlogLike', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ blogId })
+            });
+
+            if (res.status === 401) {
+                showToast('Vui lòng đăng nhập để thích bài viết', 'error');
+                return;
+            }
+
+            const data = await res.json();
+            if (data.success) {
+                button.classList.toggle('active');
+                // Update the like counter
+                const card = button.closest('.blog-card');
+                if (card) {
+                    const likeCounter = card.querySelector('.stat i.bi-heart');
+                    if (likeCounter) {
+                        const statDiv = likeCounter.parentElement;
+                        statDiv.textContent = `${data.likes} `;
+                        statDiv.innerHTML = `<i class="bi bi-heart"></i> ${data.likes}`;
+                    }
+                }
+                showToast(data.message, 'success');
+            } else {
+                showToast(data.message, 'error');
+            }
+        } catch (e) {
+            showToast('Lỗi khi thích bài viết', 'error');
+        }
+    }
+
+    async function toggleSaveBlog(button, blogId) {
+        try {
+            const res = await fetch('/Blog/ToggleSaveBlog', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ blogId })
+            });
+
+            if (res.status === 401) {
+                showToast('Vui lòng đăng nhập để lưu bài viết', 'error');
+                return;
+            }
+
+            const data = await res.json();
+            if (data.success) {
+                button.classList.toggle('active');
+                showToast(data.message, 'success');
+            } else {
+                showToast(data.message, 'error');
+            }
+        } catch (e) {
+            showToast('Lỗi khi lưu bài viết', 'error');
+        }
+    }
+
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `custom-toast toast-${type}`;
+        
+        const icon = type === 'success' ? '<i class="bi bi-check-circle"></i>' 
+            : type === 'error' ? '<i class="bi bi-x-circle"></i>'
+            : '<i class="bi bi-info-circle"></i>';
+
+        toast.innerHTML = `${icon}<span>${message}</span>`;
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+
+    // ==========================================
+    // GALLERY UPLOAD FUNCTIONS
+    // ==========================================
+
+    function handleGalleryDragOver(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        document.getElementById('galleryUploadArea').classList.add('drag-over');
+    }
+
+    function handleGalleryDragLeave(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        document.getElementById('galleryUploadArea').classList.remove('drag-over');
+    }
+
+    function handleGalleryDrop(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        document.getElementById('galleryUploadArea').classList.remove('drag-over');
+        
+        const files = e.dataTransfer.files;
+        handleGallerySelect({ target: { files } });
+    }
+
+    async function handleGallerySelect(e) {
+        const files = Array.from(e.target.files);
+        
+        if (files.length === 0) return;
+
+        for (const file of files) {
+            // Validation
+            if (selectedImages.length >= MAX_IMAGES) {
+                showToast(`Tối đa ${MAX_IMAGES} ảnh cho mỗi bài viết`, 'error');
+                break;
+            }
+
+            if (!ALLOWED_TYPES.includes(file.type)) {
+                showToast(`${file.name}: Định dạng không hỗ trợ`, 'error');
+                continue;
+            }
+
+            if (file.size > MAX_FILE_SIZE) {
+                showToast(`${file.name}: Ảnh vượt quá 10MB`, 'error');
+                continue;
+            }
+
+            try {
+                // Compress image
+                const compressedBlob = await compressImage(file);
+                const preview = URL.createObjectURL(compressedBlob);
+
+                selectedImages.push({
+                    file: new File([compressedBlob], file.name, { type: file.type }),
+                    preview: preview,
+                    order: selectedImages.length,
+                    isCover: selectedImages.length === 0 // First image is cover by default
+                });
+
+                if (selectedImages.length === 1) {
+                    coverImageIndex = 0;
+                }
+            } catch (err) {
+                showToast(`${file.name}: Không thể xử lý ảnh`, 'error');
+            }
+        }
+
+        renderGalleryPreview();
+        updateGalleryStats();
+
+        // Reset input
+        e.target.value = '';
+    }
+
+    async function compressImage(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+
+            reader.onload = (e) => {
+                const img = new Image();
+                img.src = e.target.result;
+
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    let width = img.width;
+                    let height = img.height;
+                    const MAX_WIDTH = 1920;
+                    const MAX_HEIGHT = 1920;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height = (height * MAX_WIDTH) / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width = (width * MAX_HEIGHT) / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    canvas.toBlob(resolve, 'image/jpeg', 0.85);
+                };
+
+                img.onerror = reject;
+            };
+
+            reader.onerror = reject;
+        });
+    }
+
+    function renderGalleryPreview() {
+        const area = document.getElementById('galleryUploadArea');
+        const placeholder = document.getElementById('uploadPlaceholder');
+        const preview = document.getElementById('galleryPreview');
+
+        if (selectedImages.length === 0) {
+            placeholder.style.display = 'flex';
+            preview.style.display = 'none';
+            return;
+        }
+
+        placeholder.style.display = 'none';
+        preview.style.display = 'grid';
+
+        preview.innerHTML = selectedImages.map((img, index) => `
+            <div class="gallery-item" draggable="true" data-index="${index}" ondragstart="handleImageDragStart(event)" ondragend="handleImageDragEnd(event)" ondrop="handleImageDrop(event, ${index})" ondragover="handleImageDragOver(event)">
+                ${img.isCover ? '<div class="gallery-item-badge"><i class="bi bi-star-fill"></i> Cover</div>' : ''}
+                <img src="${img.preview}" alt="Preview ${index + 1}">
+                <div class="gallery-item-overlay">
+                    <button type="button" class="gallery-item-btn btn-cover ${img.isCover ? 'active' : ''}" onclick="setCoverImage(${index}); event.stopPropagation();" title="Đặt làm ảnh cover">
+                        <i class="bi bi-star"></i>
+                    </button>
+                    <button type="button" class="gallery-item-btn btn-delete" onclick="removeImage(${index}); event.stopPropagation();" title="Xóa ảnh">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function setCoverImage(index) {
+        selectedImages = selectedImages.map((img, i) => ({
+            ...img,
+            isCover: i === index
+        }));
+        coverImageIndex = index;
+        renderGalleryPreview();
+        updateGalleryStats();
+    }
+
+    function removeImage(index) {
+        selectedImages.splice(index, 1);
+        
+        // Reassign cover if needed
+        if (coverImageIndex >= selectedImages.length && selectedImages.length > 0) {
+            coverImageIndex = 0;
+            selectedImages[0].isCover = true;
+        }
+
+        renderGalleryPreview();
+        updateGalleryStats();
+    }
+
+    let draggedIndex = null;
+
+    function handleImageDragStart(e) {
+        draggedIndex = parseInt(e.target.closest('.gallery-item').dataset.index);
+        e.target.closest('.gallery-item').style.opacity = '0.5';
+    }
+
+    function handleImageDragEnd(e) {
+        e.target.closest('.gallery-item').style.opacity = '1';
+    }
+
+    function handleImageDragOver(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.target.closest('.gallery-item').style.transform = 'scale(1.05)';
+    }
+
+    function handleImageDrop(e, targetIndex) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.target.closest('.gallery-item').style.transform = '';
+
+        if (draggedIndex === null || draggedIndex === targetIndex) return;
+
+        // Swap images
+        [selectedImages[draggedIndex], selectedImages[targetIndex]] = [selectedImages[targetIndex], selectedImages[draggedIndex]];
+
+        renderGalleryPreview();
+    }
+
+    function updateGalleryStats() {
+        const stats = document.getElementById('galleryStats');
+        const count = document.getElementById('galleryCount');
+        const size = document.getElementById('gallerySize');
+
+        if (selectedImages.length === 0) {
+            stats.style.display = 'none';
+            return;
+        }
+
+        stats.style.display = 'flex';
+        count.textContent = selectedImages.length;
+
+        const totalSize = selectedImages.reduce((sum, img) => sum + img.file.size, 0);
+        const sizeMB = (totalSize / (1024 * 1024)).toFixed(2);
+        size.textContent = `${sizeMB}MB`;
+    }
+
+    // ...existing functions continue...
 </script>

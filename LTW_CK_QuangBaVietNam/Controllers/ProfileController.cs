@@ -21,7 +21,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
 
         private static string GetConnectionString()
         {
-            var appConnection = ConfigurationManager.ConnectionStrings["QL_DL_LTWConnectionString"];
+            var appConnection = ConfigurationManager.ConnectionStrings["QBConnectionString"];
             if (appConnection != null && !string.IsNullOrWhiteSpace(appConnection.ConnectionString))
             {
                 return appConnection.ConnectionString;
@@ -33,7 +33,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                 return defaultConnection.ConnectionString;
             }
 
-            throw new ConfigurationErrorsException("Thiếu chuỗi kết nối. Vui lòng thêm 'QL_DL_LTWConnectionString' (hoặc 'DefaultConnection') trong Web.config.");
+            throw new ConfigurationErrorsException("Missing connection string. Please add 'QBConnectionString' (or 'DefaultConnection') in Web.config.");
         }
 
         [HttpPost]

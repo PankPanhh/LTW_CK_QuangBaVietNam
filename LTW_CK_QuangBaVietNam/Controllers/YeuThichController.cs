@@ -12,7 +12,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
     {
         private readonly DataClasses1DataContext db =
              new DataClasses1DataContext(
-                 ConfigurationManager.ConnectionStrings["CK_QBVNConnectionString"].ConnectionString
+                 ConfigurationManager.ConnectionStrings["QBConnectionString"].ConnectionString
              );
 
        

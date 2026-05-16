@@ -23,7 +23,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
 
         private static string GetConnectionString()
         {
-            var appConnection = ConfigurationManager.ConnectionStrings["CK_QBVNConnectionString"];
+            var appConnection = ConfigurationManager.ConnectionStrings["QBConnectionString"];
             if (appConnection != null && !string.IsNullOrWhiteSpace(appConnection.ConnectionString))
             {
                 return appConnection.ConnectionString;
@@ -35,7 +35,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                 return defaultConnection.ConnectionString;
             }
 
-            throw new ConfigurationErrorsException("Missing connection string. Please add 'CK_QBVNConnectionString' (or 'DefaultConnection') in Web.config.");
+            throw new ConfigurationErrorsException("Missing connection string. Please add 'QBConnectionString' (or 'DefaultConnection') in Web.config.");
         }
 
         //
@@ -319,10 +319,15 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             // Set breadcrumbs for Blog page
             var breadcrumbs = new List<BreadcrumbItem>
             {
-                new BreadcrumbItem("Blog", "/Home/DetailBlog", isActive: true)
+                new BreadcrumbItem("Blog", "/Home/Blog/DetailBlog", isActive: true)
             };
             this.SetBreadcrumbs(breadcrumbs);
 
+            return View();
+        }
+
+        public ActionResult SaveBlog()
+        {
             return View();
         }
 

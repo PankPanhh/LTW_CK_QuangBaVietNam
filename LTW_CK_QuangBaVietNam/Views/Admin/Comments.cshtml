@@ -1,0 +1,186 @@
+@{
+    ViewBag.Title = "Quản lý bình luận";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    .comment-table th { white-space: nowrap; }
+    .status-badge { padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 0.85rem; }
+    .status-visible { background: #dcfce7; color: #166534; }
+    .status-hidden { background: #fef08a; color: #854d0e; }
+    .status-deleted { background: #fee2e2; color: #991b1b; }
+</style>
+
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Danh sách Bình luận</h6>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <input type="text" id="filterKeyword" class="form-control" placeholder="Tìm kiếm nội dung, bài viết, người dùng...">
+                </div>
+                <div class="col-md-3">
+                    <select id="filterStatus" class="form-control">
+                        <option value="all">Tất cả trạng thái</option>
+                        <option value="visible">Hiển thị</option>
+                        <option value="hidden">Đã ẩn</option>
+                        <option value="deleted">Đã xoá</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered comment-table" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Người dùng</th>
+                            <th>Bài viết</th>
+                            <th>Nội dung</th>
+                            <th>Ngày đăng</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="commentList">
+                        <!-- Render via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Ẩn Bình Luận -->
+<div class="modal fade" id="hideCommentModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ẩn bình luận</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Nhập lý do ẩn bình luận này (Sẽ hiển thị cho tác giả):</p>
+                <textarea id="hideReason" class="form-control" rows="3" placeholder="Ví dụ: Vi phạm tiêu chuẩn cộng đồng..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-warning" id="btnConfirmHide">Xác nhận Ẩn</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let comments = [];
+        let currentActionId = null;
+
+        $(document).ready(function () {
+            loadComments();
+
+            $('#btnConfirmHide').click(function() {
+                const reason = $('#hideReason').val().trim();
+                if(!reason) { alert("Vui lòng nhập lý do!"); return; }
+
+                $.post('/Admin/HideComment', { id: currentActionId, reason: reason }, function(res) {
+                    if(res.success) {
+                        $('#hideCommentModal').modal('hide');
+                        loadComments();
+                    } else {
+                        alert(res.message);
+                    }
+                });
+            });
+
+            $('#filterKeyword, #filterStatus').on('change keyup', function() {
+                renderTable();
+            });
+        });
+
+        function loadComments() {
+            $.get('/Admin/GetCommentsAdmin', function(res) {
+                if(res.success) {
+                    comments = res.data;
+                    renderTable();
+                } else {
+                    alert(res.message);
+                }
+            });
+        }
+
+        function renderTable() {
+            let html = '';
+            const keyword = $('#filterKeyword').val().toLowerCase();
+            const status = $('#filterStatus').val();
+
+            const filtered = comments.filter(c => {
+                const matchKeyword = !keyword || 
+                    (c.content && c.content.toLowerCase().includes(keyword)) ||
+                    (c.author && c.author.toLowerCase().includes(keyword)) ||
+                    (c.blogTitle && c.blogTitle.toLowerCase().includes(keyword));
+                const matchStatus = status === 'all' || c.status === status;
+                return matchKeyword && matchStatus;
+            });
+
+            filtered.forEach(c => {
+                let statusClass = c.status === 'visible' ? 'status-visible' : (c.status === 'hidden' ? 'status-hidden' : 'status-deleted');
+                let statusText = c.status === 'visible' ? 'Hiển thị' : (c.status === 'hidden' ? 'Đã ẩn' : 'Đã xoá');
+
+                let actionHtml = '';
+                if(c.status === 'visible') {
+                    actionHtml += `<button class="btn btn-sm btn-warning mb-1" onclick="openHideModal(${c.id})"><i class="fas fa-eye-slash"></i> Ẩn</button> `;
+                } else if(c.status === 'hidden') {
+                    actionHtml += `<button class="btn btn-sm btn-success mb-1" onclick="restoreComment(${c.id})"><i class="fas fa-eye"></i> Hiện</button> `;
+                }
+                
+                if(c.status !== 'deleted') {
+                    actionHtml += `<button class="btn btn-sm btn-danger mb-1" onclick="deleteComment(${c.id})"><i class="fas fa-trash"></i> Xoá</button>`;
+                }
+
+                html += `
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img src="${c.authorAvatar}" width="30" class="rounded-circle mr-2" />
+                                <strong>${c.author}</strong>
+                            </div>
+                        </td>
+                        <td><a href="/Home/DetailBlog/${c.blogId}" target="_blank">Bài #${c.blogId}</a></td>
+                        <td>${c.content} <br/><small class="text-muted">${c.reason ? 'Lý do: ' + c.reason : ''}</small></td>
+                        <td>${c.date}</td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        <td>${actionHtml}</td>
+                    </tr>
+                `;
+            });
+            $('#commentList').html(html);
+        }
+
+        function openHideModal(id) {
+            currentActionId = id;
+            $('#hideReason').val('');
+            $('#hideCommentModal').modal('show');
+        }
+
+        function restoreComment(id) {
+            if(confirm("Khôi phục bình luận này?")) {
+                $.post('/Admin/RestoreComment', { id: id }, function(res) {
+                    if(res.success) loadComments();
+                    else alert(res.message);
+                });
+            }
+        }
+
+        function deleteComment(id) {
+            if(confirm("Bạn có chắc muốn xoá mềm bình luận này?")) {
+                $.post('/Admin/DeleteCommentAdmin', { id: id }, function(res) {
+                    if(res.success) loadComments();
+                    else alert(res.message);
+                });
+            }
+        }
+    </script>
+}
