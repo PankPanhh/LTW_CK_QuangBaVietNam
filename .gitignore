@@ -29,3 +29,10 @@
 # Keep SQL schema scripts tracked
 !**/Schema/
 !**/Schema/**/*.sql
+
+# Local temporary folders
+/New folder/
+/New/
+/gitcolne/
+/neww/
+/Places/
