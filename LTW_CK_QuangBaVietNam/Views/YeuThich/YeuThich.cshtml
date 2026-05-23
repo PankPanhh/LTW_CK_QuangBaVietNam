@@ -93,70 +93,78 @@
     }
     else
     {
-        <div class="row g-3">
-            @foreach (var yt in Model)
-            {
-                var dd = yt.DiaDiem;
+<div class="row g-3">
+    @foreach (var yt in Model)
+    {
+        var dd = yt.DiaDiem;
 
+        string rawImg = null;
+        anhMap.TryGetValue(yt.MaDiaDiem, out rawImg);
 
-                string rawImg = null;
-                anhMap.TryGetValue(yt.MaDiaDiem, out rawImg);
+        string src = "";
+        if (!string.IsNullOrWhiteSpace(rawImg))
+        {
+            src = Url.Content("~" + rawImg);
+        }
+        else
+        {
+            
+            src = Url.Content("~/Content/images/no-image.jpg");
+        }
+        <div class="col-12 col-md-6 col-lg-4" id="fav-card-@yt.MaDiaDiem">
+            <div class="card border-0 shadow-sm h-100">
+                <img src="@src" class="card-img-top" style="height:200px;object-fit:cover;" alt="@(dd != null ? dd.TenDiaDiem : "")" />
+                <div class="card-body">
+                    <div class="fw-bold">@(dd != null ? dd.TenDiaDiem : "")</div>
 
-                var src = Url.Content("~" + rawImg);
-                <div class="col-12 col-md-6 col-lg-4" id="fav-card-@yt.MaDiaDiem">
-                    <div class="card border-0 shadow-sm h-100">
-                        <img src="@src" class="card-img-top" style="height:200px;object-fit:cover;" alt="@(dd != null ? dd.TenDiaDiem : "")" />
-                        <div class="card-body">
-                            <div class="fw-bold">@(dd != null ? dd.TenDiaDiem : "")</div>
-
-                            <div class="text-muted small mt-1">
-                                <i class="bi bi-geo-alt me-1"></i>@((dd != null && dd.VungMien != null) ? dd.VungMien : "Việt Nam")
-                            </div>
-
-                            <div class="text-muted small mt-2">
-                                Lưu lúc: @yt.NgayLuu.ToString("dd/MM/yyyy HH:mm")
-                            </div>
-
-                            <hr />
-
-                            @using (Html.BeginForm("ThemVaoBoSuuTap", "YeuThich", FormMethod.Post, new { @class = "d-flex gap-2 align-items-center" }))
-                            {
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="maDiaDiem" value="@yt.MaDiaDiem" />
-                                <input type="hidden" name="returnUrl" value="@returnUrl" />
-
-                                <select class="form-select form-select-sm" name="maBoSuuTap">
-                                    <option value="">-- Chọn bộ sưu tập --</option>
-                                    @foreach (var c in collections)
-                                    {
-                                        <option value="@c.MaBoSuuTap">@c.TenBoSuuTap</option>
-                                    }
-                                </select>
-
-                                <button type="submit" class="btn btn-outline-primary btn-sm">
-                                    <i class="bi bi-bookmark-plus me-1"></i>Thêm
-                                </button>
-                            }
-
-                            
-                            <div class="d-flex justify-content-end mt-3">
-                                @using (Html.BeginForm("DoiTrangThaiYeuThich", "YeuThich", FormMethod.Post))
-                                {
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="maDiaDiem" value="@yt.MaDiaDiem" />
-                                    <input type="hidden" name="returnUrl" value="@returnUrl" />
-
-                                    <button class="btn btn-outline-danger btn-sm" type="submit">
-                                        <i class="bi bi-heartbreak me-1"></i>Bỏ lưu
-                                    </button>
-                                }
-                            </div>
-
-                        </div>
+                    <div class="text-muted small mt-1">
+                        <i class="bi bi-geo-alt me-1"></i>@((dd != null && dd.VungMien != null) ? dd.VungMien : "Việt Nam")
                     </div>
+
+                    <div class="text-muted small mt-2">
+                        Lưu lúc: @yt.NgayLuu.ToString("dd/MM/yyyy HH:mm")
+                    </div>
+
+                    <hr />
+
+                    @using (Html.BeginForm("ThemVaoBoSuuTap", "YeuThich", FormMethod.Post, new { @class = "d-flex gap-2 align-items-center" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="maDiaDiem" value="@yt.MaDiaDiem" />
+                        <input type="hidden" name="returnUrl" value="@returnUrl" />
+
+                        <select class="form-select form-select-sm" name="maBoSuuTap">
+                            <option value="">-- Chọn bộ sưu tập --</option>
+                            @foreach (var c in collections)
+                            {
+                                <option value="@c.MaBoSuuTap">@c.TenBoSuuTap</option>
+                            }
+                        </select>
+
+                        <button type="submit" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-bookmark-plus me-1"></i>Thêm
+                        </button>
+                    }
+
+
+                <div class="d-flex justify-content-end mt-3">
+                    @using (Html.BeginForm("BoLuuForm", "YeuThich", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="maDiaDiem" value="@yt.MaDiaDiem" />
+                        <input type="hidden" name="returnUrl" value="@returnUrl" />
+
+                        <button class="btn btn-outline-danger btn-sm" type="submit">
+                            <i class="bi bi-heartbreak me-1"></i>Bỏ lưu
+                        </button>
+                    }
                 </div>
-            }
+
+                </div>
+            </div>
         </div>
+    }
+</div>
     }
 </div>
 

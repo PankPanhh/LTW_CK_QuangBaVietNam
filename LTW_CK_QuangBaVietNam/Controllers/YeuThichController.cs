@@ -12,7 +12,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
     {
         private readonly DataClasses1DataContext db =
             new DataClasses1DataContext(
-                ConfigurationManager.ConnectionStrings["CK_QBVNConnectionString"].ConnectionString
+                ConfigurationManager.ConnectionStrings["QBConnectionString"].ConnectionString
             );
 
         
@@ -103,13 +103,16 @@ namespace LTW_CK_QuangBaVietNam.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult ThemVaoBoSuuTap(int? maBoSuuTap, int? maDiaDiem, string returnUrl = null)
         {
-            var user = Session["nguoiDung"] as NguoiDung;
+            var user = Session["nguoiDung"] as LTW_CK_QuangBaVietNam.Models.NguoiDung;
             if (user == null) return RedirectToAction("Login", "Home");
 
             if (!maBoSuuTap.HasValue || maBoSuuTap.Value <= 0 || !maDiaDiem.HasValue || maDiaDiem.Value <= 0)
             {
                 TempData["Error"] = "Vui lòng chọn bộ sưu tập và địa điểm.";
-                if (!string.IsNullOrWhiteSpace(returnUrl)) return Redirect(returnUrl);
+
+                if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    return Redirect(returnUrl);
+
                 return RedirectToAction("BoSuuTap");
             }
 
@@ -127,7 +130,10 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             if (existed != null)
             {
                 TempData["Message"] = "Địa điểm đã có trong bộ sưu tập.";
-                if (!string.IsNullOrWhiteSpace(returnUrl)) return Redirect(returnUrl);
+
+                if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    return Redirect(returnUrl);
+
                 return RedirectToAction("ChiTietBoSuuTap", new { id = bstId });
             }
 
@@ -141,11 +147,11 @@ namespace LTW_CK_QuangBaVietNam.Controllers
 
             TempData["Message"] = "Đã thêm vào bộ sưu tập.";
 
-            if (!string.IsNullOrWhiteSpace(returnUrl)) return Redirect(returnUrl);
+            if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                return Redirect(returnUrl);
 
             return RedirectToAction("ChiTietBoSuuTap", new { id = bstId });
         }
-
 
         public ActionResult YeuThich()
         {
@@ -176,44 +182,64 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             return View(list);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult BoLuuForm(int maDiaDiem, string returnUrl = null)
+        {
+            
+            var user = Session["nguoiDung"] as LTW_CK_QuangBaVietNam.Models.NguoiDung;
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Home");
+            }
 
+            var item = db.YeuThiches.FirstOrDefault(x => x.MaDiaDiem == maDiaDiem && x.MaNguoiDung == user.MaNguoiDung);
+            if (item != null)
+            {
+                db.YeuThiches.DeleteOnSubmit(item);
+                db.SubmitChanges();
+                TempData["Message"] = "Đã xóa địa điểm khỏi danh sách yêu thích.";
+            }
 
+            if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+
+            return RedirectToAction("Index", "YeuThich");
+        }
         public ActionResult BoSuuTap()
         {
-            var user = Session["nguoiDung"] as NguoiDung;
+            var user = Session["nguoiDung"] as LTW_CK_QuangBaVietNam.Models.NguoiDung;
             if (user == null) return RedirectToAction("Login", "Home");
 
             var list = db.BoSuuTaps
                 .Where(x => x.MaNguoiDung == user.MaNguoiDung)
                 .OrderByDescending(x => x.NgayTao)
-                .ToList(); 
+                .ToList();
 
             var bstIds = list.Select(x => x.MaBoSuuTap).ToList();
+
             ViewBag.Counts = db.BoSuuTapDiaDiems
                 .Where(x => bstIds.Contains(x.MaBoSuuTap))
                 .GroupBy(x => x.MaBoSuuTap)
                 .ToDictionary(g => g.Key, g => g.Count());
 
-            var anhMap = new Dictionary<int, string>();
+            ViewBag.AnhMap = (from ct in db.BoSuuTapDiaDiems
+                              join a in db.AnhDiaDiems on ct.MaDiaDiem equals a.MaDiaDiem
+                              where bstIds.Contains(ct.MaBoSuuTap) && a.LaAnhChinh == true
+                              group a.DuongDanAnh by ct.MaBoSuuTap into g
+                              select new
+                              {
+                                  MaBoSuuTap = g.Key,
+                               
+                                  DuongDanAnh = g.FirstOrDefault()
+                              })
+                              .ToDictionary(x => x.MaBoSuuTap, x => x.DuongDanAnh);
 
-            foreach (var bst in list)
-            {
-                var anh = (from ct in db.BoSuuTapDiaDiems
-                           join a in db.AnhDiaDiems
-                           on ct.MaDiaDiem equals a.MaDiaDiem
-                           where ct.MaBoSuuTap == bst.MaBoSuuTap
-                                 && a.LaAnhChinh == true
-                           select a.DuongDanAnh)
-                           .FirstOrDefault();
-
-                anhMap[bst.MaBoSuuTap] = anh;
-            }
-            ViewBag.AnhMap = anhMap;
-
-            return View(list); 
+            return View(list);
         }
 
-      
         public ActionResult ChiTietBoSuuTap(int id)
         {
             var user = Session["nguoiDung"] as NguoiDung;

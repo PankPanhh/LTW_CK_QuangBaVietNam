@@ -31,28 +31,47 @@ namespace LTW_CK_QuangBaVietNam.Controllers
 
         public ActionResult Index()
         {
+            if (Session["nguoiDung"] == null)
+            {
+                TempData["LoginError"] = "Vui lòng đăng nhập tài khoản Admin.";
+                return RedirectToAction("Login", "Home"); 
+            }
+
+           
+            var user = Session["nguoiDung"] as LTW_CK_QuangBaVietNam.Models.NguoiDung;
+            if (user == null || user.VaiTro != 1)
+            {
+              
+                Session["nguoiDung"] = null;
+                Session["khach"] = null;
+
+                TempData["LoginError"] = "Tài khoản của bạn không có quyền Admin. Vui lòng đăng nhập lại.";
+                return RedirectToAction("Login", "Home"); 
+            }
+         
             var now = DateTime.Now;
             var from30 = now.AddDays(-30);
             var from60 = now.AddDays(-60);
             var from7 = now.AddDays(-7);
 
-           
-            int totalPlaces = db.DiaDiems.Count();
 
+            int totalPlaces = db.DiaDiems.Count();
             int places30 = db.DiaDiems.Count(x => x.NgayDang >= from30);
             int placesPrev30 = db.DiaDiems.Count(x => x.NgayDang < from30 && x.NgayDang >= from60);
             double placesGrowth = (placesPrev30 <= 0) ? (places30 > 0 ? 100 : 0) : ((places30 - placesPrev30) * 100.0 / placesPrev30);
 
+    
             int totalUsers = db.NguoiDungs.Count(x => x.VaiTro == 2);
             int users30 = db.NguoiDungs.Count(x => x.VaiTro == 2 && x.NgayTao >= from30);
             int usersPrev30 = db.NguoiDungs.Count(x => x.VaiTro == 2 && x.NgayTao < from30 && x.NgayTao >= from60);
             double usersGrowth = (usersPrev30 <= 0) ? (users30 > 0 ? 100 : 0) : ((users30 - usersPrev30) * 100.0 / usersPrev30);
 
+        
             int newReviews7 = db.BinhLuans.Count(x => x.NgayDang >= from7 && x.TrangThai != "deleted");
             int needModeration = db.BinhLuans.Count(x => x.TrangThai == "hidden");
-
             int pendingPosts = db.BaiViets.Count(x => x.TrangThai == "pending");
 
+   
             var topPlaces = db.DiaDiems
                 .OrderByDescending(x => x.LuotXem ?? 0)
                 .Take(10)
@@ -67,14 +86,12 @@ namespace LTW_CK_QuangBaVietNam.Controllers
 
             ViewBag.NewReviews7 = newReviews7;
             ViewBag.NeedModeration = needModeration;
-
             ViewBag.PendingPosts = pendingPosts;
-
             ViewBag.TopPlaces = topPlaces;
 
-            return View(); 
+            return View();
         }
-    
+
 
         public ActionResult DiaDiem(string filter = "all", string q = "", string vung = "all", int? danhMuc = null)
         {
@@ -82,14 +99,25 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             q = (q ?? "").Trim();
             vung = (vung ?? "all").Trim();
 
-            
-            var list = db.DiaDiems.ToList();
+            IQueryable<DiaDiem> query = db.DiaDiems;
 
-            // Lọc trạng thái
-            if (filter == "showing") list = list.Where(x => (x.TrangThai ?? true) == true).ToList();
-            else if (filter == "hidden") list = list.Where(x => (x.TrangThai ?? true) == false).ToList();
+            if (filter == "showing")
+            {
+                query = query.Where(x => (x.TrangThai ?? true) == true);
+            }
+            else if (filter == "hidden")
+            {
+                query = query.Where(x => (x.TrangThai ?? true) == false);
+            }
 
-            // Search tên
+            if (danhMuc.HasValue)
+            {
+                query = query.Where(x => x.MaDanhMuc == danhMuc.Value);
+            }
+
+            var list = query.OrderBy(x => x.MaDiaDiem).ToList();
+
+           
             if (!string.IsNullOrWhiteSpace(q))
             {
                 var qNorm = NormalizeText(q);
@@ -102,12 +130,6 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                 list = list.Where(x => NormalizeText(x.VungMien).Contains(vNorm)).ToList();
             }
 
-            if (danhMuc.HasValue)
-                list = list.Where(x => x.MaDanhMuc == danhMuc.Value).ToList();
-
-            list = list.OrderBy(x => x.MaDiaDiem).ToList();
-
-            
             ViewBag.DanhMucMap = db.DanhMucs
                 .ToDictionary(x => x.MaDanhMuc, x => x.TenDanhMuc);
 
@@ -117,14 +139,13 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                 .GroupBy(a => a.MaDiaDiem)
                 .ToDictionary(g => g.Key, g => g.Select(x => x.DuongDanAnh).FirstOrDefault());
 
-           
             ViewBag.Filter = filter;
             ViewBag.Q = q;
             ViewBag.Vung = vung;
             ViewBag.DanhMuc = danhMuc;
             ViewBag.DanhMucList = db.DanhMucs.OrderBy(x => x.TenDanhMuc).ToList();
 
-            return View(list); 
+            return View(list);
         }
         private static string NormalizeText(string input)
         {
@@ -490,11 +511,19 @@ namespace LTW_CK_QuangBaVietNam.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DoiQuyenNguoiDung(int userId, int vaiTro, string filter = "all")
         {
+            // BẢO MẬT: Kiểm tra quyền Admin (VaiTro == 1)
+            var adminUser = Session["nguoiDung"] as LTW_CK_QuangBaVietNam.Models.NguoiDung;
+            if (adminUser == null || adminUser.VaiTro != 1)
+            {
+                TempData["Error"] = "Bạn không có quyền thực hiện hành động này.";
+                return RedirectToAction("Login", "Home");
+            }
+
             var u = db.NguoiDungs.SingleOrDefault(x => x.MaNguoiDung == userId);
             if (u == null) return HttpNotFound();
 
             u.VaiTro = vaiTro;
-            db.SubmitChanges(); 
+            db.SubmitChanges();
 
             TempData["Success"] = "Đổi quyền thành công.";
             return RedirectToAction("NguoiDung", new { filter = filter });
@@ -504,11 +533,19 @@ namespace LTW_CK_QuangBaVietNam.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult KhoaNguoiDung(int userId, string filter = "all")
         {
+            // BẢO MẬT: Kiểm tra quyền Admin (VaiTro == 1)
+            var adminUser = Session["nguoiDung"] as LTW_CK_QuangBaVietNam.Models.NguoiDung;
+            if (adminUser == null || adminUser.VaiTro != 1)
+            {
+                TempData["Error"] = "Bạn không có quyền thực hiện hành động này.";
+                return RedirectToAction("Login", "Home");
+            }
+
             var u = db.NguoiDungs.SingleOrDefault(x => x.MaNguoiDung == userId);
             if (u == null) return HttpNotFound();
 
-            u.TrangThai = false;
-            db.SubmitChanges(); 
+            u.TrangThai = false; 
+            db.SubmitChanges();
 
             TempData["Success"] = "Đã khoá người dùng.";
             return RedirectToAction("NguoiDung", new { filter = filter });
@@ -518,11 +555,18 @@ namespace LTW_CK_QuangBaVietNam.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult MoKhoaNguoiDung(int userId, string filter = "all")
         {
+            var adminUser = Session["nguoiDung"] as LTW_CK_QuangBaVietNam.Models.NguoiDung;
+            if (adminUser == null || adminUser.VaiTro != 1)
+            {
+                TempData["Error"] = "Bạn không có quyền thực hiện hành động này.";
+                return RedirectToAction("Login", "Home");
+            }
+
             var u = db.NguoiDungs.SingleOrDefault(x => x.MaNguoiDung == userId);
             if (u == null) return HttpNotFound();
 
-            u.TrangThai = true;
-            db.SubmitChanges(); 
+            u.TrangThai = true; 
+            db.SubmitChanges();
 
             TempData["Success"] = "Đã mở khoá người dùng.";
             return RedirectToAction("NguoiDung", new { filter = filter });
@@ -530,7 +574,25 @@ namespace LTW_CK_QuangBaVietNam.Controllers
 
         public ActionResult ThongKeBaoCao()
         {
-            
+           
+            if (Session["nguoiDung"] == null)
+            {
+                TempData["LoginError"] = "Vui lòng đăng nhập tài khoản Admin để xem báo cáo thống kê.";
+                return RedirectToAction("Login", "Home");
+            }
+
+           
+            var user = Session["nguoiDung"] as LTW_CK_QuangBaVietNam.Models.NguoiDung;
+            if (user == null || user.VaiTro != 1)
+            {
+                
+                Session["nguoiDung"] = null;
+                Session["khach"] = null;
+
+                TempData["LoginError"] = "Tài khoản của bạn không có quyền xem báo cáo. Vui lòng đăng nhập lại.";
+                return RedirectToAction("Login", "Home");
+            }
+
             var topViewed = db.DiaDiems
                 .OrderByDescending(x => x.LuotXem ?? 0)
                 .Take(10)
@@ -538,7 +600,6 @@ namespace LTW_CK_QuangBaVietNam.Controllers
 
             var mostViewed = topViewed.FirstOrDefault();
 
-            
             var topFavCounts = db.YeuThiches
                 .GroupBy(x => x.MaDiaDiem)
                 .Select(g => new { MaDiaDiem = g.Key, So = g.Count() })
@@ -554,7 +615,6 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                 .ToList();
             var topFavPlaceMap = topFavPlaces.ToDictionary(d => d.MaDiaDiem, d => d);
 
-            
             DiaDiem topFavPlace = null;
             int topFavCount = 0;
             if (topFavCounts.Count > 0)
@@ -564,7 +624,6 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                 topFavPlaceMap.TryGetValue(row0.MaDiaDiem, out topFavPlace);
             }
 
-            
             var topUserRow = db.BinhLuans
                 .Where(x => x.TrangThai != "deleted")
                 .GroupBy(x => x.MaNguoiDung)
@@ -580,12 +639,11 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                 topUser = db.NguoiDungs.FirstOrDefault(u => u.MaNguoiDung == topUserRow.MaNguoiDung);
             }
 
-            
             var from30 = DateTime.Now.AddDays(-30);
             int commentCount30 = db.BinhLuans
                 .Count(x => x.NgayDang.HasValue && x.NgayDang.Value >= from30 && x.TrangThai != "deleted");
 
-           
+            
             ViewBag.MostViewed = mostViewed;
             ViewBag.TopViewed = topViewed;
 
@@ -597,12 +655,11 @@ namespace LTW_CK_QuangBaVietNam.Controllers
 
             ViewBag.CommentCount30 = commentCount30;
 
-           
-            ViewBag.TopFavIds = topFavIds;                
-            ViewBag.TopFavCountMap = topFavCountMap;       
-            ViewBag.TopFavPlaceMap = topFavPlaceMap;       
+            ViewBag.TopFavIds = topFavIds;
+            ViewBag.TopFavCountMap = topFavCountMap;
+            ViewBag.TopFavPlaceMap = topFavPlaceMap;
 
-            return View(); 
+            return View();
         }
 
         // QUẢN LÝ BÌNH LUẬN
