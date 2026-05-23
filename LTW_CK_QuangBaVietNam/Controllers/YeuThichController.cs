@@ -10,12 +10,9 @@ namespace LTW_CK_QuangBaVietNam.Controllers
 {
     public class YeuThichController : Controller
     {
-        private readonly DataClasses1DataContext db =
-            new DataClasses1DataContext(
-                ConfigurationManager.ConnectionStrings["QBConnectionString"].ConnectionString
-            );
+        private readonly DataClasses1DataContext db = new DataClasses1DataContext(
+            ConfigurationManager.ConnectionStrings["QBConnectionString"].ConnectionString);
 
-        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult DoiTrangThaiYeuThich(int maDiaDiem)
