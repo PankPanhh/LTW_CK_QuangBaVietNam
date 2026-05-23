@@ -15,14 +15,31 @@ namespace LTW_CK_QuangBaVietNam.Controllers
 {
     public class AdminController : Controller
     {
-
-        // GET: /Admin/
-        DataClasses1DataContext db =
-        new DataClasses1DataContext(
-            ConfigurationManager
-            .ConnectionStrings["QBConnectionString"]
-            .ConnectionString
+        DataClasses1DataContext db = new DataClasses1DataContext(
+            ConfigurationManager.ConnectionStrings["QBConnectionString"].ConnectionString
         );
+
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            if (Session["nguoiDung"] == null)
+            {
+                TempData["LoginError"] = "Vui lòng đăng nhập tài khoản Admin.";
+                filterContext.Result = RedirectToAction("Login", "Home");
+                return;
+            }
+
+            var user = Session["nguoiDung"] as LTW_CK_QuangBaVietNam.Models.NguoiDung;
+            if (user == null || user.VaiTro != 1)
+            {
+                Session["nguoiDung"] = null;
+                Session["khach"] = null;
+                TempData["LoginError"] = "Tài khoản không có quyền Admin. Vui lòng đăng nhập lại.";
+                filterContext.Result = RedirectToAction("Login", "Home");
+                return;
+            }
+
+            base.OnActionExecuting(filterContext);
+        }
 
         private void LoadDanhMuc()
         {
@@ -31,45 +48,69 @@ namespace LTW_CK_QuangBaVietNam.Controllers
 
         public ActionResult Index()
         {
-            ViewBag.Title = "Dashboard";
+           
+            var now = DateTime.Now;
+            var from30 = now.AddDays(-30);
+            var from60 = now.AddDays(-60);
+            var from7 = now.AddDays(-7);
+
+            int totalPlaces = db.DiaDiems.Count();
+            int places30 = db.DiaDiems.Count(x => x.NgayDang >= from30);
+            int placesPrev30 = db.DiaDiems.Count(x => x.NgayDang < from30 && x.NgayDang >= from60);
+            double placesGrowth = (placesPrev30 <= 0) ? (places30 > 0 ? 100 : 0) : ((places30 - placesPrev30) * 100.0 / placesPrev30);
+
+            int totalUsers = db.NguoiDungs.Count(x => x.VaiTro == 2);
+            int users30 = db.NguoiDungs.Count(x => x.VaiTro == 2 && x.NgayTao >= from30);
+            int usersPrev30 = db.NguoiDungs.Count(x => x.VaiTro == 2 && x.NgayTao < from30 && x.NgayTao >= from60);
+            double usersGrowth = (usersPrev30 <= 0) ? (users30 > 0 ? 100 : 0) : ((users30 - usersPrev30) * 100.0 / usersPrev30);
+
+            int newReviews7 = db.BinhLuans.Count(x => x.NgayDang >= from7 && x.TrangThai != "deleted");
+            int needModeration = db.BinhLuans.Count(x => x.TrangThai == "hidden");
+            int pendingPosts = db.BaiViets.Count(x => x.TrangThai == "pending");
+
+            var topPlaces = db.DiaDiems
+                .OrderByDescending(x => x.LuotXem ?? 0)
+                .Take(10)
+                .ToList();
+
+            ViewBag.TotalPlaces = totalPlaces;
+            ViewBag.PlacesGrowth = placesGrowth;
+
+            ViewBag.TotalUsers = totalUsers;
+            ViewBag.UsersGrowth = usersGrowth;
+            ViewBag.NewUsers30 = users30;
+
+            ViewBag.NewReviews7 = newReviews7;
+            ViewBag.NeedModeration = needModeration;
+            ViewBag.PendingPosts = pendingPosts;
+            ViewBag.TopPlaces = topPlaces;
+
             return View();
         }
 
-        // GET: /Admin/DiaDiem
         public ActionResult DiaDiem(string filter = "all", string q = "", string vung = "all", int? danhMuc = null)
         {
             filter = (filter ?? "all").ToLower().Trim();
             q = (q ?? "").Trim();
             vung = (vung ?? "all").Trim();
 
+            IQueryable<DiaDiem> query = db.DiaDiems;
 
-            var list = (from dd in db.DiaDiems
-                        join dm in db.DanhMucs on dd.MaDanhMuc equals dm.MaDanhMuc into gj
-                        from dm in gj.DefaultIfEmpty()
+            if (filter == "showing")
+            {
+                query = query.Where(x => (x.TrangThai ?? true) == true);
+            }
+            else if (filter == "hidden")
+            {
+                query = query.Where(x => (x.TrangThai ?? true) == false);
+            }
 
-                        join a in db.AnhDiaDiems.Where(x => x.LaAnhChinh.GetValueOrDefault())
-    on dd.MaDiaDiem equals a.MaDiaDiem into ga
-                        from a in ga.DefaultIfEmpty()
+            if (danhMuc.HasValue)
+            {
+                query = query.Where(x => x.MaDanhMuc == danhMuc.Value);
+            }
 
-
-                        select new DiaDiemRowVM
-                        {
-                            MaDiaDiem = dd.MaDiaDiem,
-                            TenDiaDiem = dd.TenDiaDiem,
-                            MoTaNgan = dd.MoTaNgan,
-                            GioMoCua = dd.GioMoCua,
-                            GiaVe = dd.GiaVe,
-                            VungMien = dd.VungMien,
-                            TinhThanh = dd.TinhThanh,
-                            MaDanhMuc = dd.MaDanhMuc,
-                            TenDanhMuc = (dm != null ? dm.TenDanhMuc : "(Chưa có)"),
-                            AnhChinh = (a != null ? a.DuongDanAnh : null),
-                            TrangThai = dd.TrangThai ?? true
-                        }).ToList();
-
-
-            if (filter == "showing") list = list.Where(x => x.TrangThai).ToList();
-            else if (filter == "hidden") list = list.Where(x => !x.TrangThai).ToList();
+            var list = query.OrderBy(x => x.MaDiaDiem).ToList();
 
             if (!string.IsNullOrWhiteSpace(q))
             {
@@ -77,19 +118,19 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                 list = list.Where(x => NormalizeText(x.TenDiaDiem).Contains(qNorm)).ToList();
             }
 
-
             if (!string.IsNullOrWhiteSpace(vung) && vung.ToLower() != "all")
             {
-
                 var vNorm = NormalizeText(vung);
                 list = list.Where(x => NormalizeText(x.VungMien).Contains(vNorm)).ToList();
             }
 
-            // 4) Lọc danh mục
-            if (danhMuc.HasValue)
-                list = list.Where(x => x.MaDanhMuc == danhMuc.Value).ToList();
+            ViewBag.DanhMucMap = db.DanhMucs.ToDictionary(x => x.MaDanhMuc, x => x.TenDanhMuc);
 
-            list = list.OrderBy(x => x.MaDiaDiem).ToList();
+            var ddIds = list.Select(x => x.MaDiaDiem).ToList();
+            ViewBag.AnhChinhMap = db.AnhDiaDiems
+                .Where(a => ddIds.Contains(a.MaDiaDiem) && a.LaAnhChinh == true)
+                .GroupBy(a => a.MaDiaDiem)
+                .ToDictionary(g => g.Key, g => g.Select(x => x.DuongDanAnh).FirstOrDefault());
 
             ViewBag.Filter = filter;
             ViewBag.Q = q;
@@ -146,59 +187,57 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             ViewBag.Title = "Thêm địa điểm";
             LoadDanhMuc();
 
-            var vm = new DiaDiemRowVM
+            var dd = new DiaDiem
             {
                 GiaVe = 0,
                 TrangThai = true,
-                LaDiemChinh = false
+                LaDiemChinh = false,
+                NgayDang = DateTime.Now
             };
 
-            return View(vm);
+            return View(dd);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult TaoDiaDiem(DiaDiemRowVM vm)
+        public ActionResult TaoDiaDiem(DiaDiem form, HttpPostedFileBase AnhChinhFile, HttpPostedFileBase[] AnhPhuFiles)
         {
             ViewBag.Title = "Thêm địa điểm";
             LoadDanhMuc();
 
-            vm.TenDiaDiem = (vm.TenDiaDiem ?? "").Trim();
-            vm.Slug = (vm.Slug ?? "").Trim();
+            form.TenDiaDiem = (form.TenDiaDiem ?? "").Trim();
+            form.Slug = (form.Slug ?? "").Trim();
 
-            if (string.IsNullOrWhiteSpace(vm.TenDiaDiem))
+            if (string.IsNullOrWhiteSpace(form.TenDiaDiem))
                 ModelState.AddModelError("TenDiaDiem", "Vui lòng nhập tên địa điểm.");
 
-            if (string.IsNullOrWhiteSpace(vm.Slug))
+            if (string.IsNullOrWhiteSpace(form.Slug))
                 ModelState.AddModelError("Slug", "Vui lòng nhập slug.");
 
-            if (!vm.MaDanhMuc.HasValue)
+            if (form.MaDanhMuc <= 0)
                 ModelState.AddModelError("MaDanhMuc", "Vui lòng chọn danh mục.");
 
-            if (!ModelState.IsValid) return View(vm);
+            if (!ModelState.IsValid) return View(form);
 
             var dd = new DiaDiem
             {
-                TenDiaDiem = vm.TenDiaDiem,
-                Slug = vm.Slug,
-                MoTaNgan = string.IsNullOrWhiteSpace(vm.MoTaNgan) ? null : vm.MoTaNgan.Trim(),
-                MoTaChiTiet = string.IsNullOrWhiteSpace(vm.MoTaChiTiet) ? null : vm.MoTaChiTiet.Trim(),
-                MaDanhMuc = vm.MaDanhMuc.Value,
-                TinhThanh = string.IsNullOrWhiteSpace(vm.TinhThanh)
-    ? null
-    : vm.TinhThanh.Trim(),
-                GiaVe = vm.GiaVe ?? 0,
-                GioMoCua = string.IsNullOrWhiteSpace(vm.GioMoCua) ? null : vm.GioMoCua.Trim(),
-                VungMien = string.IsNullOrWhiteSpace(vm.VungMien) ? null : vm.VungMien.Trim(),
-
-                KinhDo = vm.KinhDo,
-                ViDo = vm.ViDo,
-                DiaChiChiTiet = string.IsNullOrWhiteSpace(vm.DiaChiChiTiet) ? null : vm.DiaChiChiTiet.Trim(),
-                SoDienThoai = string.IsNullOrWhiteSpace(vm.SoDienThoai) ? null : vm.SoDienThoai.Trim(),
-                Email = string.IsNullOrWhiteSpace(vm.Email) ? null : vm.Email.Trim(),
-                Website = string.IsNullOrWhiteSpace(vm.Website) ? null : vm.Website.Trim(),
-                LaDiemChinh = vm.LaDiemChinh,
-                TrangThai = vm.TrangThai,
+                TenDiaDiem = form.TenDiaDiem,
+                Slug = form.Slug,
+                MoTaNgan = string.IsNullOrWhiteSpace(form.MoTaNgan) ? null : form.MoTaNgan.Trim(),
+                MoTaChiTiet = string.IsNullOrWhiteSpace(form.MoTaChiTiet) ? null : form.MoTaChiTiet.Trim(),
+                MaDanhMuc = form.MaDanhMuc,
+                TinhThanh = string.IsNullOrWhiteSpace(form.TinhThanh) ? null : form.TinhThanh.Trim(),
+                GiaVe = form.GiaVe ?? 0,
+                GioMoCua = string.IsNullOrWhiteSpace(form.GioMoCua) ? null : form.GioMoCua.Trim(),
+                VungMien = string.IsNullOrWhiteSpace(form.VungMien) ? null : form.VungMien.Trim(),
+                KinhDo = form.KinhDo,
+                ViDo = form.ViDo,
+                DiaChiChiTiet = string.IsNullOrWhiteSpace(form.DiaChiChiTiet) ? null : form.DiaChiChiTiet.Trim(),
+                SoDienThoai = string.IsNullOrWhiteSpace(form.SoDienThoai) ? null : form.SoDienThoai.Trim(),
+                Email = string.IsNullOrWhiteSpace(form.Email) ? null : form.Email.Trim(),
+                Website = string.IsNullOrWhiteSpace(form.Website) ? null : form.Website.Trim(),
+                LaDiemChinh = form.LaDiemChinh ?? false,
+                TrangThai = form.TrangThai ?? true,
                 LuotXem = 0,
                 DiemDanhGiaTB = 0,
                 NgayDang = DateTime.Now
@@ -207,10 +246,9 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             db.DiaDiems.InsertOnSubmit(dd);
             db.SubmitChanges();
 
-
-            if (vm.AnhChinhFile != null && vm.AnhChinhFile.ContentLength > 0)
+            if (AnhChinhFile != null && AnhChinhFile.ContentLength > 0)
             {
-                var url = SaveUploadImage(vm.AnhChinhFile);
+                var url = SaveUploadImage(AnhChinhFile);
                 db.AnhDiaDiems.InsertOnSubmit(new AnhDiaDiem
                 {
                     MaDiaDiem = dd.MaDiaDiem,
@@ -219,9 +257,9 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                 });
             }
 
-            if (vm.AnhPhuFiles != null)
+            if (AnhPhuFiles != null)
             {
-                foreach (var f in vm.AnhPhuFiles)
+                foreach (var f in AnhPhuFiles)
                 {
                     if (f == null || f.ContentLength == 0) continue;
 
@@ -236,7 +274,6 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             }
 
             db.SubmitChanges();
-
             TempData["Success"] = "Đã thêm địa điểm.";
             return RedirectToAction("DiaDiem");
         }
@@ -250,87 +287,69 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             var dd = db.DiaDiems.SingleOrDefault(x => x.MaDiaDiem == id);
             if (dd == null) return HttpNotFound();
 
-            var vm = new DiaDiemRowVM
-            {
-                MaDiaDiem = dd.MaDiaDiem,
-                TenDiaDiem = dd.TenDiaDiem,
-                Slug = dd.Slug,
-                MoTaNgan = dd.MoTaNgan,
-                MoTaChiTiet = dd.MoTaChiTiet,
-                MaDanhMuc = dd.MaDanhMuc,
-                GiaVe = dd.GiaVe,
-                GioMoCua = dd.GioMoCua,
-                VungMien = dd.VungMien,
-                KinhDo = dd.KinhDo,
-                ViDo = dd.ViDo,
-                DiaChiChiTiet = dd.DiaChiChiTiet,
-                SoDienThoai = dd.SoDienThoai,
-                Email = dd.Email,
-                Website = dd.Website,
-                TrangThai = dd.TrangThai ?? true,
-                NgayDang = dd.NgayDang,
-                TinhThanh = dd.TinhThanh,
-                LaDiemChinh = dd.LaDiemChinh ?? false
-            };
             ViewBag.Images = db.AnhDiaDiems
-    .Where(x => x.MaDiaDiem == id)
-    .OrderByDescending(x => x.LaAnhChinh)
-    .ToList();
+                .Where(x => x.MaDiaDiem == id)
+                .OrderByDescending(x => x.LaAnhChinh)
+                .ToList();
 
-
-            return View(vm);
+            return View(dd);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult SuaDiaDiem(DiaDiemRowVM vm)
+        public ActionResult SuaDiaDiem(DiaDiem form, HttpPostedFileBase AnhChinhFile, HttpPostedFileBase[] AnhPhuFiles)
         {
             ViewBag.Title = "Sửa địa điểm";
             LoadDanhMuc();
 
-            vm.TenDiaDiem = (vm.TenDiaDiem ?? "").Trim();
-            vm.Slug = (vm.Slug ?? "").Trim();
+            form.TenDiaDiem = (form.TenDiaDiem ?? "").Trim();
+            form.Slug = (form.Slug ?? "").Trim();
 
-            if (string.IsNullOrWhiteSpace(vm.TenDiaDiem))
+            if (string.IsNullOrWhiteSpace(form.TenDiaDiem))
                 ModelState.AddModelError("TenDiaDiem", "Vui lòng nhập tên địa điểm.");
 
-            if (string.IsNullOrWhiteSpace(vm.Slug))
+            if (string.IsNullOrWhiteSpace(form.Slug))
                 ModelState.AddModelError("Slug", "Vui lòng nhập slug.");
 
-            if (!vm.MaDanhMuc.HasValue)
+            if (form.MaDanhMuc <= 0)
                 ModelState.AddModelError("MaDanhMuc", "Vui lòng chọn danh mục.");
 
-            if (!ModelState.IsValid) return View(vm);
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Images = db.AnhDiaDiems
+                    .Where(x => x.MaDiaDiem == form.MaDiaDiem)
+                    .OrderByDescending(x => x.LaAnhChinh)
+                    .ToList();
 
-            var dd = db.DiaDiems.SingleOrDefault(x => x.MaDiaDiem == vm.MaDiaDiem);
+                return View(form);
+            }
+
+            var dd = db.DiaDiems.SingleOrDefault(x => x.MaDiaDiem == form.MaDiaDiem);
             if (dd == null) return HttpNotFound();
 
-            dd.TenDiaDiem = vm.TenDiaDiem;
-            dd.Slug = vm.Slug;
-            dd.MoTaNgan = string.IsNullOrWhiteSpace(vm.MoTaNgan) ? null : vm.MoTaNgan.Trim();
-            dd.MoTaChiTiet = string.IsNullOrWhiteSpace(vm.MoTaChiTiet) ? null : vm.MoTaChiTiet.Trim();
-            dd.MaDanhMuc = vm.MaDanhMuc.Value;
+            dd.TenDiaDiem = form.TenDiaDiem;
+            dd.Slug = form.Slug;
+            dd.MoTaNgan = string.IsNullOrWhiteSpace(form.MoTaNgan) ? null : form.MoTaNgan.Trim();
+            dd.MoTaChiTiet = string.IsNullOrWhiteSpace(form.MoTaChiTiet) ? null : form.MoTaChiTiet.Trim();
+            dd.MaDanhMuc = form.MaDanhMuc;
+            dd.GiaVe = form.GiaVe ?? 0;
+            dd.GioMoCua = string.IsNullOrWhiteSpace(form.GioMoCua) ? null : form.GioMoCua.Trim();
+            dd.VungMien = string.IsNullOrWhiteSpace(form.VungMien) ? null : form.VungMien.Trim();
+            dd.TinhThanh = string.IsNullOrWhiteSpace(form.TinhThanh) ? null : form.TinhThanh.Trim();
+            dd.KinhDo = form.KinhDo;
+            dd.ViDo = form.ViDo;
+            dd.DiaChiChiTiet = string.IsNullOrWhiteSpace(form.DiaChiChiTiet) ? null : form.DiaChiChiTiet.Trim();
+            dd.SoDienThoai = string.IsNullOrWhiteSpace(form.SoDienThoai) ? null : form.SoDienThoai.Trim();
+            dd.Email = string.IsNullOrWhiteSpace(form.Email) ? null : form.Email.Trim();
+            dd.Website = string.IsNullOrWhiteSpace(form.Website) ? null : form.Website.Trim();
+            dd.TrangThai = form.TrangThai ?? true;
+            dd.LaDiemChinh = form.LaDiemChinh ?? false;
 
-            dd.GiaVe = vm.GiaVe ?? 0;
-            dd.GioMoCua = string.IsNullOrWhiteSpace(vm.GioMoCua) ? null : vm.GioMoCua.Trim();
-            dd.VungMien = string.IsNullOrWhiteSpace(vm.VungMien) ? null : vm.VungMien.Trim();
-            dd.TinhThanh = string.IsNullOrWhiteSpace(vm.TinhThanh)
-    ? null
-    : vm.TinhThanh.Trim();
-            dd.KinhDo = vm.KinhDo;
-            dd.ViDo = vm.ViDo;
-            dd.DiaChiChiTiet = string.IsNullOrWhiteSpace(vm.DiaChiChiTiet) ? null : vm.DiaChiChiTiet.Trim();
-            dd.SoDienThoai = string.IsNullOrWhiteSpace(vm.SoDienThoai) ? null : vm.SoDienThoai.Trim();
-            dd.Email = string.IsNullOrWhiteSpace(vm.Email) ? null : vm.Email.Trim();
-            dd.Website = string.IsNullOrWhiteSpace(vm.Website) ? null : vm.Website.Trim();
-            dd.TrangThai = vm.TrangThai;
-            dd.LaDiemChinh = vm.LaDiemChinh;
-
-            if (vm.AnhChinhFile != null && vm.AnhChinhFile.ContentLength > 0)
+            if (AnhChinhFile != null && AnhChinhFile.ContentLength > 0)
             {
                 db.ExecuteCommand("UPDATE AnhDiaDiem SET LaAnhChinh = 0 WHERE MaDiaDiem = {0}", dd.MaDiaDiem);
 
-                var url = SaveUploadImage(vm.AnhChinhFile);
+                var url = SaveUploadImage(AnhChinhFile);
                 db.AnhDiaDiems.InsertOnSubmit(new AnhDiaDiem
                 {
                     MaDiaDiem = dd.MaDiaDiem,
@@ -339,10 +358,9 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                 });
             }
 
-
-            if (vm.AnhPhuFiles != null)
+            if (AnhPhuFiles != null)
             {
-                foreach (var f in vm.AnhPhuFiles)
+                foreach (var f in AnhPhuFiles)
                 {
                     if (f == null || f.ContentLength == 0) continue;
 
@@ -357,7 +375,6 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             }
 
             db.SubmitChanges();
-
             TempData["Success"] = "Đã cập nhật địa điểm.";
             return RedirectToAction("DiaDiem");
         }
@@ -381,18 +398,20 @@ namespace LTW_CK_QuangBaVietNam.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult XoaDiaDiem(int id, string filter = "all", string q = "", string vung = "all", int? danhMuc = null)
         {
-
             var dd = db.DiaDiems.SingleOrDefault(x => x.MaDiaDiem == id);
-            if (dd != null)
+            if (dd == null)
             {
-                dd.TrangThai = false;
-                db.SubmitChanges();
+                TempData["Error"] = "Không tìm thấy địa điểm.";
+                return RedirectToAction("DiaDiem", new { filter, q, vung, danhMuc });
             }
 
-            return RedirectToAction("DiaDiem", new { filter = filter, q = q, vung = vung, danhMuc = danhMuc });
+            dd.TrangThai = false;
+            db.SubmitChanges();
+
+            TempData["Success"] = "Đã ẩn địa điểm (không xoá vĩnh viễn).";
+            return RedirectToAction("DiaDiem", new { filter, q, vung, danhMuc });
         }
 
-        // GET: /Admin/DanhMuc
         public ActionResult DanhMuc()
         {
             ViewBag.Title = "Quản lý danh mục";
@@ -401,7 +420,6 @@ namespace LTW_CK_QuangBaVietNam.Controllers
         }
 
         [HttpPost]
-
         public ActionResult ThemDanhMuc(string tenDanhMuc, string moTa)
         {
             tenDanhMuc = (tenDanhMuc ?? "").Trim();
@@ -449,7 +467,6 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             return RedirectToAction("DanhMuc");
         }
 
-        // QUẢN LÝ NGƯỜI DÙNG
         public ActionResult NguoiDung(string filter = "all")
         {
             ViewBag.Title = "Quản lý người dùng";
@@ -469,105 +486,118 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             return View(ds.ToList());
         }
 
-        //// KIỂM DUYỆT ĐÁNH GIÁ
-        //public ActionResult DanhGia(string filter = "all")
-        //{
-        //    ViewBag.Title = "Kiểm duyệt đánh giá";
-        //    filter = (filter ?? "all").ToLower();
-        //    ViewBag.Filter = filter;
-
-        //    var opt = new DataLoadOptions();
-        //    opt.LoadWith<DanhGia>(x => x.NguoiDung);
-        //    opt.LoadWith<DanhGia>(x => x.DiaDiem);
-        //    db.LoadOptions = opt;
-
-        //    var q = db.DanhGias.AsQueryable();
-
-        //    if (filter == "pending")
-        //        q = q.Where(x => x.TrangThaiKiemDuyet == false);
-
-        //    var list = q.OrderByDescending(x => x.NgayGui).ToList();
-
-        //    return View(list);
-        //}
-
-        //[HttpPost]
-        //public ActionResult DuyetDanhGia(int id, string filter = "all")
-        //{
-        //    var dg = db.DanhGias.SingleOrDefault(x => x.MaDanhGia == id);
-
-        //    if (dg != null)
-        //    {
-        //        dg.TrangThaiKiemDuyet = true;
-        //        db.SubmitChanges();
-
-        //        //CapNhatDiemTB(dg.MaDiaDiem);
-        //    }
-
-        //    return RedirectToAction("DanhGia", new { filter });
-        //}
-
-        //[HttpPost]
-        //public ActionResult XoaDanhGia(int id, string filter = "all")
-        //{
-        //    var dg = db.DanhGias.SingleOrDefault(x => x.MaDanhGia == id);
-
-        //    if (dg != null)
-        //    {
-        //        int maDiaDiem = dg.MaDiaDiem;
-
-        //        db.DanhGias.DeleteOnSubmit(dg);
-        //        db.SubmitChanges();
-
-        //        //CapNhatDiemTB(maDiaDiem);
-        //    }
-
-        //    return RedirectToAction("DanhGia", new { filter });
-        //}
-
-        //[HttpPost]
-        //public ActionResult KhoaNguoiDung(int userId)
-        //{
-
-        //    return RedirectToAction("DanhGia");
-        //}
-
-        // QUẢN LÝ BLOG
-        public ActionResult Blog()
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DoiQuyenNguoiDung(int userId, int vaiTro, string filter = "all")
         {
-            if (Session["nguoiDung"] == null) return RedirectToAction("Index", "Home");
-            var user = Session["nguoiDung"] as NguoiDung;
-            if (user.VaiTro != 1) return RedirectToAction("Index", "Home");
+            var u = db.NguoiDungs.SingleOrDefault(x => x.MaNguoiDung == userId);
+            if (u == null) return HttpNotFound();
 
-            ViewBag.Title = "Quản lý bài viết blog";
+            u.VaiTro = vaiTro;
+            db.SubmitChanges();
+
+            TempData["Success"] = "Đổi quyền thành công.";
+            return RedirectToAction("NguoiDung", new { filter = filter });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult KhoaNguoiDung(int userId, string filter = "all")
+        {
+            // Đã lược bỏ đoạn check Admin thủ công tại đây
+            var u = db.NguoiDungs.SingleOrDefault(x => x.MaNguoiDung == userId);
+            if (u == null) return HttpNotFound();
+
+            u.TrangThai = false;
+            db.SubmitChanges();
+
+            TempData["Success"] = "Đã khoá người dùng.";
+            return RedirectToAction("NguoiDung", new { filter = filter });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult MoKhoaNguoiDung(int userId, string filter = "all")
+        {
+            var u = db.NguoiDungs.SingleOrDefault(x => x.MaNguoiDung == userId);
+            if (u == null) return HttpNotFound();
+
+            u.TrangThai = true;
+            db.SubmitChanges();
+
+            TempData["Success"] = "Đã mở khoá người dùng.";
+            return RedirectToAction("NguoiDung", new { filter = filter });
+        }
+
+        public ActionResult ThongKeBaoCao()
+        {
+            var topViewed = db.DiaDiems
+                .OrderByDescending(x => x.LuotXem ?? 0)
+                .Take(10)
+                .ToList();
+
+            var mostViewed = topViewed.FirstOrDefault();
+
+            var topFavCounts = db.YeuThiches
+                .GroupBy(x => x.MaDiaDiem)
+                .Select(g => new { MaDiaDiem = g.Key, So = g.Count() })
+                .OrderByDescending(x => x.So)
+                .Take(10)
+                .ToList();
+
+            var topFavIds = topFavCounts.Select(x => x.MaDiaDiem).ToList();
+            var topFavCountMap = topFavCounts.ToDictionary(x => x.MaDiaDiem, x => x.So);
+
+            var topFavPlaces = db.DiaDiems
+                .Where(d => topFavIds.Contains(d.MaDiaDiem))
+                .ToList();
+            var topFavPlaceMap = topFavPlaces.ToDictionary(d => d.MaDiaDiem, d => d);
+
+            DiaDiem topFavPlace = null;
+            int topFavCount = 0;
+            if (topFavCounts.Count > 0)
+            {
+                var row0 = topFavCounts[0];
+                topFavCount = row0.So;
+                topFavPlaceMap.TryGetValue(row0.MaDiaDiem, out topFavPlace);
+            }
+
+            var topUserRow = db.BinhLuans
+                .Where(x => x.TrangThai != "deleted")
+                .GroupBy(x => x.MaNguoiDung)
+                .Select(g => new { MaNguoiDung = g.Key, So = g.Count() })
+                .OrderByDescending(x => x.So)
+                .FirstOrDefault();
+
+            NguoiDung topUser = null;
+            int topUserCount = 0;
+            if (topUserRow != null)
+            {
+                topUserCount = topUserRow.So;
+                topUser = db.NguoiDungs.FirstOrDefault(u => u.MaNguoiDung == topUserRow.MaNguoiDung);
+            }
+
+            var from30 = DateTime.Now.AddDays(-30);
+            int commentCount30 = db.BinhLuans
+                .Count(x => x.NgayDang.HasValue && x.NgayDang.Value >= from30 && x.TrangThai != "deleted");
+
+            ViewBag.MostViewed = mostViewed;
+            ViewBag.TopViewed = topViewed;
+            ViewBag.TopFavPlace = topFavPlace;
+            ViewBag.TopFavCount = topFavCount;
+            ViewBag.TopUser = topUser;
+            ViewBag.TopUserCount = topUserCount;
+            ViewBag.CommentCount30 = commentCount30;
+            ViewBag.TopFavIds = topFavIds;
+            ViewBag.TopFavCountMap = topFavCountMap;
+            ViewBag.TopFavPlaceMap = topFavPlaceMap;
+
             return View();
         }
 
-        public ActionResult BlogDetail(int id)
-        {
-            if (Session["nguoiDung"] == null) return RedirectToAction("Index", "Home");
-            var user = Session["nguoiDung"] as NguoiDung;
-            if (user.VaiTro != 1) return RedirectToAction("Index", "Home");
-
-            ViewBag.Title = "Chi tiết bài viết - Kiểm duyệt";
-            ViewBag.BlogId = id;
-            return View();
-        }
-
-        // THỐNG KÊ
-        public ActionResult ThongKe()
-        {
-            ViewBag.Title = "Thống kê & báo cáo";
-            return View();
-        }
-
-        // QUẢN LÝ BÌNH LUẬN
         public ActionResult Comments()
         {
-            if (Session["nguoiDung"] == null) return RedirectToAction("Index", "Home");
-            var user = Session["nguoiDung"] as NguoiDung;
-            if (user.VaiTro != 1) return RedirectToAction("Index", "Home");
-
+            // Đã lược bỏ đoạn check Admin thủ công tại đây
             ViewBag.Title = "Quản lý bình luận";
             return View();
         }
@@ -577,9 +607,6 @@ namespace LTW_CK_QuangBaVietNam.Controllers
         {
             try
             {
-                var user = Session["nguoiDung"] as NguoiDung;
-                if (user == null || user.VaiTro != 1) return Json(new { success = false, message = "Unauthorized" }, JsonRequestBehavior.AllowGet);
-
                 var dbComments = db.BinhLuans.OrderByDescending(c => c.NgayDang).Select(c => new
                 {
                     id = c.MaBinhLuan,
@@ -619,8 +646,6 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             try
             {
                 var user = Session["nguoiDung"] as NguoiDung;
-                if (user == null || user.VaiTro != 1) return Json(new { success = false, message = "Unauthorized" });
-
                 var c = db.BinhLuans.FirstOrDefault(x => x.MaBinhLuan == id);
                 if (c == null) return Json(new { success = false, message = "Không tìm thấy bình luận" });
 
@@ -644,8 +669,6 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             try
             {
                 var user = Session["nguoiDung"] as NguoiDung;
-                if (user == null || user.VaiTro != 1) return Json(new { success = false, message = "Unauthorized" });
-
                 var c = db.BinhLuans.FirstOrDefault(x => x.MaBinhLuan == id);
                 if (c == null) return Json(new { success = false, message = "Không tìm thấy bình luận" });
 
@@ -669,8 +692,6 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             try
             {
                 var user = Session["nguoiDung"] as NguoiDung;
-                if (user == null || user.VaiTro != 1) return Json(new { success = false, message = "Unauthorized" });
-
                 var c = db.BinhLuans.FirstOrDefault(x => x.MaBinhLuan == id);
                 if (c == null) return Json(new { success = false, message = "Không tìm thấy bình luận" });
 

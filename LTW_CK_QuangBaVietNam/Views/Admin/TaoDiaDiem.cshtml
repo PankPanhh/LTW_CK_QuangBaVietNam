@@ -1,7 +1,7 @@
 ﻿@using System
 @using System.Linq
 @using LTW_CK_QuangBaVietNam.Models
-@model DiaDiemRowVM
+@model LTW_CK_QuangBaVietNam.Models.DiaDiem
 
 @{
     ViewBag.Title = "Thêm địa điểm";
@@ -9,6 +9,15 @@
 
     var dmList = ViewBag.DanhMucList as IEnumerable<DanhMuc>;
     if (dmList == null) { dmList = new DanhMuc[0]; }
+
+    var vungMien = (Model != null && Model.VungMien != null) ? Model.VungMien : "";
+
+    Func<string, bool> IsRegion = (r) =>
+        !string.IsNullOrWhiteSpace(vungMien) &&
+        vungMien.IndexOf(r, StringComparison.OrdinalIgnoreCase) >= 0;
+
+    var isShow = (Model != null) ? Model.TrangThai.GetValueOrDefault(true) : true;
+    var isMain = (Model != null) ? Model.LaDiemChinh.GetValueOrDefault(false) : false;
 }
 
 <div class="card shadow-sm border-0">
@@ -23,7 +32,6 @@
 
     <div class="card-body">
 
-        @* Thông báo *@
         @if (TempData["Error"] != null)
         {
             <div class="alert alert-danger">@TempData["Error"]</div>
@@ -39,7 +47,7 @@
 
             <div class="row g-3">
 
-                <!-- TenDiaDiem + Slug (Slug NOT NULL) -->
+                
                 <div class="col-12 col-lg-6">
                     <label class="form-label">Tên địa điểm *</label>
                     @Html.TextBoxFor(m => m.TenDiaDiem, new { @class = "form-control", required = "required", id = "TenDiaDiem" })
@@ -50,10 +58,8 @@
                     <label class="form-label">Slug * (không dấu, không khoảng trắng)</label>
                     @Html.TextBoxFor(m => m.Slug, new { @class = "form-control", required = "required", id = "Slug", placeholder = "vd: pho-co-hoi-an" })
                     @Html.ValidationMessageFor(m => m.Slug, "", new { @class = "text-danger small" })
-
                 </div>
 
-                <!-- MaDanhMuc NOT NULL -->
                 <div class="col-12 col-lg-4">
                     <label class="form-label">Danh mục *</label>
                     <select class="form-select" name="MaDanhMuc" required>
@@ -72,9 +78,9 @@
                     <label class="form-label">Vùng miền</label>
                     <select class="form-select" name="VungMien">
                         <option value="">-- Chọn vùng --</option>
-                        <option value="Miền Bắc">Miền Bắc</option>
-                        <option value="Miền Trung">Miền Trung</option>
-                        <option value="Miền Nam">Miền Nam</option>
+                        <option value="Miền Bắc" @(IsRegion("Bắc") ? "selected" : "")>Miền Bắc</option>
+                        <option value="Miền Trung" @(IsRegion("Trung") ? "selected" : "")>Miền Trung</option>
+                        <option value="Miền Nam" @(IsRegion("Nam") ? "selected" : "")>Miền Nam</option>
                     </select>
                     @Html.ValidationMessage("VungMien", "", new { @class = "text-danger small" })
                 </div>
@@ -84,10 +90,9 @@
                     @Html.TextBoxFor(m => m.TinhThanh, new { @class = "form-control", placeholder = "VD: Quảng Nam / Đà Nẵng..." })
                 </div>
 
-                <!-- GiaVe, GioMoCua -->
                 <div class="col-12 col-lg-3">
                     <label class="form-label">Giá vé</label>
-                    @Html.TextBoxFor(m => m.GiaVe, new { @class = "form-control", type = "number", min = "0", value = "0" })
+                    @Html.TextBoxFor(m => m.GiaVe, new { @class = "form-control", type = "number", min = "0" })
                 </div>
 
                 <div class="col-12 col-lg-3">
@@ -95,7 +100,6 @@
                     @Html.TextBoxFor(m => m.GioMoCua, new { @class = "form-control", placeholder = "VD: 08:00 - 17:00" })
                 </div>
 
-                <!-- KinhDo / ViDo -->
                 <div class="col-12 col-lg-3">
                     <label class="form-label">Kinh độ</label>
                     @Html.TextBoxFor(m => m.KinhDo, new { @class = "form-control", type = "number", step = "0.0000000001" })
@@ -106,13 +110,11 @@
                     @Html.TextBoxFor(m => m.ViDo, new { @class = "form-control", type = "number", step = "0.0000000001" })
                 </div>
 
-                <!-- DiaChiChiTiet -->
                 <div class="col-12">
                     <label class="form-label">Địa chỉ chi tiết</label>
                     @Html.TextBoxFor(m => m.DiaChiChiTiet, new { @class = "form-control" })
                 </div>
 
-                <!-- SoDienThoai / Email / Website -->
                 <div class="col-12 col-lg-4">
                     <label class="form-label">Số điện thoại</label>
                     @Html.TextBoxFor(m => m.SoDienThoai, new { @class = "form-control" })
@@ -128,7 +130,6 @@
                     @Html.TextBoxFor(m => m.Website, new { @class = "form-control", placeholder = "https://..." })
                 </div>
 
-                <!-- MoTaNgan / MoTaChiTiet -->
                 <div class="col-12">
                     <label class="form-label">Mô tả ngắn</label>
                     @Html.TextAreaFor(m => m.MoTaNgan, new { @class = "form-control", rows = "2" })
@@ -138,10 +139,10 @@
                     <label class="form-label">Mô tả chi tiết</label>
                     @Html.TextAreaFor(m => m.MoTaChiTiet, new { @class = "form-control", rows = "6" })
                 </div>
+
                 <div class="col-12 col-lg-6">
                     <label class="form-label">Ảnh chính</label>
                     <input type="file" name="AnhChinhFile" id="AnhChinhFile" class="form-control" accept="image/*" />
-                    
 
                     <div class="mt-2" id="previewMainWrap" style="display:none;">
                         <img id="previewMain" src="" alt="Preview ảnh chính"
@@ -150,22 +151,22 @@
                 </div>
 
                 <div class="col-12 col-lg-6">
-                    <label class="form-label">Ảnh phụ </label>
+                    <label class="form-label">Ảnh phụ</label>
                     <input type="file" name="AnhPhuFiles" id="AnhPhuFiles" class="form-control" accept="image/*" multiple />
-                    
 
                     <div class="mt-2 d-flex flex-wrap gap-2" id="previewSubs"></div>
                 </div>
 
                 <div class="col-12 d-flex gap-4">
                     <div class="form-check">
-                        @Html.CheckBoxFor(m => m.TrangThai, new { @class = "form-check-input" })
+                        <input type="hidden" name="TrangThai" value="false" />
+                        <input class="form-check-input" type="checkbox" name="TrangThai" value="true" @(isShow ? "checked" : "") />
                         <label class="form-check-label">Hiển thị địa điểm</label>
                     </div>
 
-                    @* Nếu DB bạn KHÔNG có LaDiemChinh thì bỏ block này *@
                     <div class="form-check">
-                        @Html.CheckBoxFor(m => m.LaDiemChinh, new { @class = "form-check-input" })
+                        <input type="hidden" name="LaDiemChinh" value="false" />
+                        <input class="form-check-input" type="checkbox" name="LaDiemChinh" value="true" @(isMain ? "checked" : "") />
                         <label class="form-check-label">Là điểm chính</label>
                     </div>
                 </div>
@@ -175,6 +176,7 @@
                         <i class="fa-solid fa-floppy-disk me-2"></i>Lưu
                     </button>
                 </div>
+
             </div>
         }
     </div>
@@ -200,7 +202,6 @@
                 });
             }
 
-            // Preview ảnh chính
             var mainInput = document.getElementById('AnhChinhFile');
             var previewMain = document.getElementById('previewMain');
             var previewMainWrap = document.getElementById('previewMainWrap');
@@ -219,7 +220,6 @@
                 });
             }
 
-            // Preview ảnh phụ
             var subsInput = document.getElementById('AnhPhuFiles');
             var previewSubs = document.getElementById('previewSubs');
 

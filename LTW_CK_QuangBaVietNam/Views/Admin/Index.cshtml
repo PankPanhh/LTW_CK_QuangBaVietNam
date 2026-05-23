@@ -1,6 +1,29 @@
-﻿@{
+﻿@using System
+@using System.Linq
+@using LTW_CK_QuangBaVietNam.Models
+
+@{
     ViewBag.Title = "Trung tâm quản trị";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    int totalPlaces = (ViewBag.TotalPlaces != null) ? (int)ViewBag.TotalPlaces : 0;
+    double placesGrowth = (ViewBag.PlacesGrowth != null) ? (double)ViewBag.PlacesGrowth : 0;
+
+    int totalUsers = (ViewBag.TotalUsers != null) ? (int)ViewBag.TotalUsers : 0;
+    double usersGrowth = (ViewBag.UsersGrowth != null) ? (double)ViewBag.UsersGrowth : 0;
+    int newUsers30 = (ViewBag.NewUsers30 != null) ? (int)ViewBag.NewUsers30 : 0;
+
+    int newReviews7 = (ViewBag.NewReviews7 != null) ? (int)ViewBag.NewReviews7 : 0;
+    int needModeration = (ViewBag.NeedModeration != null) ? (int)ViewBag.NeedModeration : 0;
+
+    int pendingPosts = (ViewBag.PendingPosts != null) ? (int)ViewBag.PendingPosts : 0;
+
+    var topPlaces = ViewBag.TopPlaces as System.Collections.Generic.List<DiaDiem>
+                    ?? new System.Collections.Generic.List<DiaDiem>();
+
+    Func<double, string> ArrowClass = (val) => (val >= 0 ? "text-success" : "text-danger");
+    Func<double, string> ArrowIcon = (val) => (val >= 0 ? "fa-arrow-up" : "fa-arrow-down");
+    Func<double, string> AbsPercent = (val) => String.Format("{0:0.#}", Math.Abs(val));
 }
 
 <div class="container-fluid py-4">
@@ -10,79 +33,95 @@
             <p class="text-secondary mb-0">Chào mừng trở lại! Đây là tình hình hệ thống hôm nay.</p>
         </div>
         <button class="btn btn-white shadow-sm rounded-pill px-4 border">
-            <i class="fa-solid fa-calendar-day me-2 text-primary"></i>  @DateTime.Now.ToString("dd 'Tháng' M, yyyy")
+            <i class="fa-solid fa-calendar-day me-2 text-primary"></i> @DateTime.Now.ToString("dd 'Tháng' M, yyyy")
         </button>
     </div>
 
+    
     <div class="row g-4 mb-5">
+        <!-- Tổng địa điểm -->
         <div class="col-12 col-md-6 col-xl-3">
-            <div class="card border-0 shadow-sm rounded-4 position-relative overflow-hidden transition-all hover-shadow-lg">
+            <div class="card border-0 shadow-sm rounded-4 position-relative overflow-hidden">
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="text-uppercase fw-semibold text-muted mb-2 small">Tổng địa điểm</h6>
-                            <h2 class="fw-bold mb-0">128</h2>
+                            <h2 class="fw-bold mb-0">@String.Format("{0:N0}", totalPlaces)</h2>
                         </div>
-                        <div class="bg-primary bg-opacity-10 text-primary rounded-4 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-4 d-flex align-items-center justify-content-center" style="width:56px;height:56px;">
                             <i class="fa-solid fa-location-dot fs-3"></i>
                         </div>
                     </div>
                     <div class="mt-3 pt-3 border-top">
-                        <span class="text-success small fw-medium"><i class="fa-solid fa-arrow-up me-1"></i> 12%</span>
-                        <span class="text-muted small ms-1">so với tháng trước</span>
+                        <span class="small fw-medium @ArrowClass(placesGrowth)">
+                            <i class="fa-solid @ArrowIcon(placesGrowth) me-1"></i> @AbsPercent(placesGrowth)%
+                        </span>
+                        <span class="text-muted small ms-1">so với 30 ngày trước</span>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- Người dùng -->
         <div class="col-12 col-md-6 col-xl-3">
             <div class="card border-0 shadow-sm rounded-4 position-relative overflow-hidden">
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="text-uppercase fw-semibold text-muted mb-2 small">Người dùng</h6>
-                            <h2 class="fw-bold mb-0">3,240</h2>
+                            <h2 class="fw-bold mb-0">@String.Format("{0:N0}", totalUsers)</h2>
                         </div>
-                        <div class="bg-success bg-opacity-10 text-success rounded-4 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+                        <div class="bg-success bg-opacity-10 text-success rounded-4 d-flex align-items-center justify-content-center" style="width:56px;height:56px;">
                             <i class="fa-solid fa-users fs-3"></i>
                         </div>
                     </div>
                     <div class="mt-3 pt-3 border-top">
-                        <span class="text-success small fw-medium"><i class="fa-solid fa-arrow-up me-1"></i> 5.4%</span>
-                        <span class="text-muted small ms-1">người mới</span>
+                        <span class="small fw-medium @ArrowClass(usersGrowth)">
+                            <i class="fa-solid @ArrowIcon(usersGrowth) me-1"></i> @AbsPercent(usersGrowth)%
+                        </span>
+                        <span class="text-muted small ms-1">@String.Format("{0:N0}", newUsers30) người mới / 30 ngày</span>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- Review mới (BinhLuan) -->
         <div class="col-12 col-md-6 col-xl-3">
             <div class="card border-0 shadow-sm rounded-4">
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-center text-decoration-none">
                         <div>
-                            <h6 class="text-uppercase fw-semibold text-muted mb-2 small">Review mới</h6>
-                            <h2 class="fw-bold mb-0">19</h2>
+                            <h6 class="text-uppercase fw-semibold text-muted mb-2 small">Review mới (7 ngày)</h6>
+                            <h2 class="fw-bold mb-0">@String.Format("{0:N0}", newReviews7)</h2>
                         </div>
-                        <div class="bg-warning bg-opacity-10 text-warning rounded-4 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+                        <div class="bg-warning bg-opacity-10 text-warning rounded-4 d-flex align-items-center justify-content-center" style="width:56px;height:56px;">
                             <i class="fa-solid fa-star fs-3"></i>
                         </div>
                     </div>
                     <div class="mt-3 pt-3 border-top text-warning small fw-bold">
-                        Cần xử lý ngay <i class="fa-solid fa-chevron-right ms-1 small"></i>
+                        @if (needModeration > 0)
+                        {
+                            @:Có @needModeration bình luận cần xử lý <i class="fa-solid fa-chevron-right ms-1 small"></i>
+                        }
+                        else
+                        {
+                            @:Không có bình luận cần xử lý <i class="fa-solid fa-chevron-right ms-1 small"></i>
+                        }
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- Blog chờ duyệt -->
         <div class="col-12 col-md-6 col-xl-3">
             <div class="card border-0 shadow-sm rounded-4">
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="text-uppercase fw-semibold text-muted mb-2 small">Blog chờ duyệt</h6>
-                            <h2 class="fw-bold mb-0">07</h2>
+                            <h2 class="fw-bold mb-0">@String.Format("{0:00}", pendingPosts)</h2>
                         </div>
-                        <div class="bg-info bg-opacity-10 text-info rounded-4 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+                        <div class="bg-info bg-opacity-10 text-info rounded-4 d-flex align-items-center justify-content-center" style="width:56px;height:56px;">
                             <i class="fa-solid fa-pen-nib fs-3"></i>
                         </div>
                     </div>
@@ -94,6 +133,7 @@
         </div>
     </div>
 
+    <!-- MAIN -->
     <div class="row g-4">
         <div class="col-xl-8">
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
@@ -101,13 +141,14 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h5 class="fw-bold mb-0">Địa điểm phổ biến nhất</h5>
-                            <p class="text-muted small mb-0">Dữ liệu cập nhật dựa trên lượt tương tác</p>
+                            
                         </div>
                         <a href="@Url.Action("DiaDiem","Admin")" class="btn btn-light rounded-pill px-4 text-primary fw-bold small">
                             Xem tất cả
                         </a>
                     </div>
                 </div>
+
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
                         <thead class="bg-light">
@@ -115,50 +156,53 @@
                                 <th class="ps-4 border-0">Địa danh</th>
                                 <th class="border-0">Khu vực</th>
                                 <th class="text-center border-0">Lượt xem</th>
-                                <th class="text-end pe-4 border-0">Đánh giá</th>
+                               
                             </tr>
                         </thead>
+
                         <tbody>
-                            <tr>
-                                <td class="ps-4 py-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="bg-primary bg-opacity-10 text-primary rounded-3 p-2 me-3">
-                                            <i class="fa-solid fa-mountain-sun"></i>
-                                        </div>
-                                        <span class="fw-bold text-dark">Bà Nà Hills</span>
-                                    </div>
-                                </td>
-                                <td><span class="badge bg-secondary-subtle text-secondary rounded-pill px-3">Miền Trung</span></td>
-                                <td class="text-center fw-semibold">120,540</td>
-                                <td class="text-end pe-4">
-                                    <span class="bg-warning-subtle text-warning px-2 py-1 rounded-2 fw-bold">
-                                        4.6 <i class="fa-solid fa-star fs-xs"></i>
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="ps-4 py-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="bg-info bg-opacity-10 text-info rounded-3 p-2 me-3">
-                                            <i class="fa-solid fa-ship"></i>
-                                        </div>
-                                        <span class="fw-bold text-dark">Vịnh Hạ Long</span>
-                                    </div>
-                                </td>
-                                <td><span class="badge bg-secondary-subtle text-secondary rounded-pill px-3">Miền Bắc</span></td>
-                                <td class="text-center fw-semibold">98,221</td>
-                                <td class="text-end pe-4">
-                                    <span class="bg-warning-subtle text-warning px-2 py-1 rounded-2 fw-bold">
-                                        4.7 <i class="fa-solid fa-star fs-xs"></i>
-                                    </span>
-                                </td>
-                            </tr>
+                            @if (!topPlaces.Any())
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-4">Chưa có dữ liệu.</td>
+                                </tr>
+                            }
+                            else
+                            {
+                                foreach (var dd in topPlaces.Take(6))
+                                {
+                                    var vung = string.IsNullOrWhiteSpace(dd.VungMien) ? "—" : dd.VungMien;
+                                    var views = dd.LuotXem ?? 0;
+                                    var rate = dd.DiemDanhGiaTB; // float
+
+                                    <tr>
+                                        <td class="ps-4 py-3">
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-primary bg-opacity-10 text-primary rounded-3 p-2 me-3">
+                                                    <i class="fa-solid fa-location-dot"></i>
+                                                </div>
+                                                <span class="fw-bold text-dark">@dd.TenDiaDiem</span>
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            <span class="badge bg-secondary-subtle text-secondary rounded-pill px-3">@vung</span>
+                                        </td>
+
+                                        <td class="text-center fw-semibold">@String.Format("{0:N0}", views)</td>
+
+                                      
+                                    </tr>
+                                }
+                            }
                         </tbody>
                     </table>
                 </div>
+
             </div>
         </div>
 
+        
         <div class="col-xl-4">
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100">
                 <div class="card-body p-4">
@@ -171,18 +215,19 @@
                             </div>
                             <div class="flex-grow-1">
                                 <div class="fw-bold text-dark">Quản lý địa điểm</div>
-                                <div class="small opacity-75 text-dark">Thêm, sửa hoặc xóa địa danh</div>
+                                <div class="small opacity-75 text-dark">Thêm, sửa hoặc ẩn địa danh</div>
                             </div>
                             <i class="fa-solid fa-chevron-right opacity-50"></i>
                         </a>
 
-                        <a href="@Url.Action("DanhGia","Admin")" class="btn btn-outline-warning border-0 bg-warning bg-opacity-10 text-start p-3 rounded-4 d-flex align-items-center">
+                       
+                        <a href="@Url.Action("BinhLuan","Admin")" class="btn btn-outline-warning border-0 bg-warning bg-opacity-10 text-start p-3 rounded-4 d-flex align-items-center">
                             <div class="bg-warning text-white rounded-3 p-2 me-3">
-                                <i class="fa-solid fa-star fa-fw"></i>
+                                <i class="fa-solid fa-comments fa-fw"></i>
                             </div>
                             <div class="flex-grow-1 text-dark">
-                                <div class="fw-bold text-dark">Duyệt đánh giá</div>
-                                <div class="small opacity-75">Kiểm tra nội dung người dùng</div>
+                                <div class="fw-bold text-dark">Duyệt bình luận</div>
+                                <div class="small opacity-75">Ẩn / xoá mềm bình luận vi phạm</div>
                             </div>
                             <i class="fa-solid fa-chevron-right opacity-50"></i>
                         </a>
@@ -193,7 +238,7 @@
                             </div>
                             <div class="flex-grow-1 text-dark">
                                 <div class="fw-bold text-dark">Quản lý Blog</div>
-                                <div class="small opacity-75">Biên tập bài viết mới</div>
+                                <div class="small opacity-75">Duyệt bài viết pending/approved/rejected</div>
                             </div>
                             <i class="fa-solid fa-chevron-right opacity-50"></i>
                         </a>
@@ -202,7 +247,7 @@
                     <div class="mt-5 p-4 bg-dark rounded-4 text-white text-center">
                         <h6 class="fw-bold mb-2">Hỗ trợ kỹ thuật?</h6>
                         <p class="small opacity-75 mb-3">Liên hệ với bộ phận IT để được hỗ trợ nhanh nhất.</p>
-                        <button class="btn btn-light btn-sm rounded-pill px-4">Gửi yêu cầu</button>
+                       
                     </div>
                 </div>
             </div>

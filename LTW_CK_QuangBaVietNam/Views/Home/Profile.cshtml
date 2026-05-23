@@ -12,6 +12,8 @@
     var displayBio = ViewBag.Bio != null ? ViewBag.Bio.ToString() : string.Empty;
     var displayCity = ViewBag.City != null ? ViewBag.City.ToString() : string.Empty;
     var displayCountry = ViewBag.Country != null ? ViewBag.Country.ToString() : string.Empty;
+    var soHanhTrinh = (ViewBag.SoHanhTrinh != null) ? (int)ViewBag.SoHanhTrinh : 0;
+    var soDiaDiemDaLuu = (ViewBag.SoDiaDiemDaLuu != null) ? (int)ViewBag.SoDiaDiemDaLuu : 0;
 }
 
 <style>
@@ -380,11 +382,11 @@
         <p class="profile-bio" id="displayBio">@displayBio</p>
         <div class="profile-stats">
             <div class="stat-item">
-                <div class="stat-value"></div>
+                <div class="stat-value">@soHanhTrinh</div>
                 <div class="stat-label">Hành trình</div>
             </div>
             <div class="stat-item">
-                <div class="stat-value"></div>
+                <div class="stat-value">@soDiaDiemDaLuu</div>
                 <div class="stat-label">Địa điểm đã lưu</div>
             </div>
             <div class="stat-item">
@@ -396,21 +398,13 @@
 
     <div class="profile-content">
         <div class="profile-tabs">
-            <button class="tab-btn active" onclick="switchTab('journeys')">Hành trình của tôi</button>
-            <a class="tab-btn" href="@Url.Action("YeuThich","Home")">Địa điểm yêu thích</a>
+           
+            <button type="button" class="tab-btn"
+                    onclick="window.location.href='@Url.Action("YeuThich","YeuThich")'">
+                Địa điểm yêu thích
+            </button>
             <button class="tab-btn" onclick="switchTab('settings')">Cài đặt tài khoản</button>
-            <button type="button" class="tab-btn"
-                    onclick="window.location.href='@Url.Action("LichSuDanhGia","Home")'">
-                Lịch sử đánh giá
-            </button>
-            <button type="button" class="tab-btn"
-                    onclick="window.location.href='@Url.Action("YeuThich","Home")'">
-                Địa điểm đã lưu
-            </button>
-            @*<button class="tab-btn" onclick="switchTab('reviews')">
-            Lịch sử đánh giá
-        </button>*@
-
+           
             <button type="button" class="tab-btn"
                     onclick="window.location.href='@Url.Action("LichTrinhDaTao","Home")'">
                 Hành trình của tôi
