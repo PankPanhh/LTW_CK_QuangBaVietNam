@@ -2,8 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data.Linq;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace LTW_CK_QuangBaVietNam.Controllers
@@ -11,15 +11,14 @@ namespace LTW_CK_QuangBaVietNam.Controllers
     public class YeuThichController : Controller
     {
         private readonly DataClasses1DataContext db =
-             new DataClasses1DataContext(
-                 ConfigurationManager.ConnectionStrings["QBConnectionString"].ConnectionString
-             );
+            new DataClasses1DataContext(
+                ConfigurationManager.ConnectionStrings["CK_QBVNConnectionString"].ConnectionString
+            );
 
-       
-
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult Toggle(int maDiaDiem)
+        public JsonResult DoiTrangThaiYeuThich(int maDiaDiem)
         {
             var user = Session["nguoiDung"] as NguoiDung;
             if (user == null)
@@ -28,7 +27,6 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                 return Json(new { success = false, message = "Vui lòng đăng nhập." });
             }
 
-            // LƯU Ý: tên bảng trong DataContext có thể là YeuThiches hoặc YeuThichs tùy bạn tạo LINQ to SQL
             var existed = db.YeuThiches.SingleOrDefault(x =>
                 x.MaNguoiDung == user.MaNguoiDung && x.MaDiaDiem == maDiaDiem);
 
@@ -39,20 +37,17 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                 return Json(new { success = true, isFavorite = false });
             }
 
-            var fav = new YeuThich
+            db.YeuThiches.InsertOnSubmit(new YeuThich
             {
                 MaNguoiDung = user.MaNguoiDung,
                 MaDiaDiem = maDiaDiem,
                 NgayLuu = DateTime.Now
-            };
-
-            db.YeuThiches.InsertOnSubmit(fav);
+            });
             db.SubmitChanges();
 
             return Json(new { success = true, isFavorite = true });
         }
 
-        // (Tuỳ chọn) Lấy danh sách ID yêu thích để render tim đúng theo DB
         [HttpGet]
         public JsonResult MyIds()
         {
@@ -71,22 +66,22 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             return Json(new { success = true, ids = ids }, JsonRequestBehavior.AllowGet);
         }
 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult TaoBoSuuTap(string tenBoSuuTap, string moTa)
+        public ActionResult TaoBoSuuTap(string tenBoSuuTap, string moTa)
         {
             var user = Session["nguoiDung"] as NguoiDung;
-            if (user == null)
-            {
-                Response.StatusCode = 401;
-                return Json(new { success = false, message = "Vui lòng đăng nhập." });
-            }
+            if (user == null) return RedirectToAction("Login", "Home");
 
             tenBoSuuTap = (tenBoSuuTap ?? "").Trim();
             moTa = string.IsNullOrWhiteSpace(moTa) ? null : moTa.Trim();
 
             if (string.IsNullOrWhiteSpace(tenBoSuuTap))
-                return Json(new { success = false, message = "Tên bộ sưu tập không được để trống." });
+            {
+                TempData["Error"] = "Tên bộ sưu tập không được để trống.";
+                return RedirectToAction("BoSuuTap");
+            }
 
             var bst = new BoSuuTap
             {
@@ -99,66 +94,126 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             db.BoSuuTaps.InsertOnSubmit(bst);
             db.SubmitChanges();
 
-            return Json(new
-            {
-                success = true,
-                data = new { maBoSuuTap = bst.MaBoSuuTap, tenBoSuuTap = bst.TenBoSuuTap }
-            });
+            TempData["Message"] = "Tạo bộ sưu tập thành công.";
+            return RedirectToAction("ChiTietBoSuuTap", new { id = bst.MaBoSuuTap });
         }
 
-        // ========= 5) Bộ sưu tập: Thêm địa điểm vào BST =========
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult ThemVaoBoSuuTap(int maBoSuuTap, int maDiaDiem)
+        public ActionResult ThemVaoBoSuuTap(int? maBoSuuTap, int? maDiaDiem, string returnUrl = null)
         {
             var user = Session["nguoiDung"] as NguoiDung;
-            if (user == null)
+            if (user == null) return RedirectToAction("Login", "Home");
+
+            if (!maBoSuuTap.HasValue || maBoSuuTap.Value <= 0 || !maDiaDiem.HasValue || maDiaDiem.Value <= 0)
             {
-                Response.StatusCode = 401;
-                return Json(new { success = false, message = "Vui lòng đăng nhập." });
+                TempData["Error"] = "Vui lòng chọn bộ sưu tập và địa điểm.";
+                if (!string.IsNullOrWhiteSpace(returnUrl)) return Redirect(returnUrl);
+                return RedirectToAction("BoSuuTap");
             }
 
-            // kiểm tra bst thuộc về user
-            var bst = db.BoSuuTaps.FirstOrDefault(x => x.MaBoSuuTap == maBoSuuTap && x.MaNguoiDung == user.MaNguoiDung);
-            if (bst == null) return Json(new { success = false, message = "Bộ sưu tập không hợp lệ." });
+            int bstId = maBoSuuTap.Value;
+            int ddId = maDiaDiem.Value;
 
-            var existed = db.BoSuuTapDiaDiems.FirstOrDefault(x => x.MaBoSuuTap == maBoSuuTap && x.MaDiaDiem == maDiaDiem);
+            var bst = db.BoSuuTaps.FirstOrDefault(x => x.MaBoSuuTap == bstId && x.MaNguoiDung == user.MaNguoiDung);
+            if (bst == null)
+            {
+                TempData["Error"] = "Bộ sưu tập không hợp lệ.";
+                return RedirectToAction("BoSuuTap");
+            }
+
+            var existed = db.BoSuuTapDiaDiems.FirstOrDefault(x => x.MaBoSuuTap == bstId && x.MaDiaDiem == ddId);
             if (existed != null)
-                return Json(new { success = true, message = "Địa điểm đã có trong bộ sưu tập." });
+            {
+                TempData["Message"] = "Địa điểm đã có trong bộ sưu tập.";
+                if (!string.IsNullOrWhiteSpace(returnUrl)) return Redirect(returnUrl);
+                return RedirectToAction("ChiTietBoSuuTap", new { id = bstId });
+            }
 
             db.BoSuuTapDiaDiems.InsertOnSubmit(new BoSuuTapDiaDiem
             {
-                MaBoSuuTap = maBoSuuTap,
-                MaDiaDiem = maDiaDiem,
+                MaBoSuuTap = bstId,
+                MaDiaDiem = ddId,
                 NgayThem = DateTime.Now
             });
             db.SubmitChanges();
 
-            return Json(new { success = true, message = "Đã thêm vào bộ sưu tập." });
+            TempData["Message"] = "Đã thêm vào bộ sưu tập.";
+
+            if (!string.IsNullOrWhiteSpace(returnUrl)) return Redirect(returnUrl);
+
+            return RedirectToAction("ChiTietBoSuuTap", new { id = bstId });
         }
 
-        // GET: /YeuThich/BoSuuTap
+
+        public ActionResult YeuThich()
+        {
+            var user = Session["nguoiDung"] as NguoiDung;
+            if (user == null) return RedirectToAction("Login", "Home");
+
+            var opt = new DataLoadOptions();
+            opt.LoadWith<YeuThich>(x => x.DiaDiem);
+            opt.LoadWith<DiaDiem>(x => x.AnhDiaDiems);
+            db.LoadOptions = opt;
+
+            var list = db.YeuThiches
+                         .Where(x => x.MaNguoiDung == user.MaNguoiDung)
+                         .OrderByDescending(x => x.NgayLuu)
+                         .ToList();
+
+            ViewBag.Collections = db.BoSuuTaps
+                .Where(x => x.MaNguoiDung == user.MaNguoiDung)
+                .OrderByDescending(x => x.NgayTao)
+                .ToList();
+
+            var ids = list.Select(x => x.MaDiaDiem).Distinct().ToList();
+
+            ViewBag.AnhChinhMap = db.AnhDiaDiems
+                .Where(a => a.LaAnhChinh == true && ids.Contains(a.MaDiaDiem))
+                .GroupBy(a => a.MaDiaDiem)
+                .ToDictionary(g => g.Key, g => g.Select(x => x.DuongDanAnh).FirstOrDefault());
+            return View(list);
+        }
+
+
+
         public ActionResult BoSuuTap()
         {
             var user = Session["nguoiDung"] as NguoiDung;
             if (user == null) return RedirectToAction("Login", "Home");
 
-            var list = (from bst in db.BoSuuTaps
-                        where bst.MaNguoiDung == user.MaNguoiDung
-                        orderby bst.NgayTao descending
-                        select new BoSuuTapListVM
-                        {
-                            MaBoSuuTap = bst.MaBoSuuTap,
-                            TenBoSuuTap = bst.TenBoSuuTap,
-                            MoTa = bst.MoTa,
-                            NgayTao = bst.NgayTao,
-                            SoDiaDiem = db.BoSuuTapDiaDiems.Count(x => x.MaBoSuuTap == bst.MaBoSuuTap)
-                        }).ToList();
+            var list = db.BoSuuTaps
+                .Where(x => x.MaNguoiDung == user.MaNguoiDung)
+                .OrderByDescending(x => x.NgayTao)
+                .ToList(); 
 
-            return View(list); // Views/YeuThich/BoSuuTap.cshtml
+            var bstIds = list.Select(x => x.MaBoSuuTap).ToList();
+            ViewBag.Counts = db.BoSuuTapDiaDiems
+                .Where(x => bstIds.Contains(x.MaBoSuuTap))
+                .GroupBy(x => x.MaBoSuuTap)
+                .ToDictionary(g => g.Key, g => g.Count());
+
+            var anhMap = new Dictionary<int, string>();
+
+            foreach (var bst in list)
+            {
+                var anh = (from ct in db.BoSuuTapDiaDiems
+                           join a in db.AnhDiaDiems
+                           on ct.MaDiaDiem equals a.MaDiaDiem
+                           where ct.MaBoSuuTap == bst.MaBoSuuTap
+                                 && a.LaAnhChinh == true
+                           select a.DuongDanAnh)
+                           .FirstOrDefault();
+
+                anhMap[bst.MaBoSuuTap] = anh;
+            }
+            ViewBag.AnhMap = anhMap;
+
+            return View(list); 
         }
 
-        // GET: /YeuThich/ChiTietBoSuuTap/5
+      
         public ActionResult ChiTietBoSuuTap(int id)
         {
             var user = Session["nguoiDung"] as NguoiDung;
@@ -167,31 +222,27 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             var bst = db.BoSuuTaps.FirstOrDefault(x => x.MaBoSuuTap == id && x.MaNguoiDung == user.MaNguoiDung);
             if (bst == null) return HttpNotFound();
 
-            var places = (from x in db.BoSuuTapDiaDiems
-                          join dd in db.DiaDiems on x.MaDiaDiem equals dd.MaDiaDiem
-                          join a in db.AnhDiaDiems.Where(x => x.LaAnhChinh == true)
-on dd.MaDiaDiem equals a.MaDiaDiem into ga
-                          from a in ga.DefaultIfEmpty()
-                          where x.MaBoSuuTap == id
-                          orderby x.NgayThem descending
-                          select new BoSuuTapPlaceVM
-                          {
-                              MaDiaDiem = dd.MaDiaDiem,
-                              TenDiaDiem = dd.TenDiaDiem,
-                              VungMien = dd.VungMien,
-                              AnhChinh = (a != null ? a.DuongDanAnh : null),
-                              NgayThem = x.NgayThem
-                          }).ToList();
+            var rows = db.BoSuuTapDiaDiems
+                .Where(x => x.MaBoSuuTap == id)
+                .OrderByDescending(x => x.NgayThem)
+                .ToList(); 
 
-            var vm = new BoSuuTapDetailVM
-            {
-                BoSuuTap = bst,
-                Places = places
-            };
+            var ddIds = rows.Select(x => x.MaDiaDiem).Distinct().ToList();
 
-            return View(vm); // Views/YeuThich/ChiTietBoSuuTap.cshtml
+            ViewBag.Rows = rows;
+            ViewBag.DiaDiemMap = db.DiaDiems
+                .Where(d => ddIds.Contains(d.MaDiaDiem))
+                .ToDictionary(d => d.MaDiaDiem, d => d);
+
+            ViewBag.AnhChinhMap = db.AnhDiaDiems
+                .Where(a => ddIds.Contains(a.MaDiaDiem) && a.LaAnhChinh == true)
+                .GroupBy(a => a.MaDiaDiem)
+                .ToDictionary(g => g.Key, g => g.Select(x => x.DuongDanAnh).FirstOrDefault());
+
+            return View(bst); 
         }
 
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult XoaKhoiBoSuuTap(int maBoSuuTap, int maDiaDiem)
@@ -199,7 +250,6 @@ on dd.MaDiaDiem equals a.MaDiaDiem into ga
             var user = Session["nguoiDung"] as NguoiDung;
             if (user == null) return RedirectToAction("Login", "Home");
 
-            // đảm bảo BST thuộc user
             var bst = db.BoSuuTaps.FirstOrDefault(x => x.MaBoSuuTap == maBoSuuTap && x.MaNguoiDung == user.MaNguoiDung);
             if (bst == null) return HttpNotFound();
 
@@ -213,6 +263,7 @@ on dd.MaDiaDiem equals a.MaDiaDiem into ga
             return RedirectToAction("ChiTietBoSuuTap", new { id = maBoSuuTap });
         }
 
+      
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult XoaBoSuuTap(int id)
@@ -223,7 +274,6 @@ on dd.MaDiaDiem equals a.MaDiaDiem into ga
             var bst = db.BoSuuTaps.FirstOrDefault(x => x.MaBoSuuTap == id && x.MaNguoiDung == user.MaNguoiDung);
             if (bst == null) return HttpNotFound();
 
-            // xoá chi tiết trước
             var rows = db.BoSuuTapDiaDiems.Where(x => x.MaBoSuuTap == id).ToList();
             db.BoSuuTapDiaDiems.DeleteAllOnSubmit(rows);
 

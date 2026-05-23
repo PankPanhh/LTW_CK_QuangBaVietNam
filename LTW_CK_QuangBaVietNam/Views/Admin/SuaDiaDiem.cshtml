@@ -1,7 +1,7 @@
 ﻿@using System
 @using System.Linq
 @using LTW_CK_QuangBaVietNam.Models
-@model DiaDiemRowVM
+@model LTW_CK_QuangBaVietNam.Models.DiaDiem
 
 @{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
@@ -9,7 +9,6 @@
     var dmList = ViewBag.DanhMucList as IEnumerable<DanhMuc>;
     if (dmList == null) { dmList = new DanhMuc[0]; }
 
-    // ẢNH HIỆN TẠI (đổ từ controller: ViewBag.Images)
     var images = ViewBag.Images as IEnumerable<AnhDiaDiem>;
     if (images == null) { images = new AnhDiaDiem[0]; }
 
@@ -17,8 +16,12 @@
     var subImgs = images.Where(x => x.LaAnhChinh != true).ToList();
 
     Func<string, bool> IsRegion = (r) =>
-!string.IsNullOrWhiteSpace(Model.VungMien) &&
-Model.VungMien.IndexOf(r, StringComparison.OrdinalIgnoreCase) >= 0;
+        !string.IsNullOrWhiteSpace(Model.VungMien) &&
+        Model.VungMien.IndexOf(r, StringComparison.OrdinalIgnoreCase) >= 0;
+
+    
+    var isShow = Model.TrangThai.GetValueOrDefault(true);
+    var isMain = Model.LaDiemChinh.GetValueOrDefault(false);
 }
 
 <div class="card shadow-sm border-0">
@@ -187,12 +190,15 @@ Model.VungMien.IndexOf(r, StringComparison.OrdinalIgnoreCase) >= 0;
                 <!-- ====== TRẠNG THÁI ====== -->
                 <div class="col-12 d-flex gap-4">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="TrangThai" value="true" @(Model.TrangThai ? "checked" : "") />
+                       
+                        <input type="hidden" name="TrangThai" value="false" />
+                        <input class="form-check-input" type="checkbox" name="TrangThai" value="true" @(isShow ? "checked" : "") />
                         <label class="form-check-label">Hiển thị</label>
                     </div>
 
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="LaDiemChinh" value="true" @(Model.LaDiemChinh ? "checked" : "") />
+                        <input type="hidden" name="LaDiemChinh" value="false" />
+                        <input class="form-check-input" type="checkbox" name="LaDiemChinh" value="true" @(isMain ? "checked" : "") />
                         <label class="form-check-label">Là điểm chính</label>
                     </div>
                 </div>
@@ -209,52 +215,52 @@ Model.VungMien.IndexOf(r, StringComparison.OrdinalIgnoreCase) >= 0;
 
 @section scripts{
     <script>
-(function () {
-    // Preview ảnh chính
-    var mainInput = document.getElementById('AnhChinhFile');
-    var previewMain = document.getElementById('previewMain');
-    var previewMainWrap = document.getElementById('previewMainWrap');
+        (function () {
+            // Preview ảnh chính
+            var mainInput = document.getElementById('AnhChinhFile');
+            var previewMain = document.getElementById('previewMain');
+            var previewMainWrap = document.getElementById('previewMainWrap');
 
-    if (mainInput) {
-        mainInput.addEventListener('change', function () {
-            var f = mainInput.files && mainInput.files.length ? mainInput.files[0] : null;
-            if (!f) { previewMainWrap.style.display = 'none'; return; }
+            if (mainInput) {
+                mainInput.addEventListener('change', function () {
+                    var f = mainInput.files && mainInput.files.length ? mainInput.files[0] : null;
+                    if (!f) { previewMainWrap.style.display = 'none'; return; }
 
-            var reader = new FileReader();
-            reader.onload = function (e) {
-                previewMain.src = e.target.result;
-                previewMainWrap.style.display = 'block';
-            };
-            reader.readAsDataURL(f);
-        });
-    }
-
-    // Preview ảnh phụ
-    var subsInput = document.getElementById('AnhPhuFiles');
-    var previewSubs = document.getElementById('previewSubs');
-
-    if (subsInput) {
-        subsInput.addEventListener('change', function () {
-            previewSubs.innerHTML = '';
-            var files = subsInput.files || [];
-            for (var i = 0; i < files.length; i++) {
-                (function (file) {
                     var reader = new FileReader();
                     reader.onload = function (e) {
-                        var img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.style.width = '110px';
-                        img.style.height = '80px';
-                        img.style.objectFit = 'cover';
-                        img.style.borderRadius = '10px';
-                        img.style.border = '1px solid #e2e8f0';
-                        previewSubs.appendChild(img);
+                        previewMain.src = e.target.result;
+                        previewMainWrap.style.display = 'block';
                     };
-                    reader.readAsDataURL(file);
-                })(files[i]);
+                    reader.readAsDataURL(f);
+                });
             }
-        });
-    }
-})();
+
+            // Preview ảnh phụ
+            var subsInput = document.getElementById('AnhPhuFiles');
+            var previewSubs = document.getElementById('previewSubs');
+
+            if (subsInput) {
+                subsInput.addEventListener('change', function () {
+                    previewSubs.innerHTML = '';
+                    var files = subsInput.files || [];
+                    for (var i = 0; i < files.length; i++) {
+                        (function (file) {
+                            var reader = new FileReader();
+                            reader.onload = function (e) {
+                                var img = document.createElement('img');
+                                img.src = e.target.result;
+                                img.style.width = '110px';
+                                img.style.height = '80px';
+                                img.style.objectFit = 'cover';
+                                img.style.borderRadius = '10px';
+                                img.style.border = '1px solid #e2e8f0';
+                                previewSubs.appendChild(img);
+                            };
+                            reader.readAsDataURL(file);
+                        })(files[i]);
+                    }
+                });
+            }
+        })();
     </script>
 }

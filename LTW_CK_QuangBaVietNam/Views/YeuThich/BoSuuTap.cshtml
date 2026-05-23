@@ -1,14 +1,18 @@
 ﻿@using System.Linq
-@model List<LTW_CK_QuangBaVietNam.Models.BoSuuTapListVM>
+@using LTW_CK_QuangBaVietNam.Models
+@model List<LTW_CK_QuangBaVietNam.Models.BoSuuTap>
 
 @{
     ViewBag.Title = "Bộ sưu tập của tôi";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var anhMap = ViewBag.AnhMap as Dictionary<int, string>
+              ?? new Dictionary<int, string>();
+
+    var counts = ViewBag.Counts as Dictionary<int, int> ?? new Dictionary<int, int>();
 }
 
 <div class="container py-4">
 
-    <!-- HERO tone nhạt như hình bạn gửi -->
     <div class="card border-0 shadow-sm rounded-4 mb-4 text-white"
          style="background:#334155;">
         <div class="card-body p-4">
@@ -31,10 +35,9 @@
                 <div class="d-flex align-items-center gap-2">
                     <a class="btn btn-sm rounded-pill px-3"
                        style="background:#38BDF8;border:none;color:#0f172a;font-weight:700;"
-                       href="@Url.Action("YeuThich","Home")">
+                       href="@Url.Action("YeuThich","YeuThich")">
                         <i class="bi bi-arrow-left me-2"></i>Về Yêu thích
                     </a>
-
                 </div>
 
             </div>
@@ -56,18 +59,27 @@
         <div class="row g-3">
             @foreach (var c in Model)
             {
+                var soDiaDiem = counts.ContainsKey(c.MaBoSuuTap) ? counts[c.MaBoSuuTap] : 0;
+                string rawImg = null;
+                anhMap.TryGetValue(c.MaBoSuuTap, out rawImg);
+
+                var bgImg = !string.IsNullOrWhiteSpace(rawImg)
+                    ? Url.Content("~" + rawImg)
+                    : Url.Content("~/Content/images/Places/default.jpg");
+
                 <div class="col-12 col-md-6 col-lg-4">
                     <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
 
-                        <!-- cover nhạt -->
-                        <div style="height:110px;background:
-                                    linear-gradient(135deg, rgba(56,189,248,.35), rgba(51,65,85,.25)),
-                                    url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1200&q=80') center/cover;">
-                        </div>
+                      <div style="
+                            height:110px;
+                            background:
+                            linear-gradient(135deg, rgba(56,189,248,.35), rgba(51,65,85,.25)),
+                            url('@bgImg') center/cover;">
+                                              </div>
 
                         <div class="card-body p-4 text-center">
                             <span class="badge rounded-pill bg-light text-dark border mb-3 px-3 py-2">
-                                <i class="bi bi-geo-alt me-1"></i>@c.SoDiaDiem địa điểm
+                                <i class="bi bi-geo-alt me-1"></i>@soDiaDiem địa điểm
                             </span>
 
                             <h5 class="fw-bold mb-1">@c.TenBoSuuTap</h5>

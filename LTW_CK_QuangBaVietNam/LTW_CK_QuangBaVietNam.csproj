@@ -147,8 +147,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DataClasses1.dbml</DependentUpon>
     </Compile>
-    <Compile Include="Models\FavoritePlaceVM.cs" />
-    <Compile Include="Models\NoiDungTrangChuVM.cs" />
     <Compile Include="obj\Debug\.NETFramework,Version=v4.8.AssemblyAttributes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
@@ -386,30 +384,24 @@
     <Content Include="Views\Home\DetailSchedule.cshtml" />
     <Content Include="Views\Home\DetailPlace.cshtml" />
     <Content Include="Views\Home\AllPlaces.cshtml" />
-    <Content Include="Views\Home\YeuThich.cshtml" />
+    <Content Include="Views\YeuThich\YeuThich.cshtml" />
     <Content Include="Views\YeuThich\BoSuuTap.cshtml" />
     <Content Include="Views\YeuThich\ChiTietBoSuuTap.cshtml" />
     <Content Include="Views\Shared\_AdminLayout.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
-    <Content Include="Views\Admin\DanhGia.cshtml" />
-    <Content Include="Views\Admin\BanDo.cshtml" />
     <Content Include="Views\Admin\DiaDiem.cshtml" />
     <Content Include="Views\Admin\DanhMuc.cshtml" />
     <Content Include="Views\Admin\Blog.cshtml" />
-    <Content Include="Views\Admin\ThongKe.cshtml" />
-    <Content Include="Views\Admin\CapNhatToaDo.cshtml" />
-    <Content Include="Views\Admin\NoiDungTrangChu.cshtml" />
-    <Content Include="Views\Admin\Banner.cshtml" />
     <Content Include="Views\Admin\NguoiDung.cshtml" />
-    <Content Include="Views\Home\LichSuDanhGia.cshtml" />
     <Content Include="Views\Home\LichTrinhDaTao.cshtml" />
     <Content Include="Views\Home\ChiTietLichTrinh.cshtml" />
     <Content Include="Views\Admin\TaoDiaDiem.cshtml" />
-    <Content Include="Views\Home\YeuThich.cshtml" />
     <Content Include="Views\Admin\SuaDiaDiem.cshtml" />
     <Content Include="Views\Home\MyBlogs.cshtml" />
     <Content Include="Views\Home\SaveBlog.cshtml" />
     <Content Include="Views\Admin\BlogDetail.cshtml" />
+    <Content Include="Views\Home\LichSuBinhLuan.cshtml" />
+    <Content Include="Views\Admin\ThongKeBaoCao.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -1,11 +1,12 @@
+﻿﻿using LTW_CK_QuangBaVietNam.Helpers;
+using LTW_CK_QuangBaVietNam.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data.Linq;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using LTW_CK_QuangBaVietNam.Helpers;
-using LTW_CK_QuangBaVietNam.Models;
 
 namespace LTW_CK_QuangBaVietNam.Controllers
 {
@@ -204,25 +205,9 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             ViewBag.Bio = extra != null ? (extra.TieuSu ?? string.Empty) : string.Empty;
             ViewBag.City = extra != null ? (extra.ThanhPho ?? string.Empty) : string.Empty;
             ViewBag.Country = extra != null ? (extra.QuocGia ?? string.Empty) : string.Empty;
+            ViewBag.SoHanhTrinh = db.LichTrinhs.Count(x => x.MaNguoiDung == user.MaNguoiDung);
+            ViewBag.SoDiaDiemDaLuu = db.YeuThiches.Count(x => x.MaNguoiDung == user.MaNguoiDung);
 
-            //var reviewList = (from dg in db.DanhGias
-            //                  join dd in db.DiaDiems on dg.MaDiaDiem equals dd.MaDiaDiem
-            //                  where dg.MaNguoiDung == user.MaNguoiDung
-            //                  orderby dg.NgayGui descending
-            //                  select new ReviewHistoryVM
-            //                  {
-            //                      MaDanhGia = dg.MaDanhGia,
-            //                      MaDiaDiem = dd.MaDiaDiem,
-            //                      TenDiaDiem = dd.TenDiaDiem,
-            //                      SoSao = dg.SoSao,
-            //                      NoiDung = dg.NoiDung,
-            //                      TrangThaiKiemDuyet = dg.TrangThaiKiemDuyet,
-            //                      NgayGui = dg.NgayGui
-            //                  }).ToList();
-
-            //ViewData["Reviews"] = reviewList;
-
-            // Set breadcrumbs for Profile page
             var breadcrumbs = new List<BreadcrumbItem>
             {
                 new BreadcrumbItem("Hồ sơ cá nhân", "/Home/Profile", isActive: true)
@@ -232,115 +217,174 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             return View(user);
         }
 
-        //    public ActionResult LichSuDanhGia()
-        //    {
-        //        var sessionUser = Session["nguoiDung"] as NguoiDung;
-        //        if (sessionUser == null)
-        //        {
-        //            TempData["LoginError"] = "Vui lòng đăng nhập để xem lịch sử đánh giá.";
-        //            return RedirectToAction("Login", "Home");
-        //        }
-
-        //        var breadcrumbs = new List<BreadcrumbItem>
+        //public ActionResult LichSuBinhLuan() 
         //{
-        //    new BreadcrumbItem("Hồ sơ cá nhân", "/Home/Profile"),
-        //    new BreadcrumbItem("Lịch sử đánh giá", "/Home/LichSuDanhGia", isActive: true)
-        //};
-        //        this.SetBreadcrumbs(breadcrumbs);
-
-        //        var list = (from dg in db.DanhGias
-        //                    join dd in db.DiaDiems on dg.MaDiaDiem equals dd.MaDiaDiem
-        //                    where dg.MaNguoiDung == sessionUser.MaNguoiDung
-        //                    orderby dg.NgayGui descending
-        //                    select new ReviewHistoryVM
-        //                    {
-        //                        MaDanhGia = dg.MaDanhGia,
-        //                        MaDiaDiem = dd.MaDiaDiem,
-        //                        TenDiaDiem = dd.TenDiaDiem,
-        //                        SoSao = dg.SoSao,
-        //                        NoiDung = dg.NoiDung,
-        //                        TrangThaiKiemDuyet = dg.TrangThaiKiemDuyet,
-        //                        NgayGui = dg.NgayGui
-        //                    }).ToList();
-
-        //        return View(list); 
-        //    }
-
-        // /Home/LichTrinhDaTao
-        //    public ActionResult LichTrinhDaTao()
+        //    var sessionUser = Session["nguoiDung"] as NguoiDung;
+        //    if (sessionUser == null)
         //    {
-        //        var sessionUser = Session["nguoiDung"] as NguoiDung;
-        //        if (sessionUser == null)
-        //        {
-        //            TempData["LoginError"] = "Vui lòng đăng nhập để xem lịch trình.";
-        //            return RedirectToAction("Login", "Home");
-        //        }
-
-        //        var breadcrumbs = new List<BreadcrumbItem>
-        //{
-        //    new BreadcrumbItem("Hồ sơ cá nhân", "/Home/Profile"),
-        //    new BreadcrumbItem("Lịch trình đã tạo", "/Home/LichTrinhDaTao", isActive: true)
-        //};
-        //        this.SetBreadcrumbs(breadcrumbs);
-
-        //        // Lấy danh sách lịch trình + đếm số địa điểm
-        //        var list = (from lt in db.LichTrinhs
-        //                    where lt.MaNguoiDung == sessionUser.MaNguoiDung
-        //                    join ct in db.ChiTietLichTrinhs on lt.MaLichTrinh equals ct.MaLichTrinh into g
-        //                    orderby lt.NgayTao descending
-        //                    select new ItineraryListVM
-        //                    {
-        //                        MaLichTrinh = lt.MaLichTrinh,
-        //                        TenLichTrinh = lt.TenLichTrinh,
-        //                        TongChiPhiDuKien = lt.TongChiPhiDuKien,
-        //                        NgayTao = lt.NgayTao,
-        //                        SoDiaDiem = g.Count()
-        //                    }).ToList();
-
-        //        return View(list); 
+        //        TempData["LoginError"] = "Vui lòng đăng nhập để xem lịch sử bình luận.";
+        //        return RedirectToAction("Login", "Home");
         //    }
 
-        //    public ActionResult ChiTietLichTrinh(int? id)
-        //    {
-        //        if (!id.HasValue)
-        //            return RedirectToAction("LichTrinhDaTao");
+        //    var comments = db.BinhLuans
+        //        .Where(x => x.MaNguoiDung == sessionUser.MaNguoiDung)
+        //        .OrderByDescending(x => x.NgayDang)
+        //        .ToList(); // Model
 
-        //        var sessionUser = Session["nguoiDung"] as NguoiDung;
-        //        if (sessionUser == null)
-        //        {
-        //            TempData["LoginError"] = "Vui lòng đăng nhập để xem chi tiết lịch trình.";
-        //            return RedirectToAction("Login", "Home");
-        //        }
+        //    // 2) Lấy các bài viết liên quan
+        //    var postIds = comments.Select(x => x.MaBaiViet).Distinct().ToList();
 
-        //        int ma = id.Value;
+        //    var posts = db.BaiViets
+        //        .Where(p => postIds.Contains(p.MaBaiViet))
+        //        .ToList();
 
-        //        var lt = db.LichTrinhs.FirstOrDefault(x => x.MaLichTrinh == ma && x.MaNguoiDung == sessionUser.MaNguoiDung);
-        //        if (lt == null) return HttpNotFound();
+        //    ViewBag.PostMap = posts.ToDictionary(p => p.MaBaiViet, p => p);
 
-        //        var items = (from ct in db.ChiTietLichTrinhs
-        //                     join dd in db.DiaDiems on ct.MaDiaDiem equals dd.MaDiaDiem
-        //                     where ct.MaLichTrinh == ma
-        //                     orderby ct.NgayThamQuan, ct.ThuTuUuTien
-        //                     select new ItineraryItemVM
-        //                     {
-        //                         NgayThamQuan = ct.NgayThamQuan,
-        //                         ThuTuUuTien = ct.ThuTuUuTien,
-        //                         MaDiaDiem = dd.MaDiaDiem,
-        //                         TenDiaDiem = dd.TenDiaDiem,
-        //                         VungMien = dd.VungMien
-        //                     }).ToList();
+        //    // 3) Lấy ảnh đại diện bài viết (lấy ảnh có ThuTu nhỏ nhất)
+        //    var postImgs = db.AnhBaiViets
+        //        .Where(a => postIds.Contains(a.MaBaiViet))
+        //        .ToList();
 
-        //        var vm = new ItineraryDetailVM
-        //        {
-        //            MaLichTrinh = lt.MaLichTrinh,
-        //            TenLichTrinh = lt.TenLichTrinh,
-        //            TongChiPhiDuKien = lt.TongChiPhiDuKien,
-        //            NgayTao = lt.NgayTao,
-        //            Items = items
-        //        };
+        //    ViewBag.PostThumbMap = postImgs
+        //        .GroupBy(a => a.MaBaiViet)
+        //        .ToDictionary(
+        //            g => g.Key,
+        //            g => g.OrderBy(x => x.ThuTu).ThenBy(x => x.MaAnh).Select(x => x.DuongDanAnh).FirstOrDefault()
+        //        );
 
-        //        return View(vm);
-        //    }
+        //    // 4) Lấy địa điểm liên quan (nếu bài viết có MaDiaDiem)
+        //    var placeIds = posts
+        //        .Where(p => p.MaDiaDiem.HasValue)
+        //        .Select(p => p.MaDiaDiem.Value)
+        //        .Distinct()
+        //        .ToList();
+
+        //    ViewBag.PlaceMap = db.DiaDiems
+        //        .Where(d => placeIds.Contains(d.MaDiaDiem))
+        //        .ToDictionary(d => d.MaDiaDiem, d => d);
+
+        //    // 5) (Tuỳ chọn) Map bình luận cha để hiển thị "đang trả lời..."
+        //    var parentIds = comments
+        //        .Where(x => x.ParentId.HasValue)
+        //        .Select(x => x.ParentId.Value)
+        //        .Distinct()
+        //        .ToList();
+
+        //    ViewBag.ParentMap = db.BinhLuans
+        //        .Where(x => parentIds.Contains(x.MaBinhLuan))
+        //        .ToDictionary(x => x.MaBinhLuan, x => x);
+
+        //    return View(comments);
+        //}
+
+        public ActionResult LichTrinhDaTao()
+        {
+            var sessionUser = Session["nguoiDung"] as NguoiDung;
+            if (sessionUser == null)
+            {
+                TempData["LoginError"] = "Vui lòng đăng nhập để xem lịch trình.";
+                return RedirectToAction("Login", "Home");
+            }
+
+            var breadcrumbs = new List<BreadcrumbItem>
+    {
+        new BreadcrumbItem("Hồ sơ cá nhân", "/Home/Profile"),
+        new BreadcrumbItem("Lịch trình đã tạo", "/Home/LichTrinhDaTao", isActive: true)
+    };
+            this.SetBreadcrumbs(breadcrumbs);
+
+            
+            var list = db.LichTrinhs
+                .Where(x => x.MaNguoiDung == sessionUser.MaNguoiDung)
+                .OrderByDescending(x => x.NgayTao)
+                .ToList(); 
+
+            var ltIds = list.Select(x => x.MaLichTrinh).ToList();
+
+            
+            var soDiaDiemMap =
+                (from day in db.NgayLichTrinhs
+                 join ct in db.ChiTietLichTrinhs on day.MaNgay equals ct.MaNgay
+                 where ltIds.Contains(day.MaLichTrinh)
+                 group ct by day.MaLichTrinh into g
+                 select new { MaLichTrinh = g.Key, So = g.Count() })
+                .ToDictionary(x => x.MaLichTrinh, x => x.So);
+
+         
+            var tongChiPhiMap =
+                (from day in db.NgayLichTrinhs
+                 join ct in db.ChiTietLichTrinhs on day.MaNgay equals ct.MaNgay
+                 join dd in db.DiaDiems on ct.MaDiaDiem equals dd.MaDiaDiem
+                 where ltIds.Contains(day.MaLichTrinh)
+                 group dd by day.MaLichTrinh into g
+                 select new
+                 {
+                     MaLichTrinh = g.Key,
+                     Tong = g.Sum(x => (decimal?)x.GiaVe) ?? 0m
+                 })
+                .ToDictionary(x => x.MaLichTrinh, x => x.Tong);
+
+            ViewBag.SoDiaDiemMap = soDiaDiemMap;
+            ViewBag.TongChiPhiMap = tongChiPhiMap;
+
+            return View(list); 
+        }
+
+        public ActionResult ChiTietLichTrinh(int? id)
+        {
+            if (!id.HasValue) return RedirectToAction("LichTrinhDaTao");
+
+            var sessionUser = Session["nguoiDung"] as NguoiDung;
+            if (sessionUser == null)
+            {
+                TempData["LoginError"] = "Vui lòng đăng nhập để xem chi tiết lịch trình.";
+                return RedirectToAction("Login", "Home");
+            }
+
+            int ma = id.Value;
+
+            var lt = db.LichTrinhs.FirstOrDefault(x => x.MaLichTrinh == ma && x.MaNguoiDung == sessionUser.MaNguoiDung);
+            if (lt == null) return HttpNotFound();
+
+            
+            var days = db.NgayLichTrinhs
+                .Where(x => x.MaLichTrinh == ma)
+                .OrderBy(x => x.ThuTuNgay)
+                .ToList();
+
+            var dayIds = days.Select(x => x.MaNgay).ToList();
+
+           
+            var details = db.ChiTietLichTrinhs
+                .Where(x => dayIds.Contains(x.MaNgay))
+                .OrderBy(x => x.MaNgay)
+                .ThenBy(x => x.ThuTu)
+                .ToList();
+
+            
+            var ddIds = details.Select(x => x.MaDiaDiem).Distinct().ToList();
+
+            var diaDiemMap = db.DiaDiems
+                .Where(d => ddIds.Contains(d.MaDiaDiem))
+                .ToDictionary(d => d.MaDiaDiem, d => d);
+
+            var anhChinhMap = db.AnhDiaDiems
+                .Where(a => ddIds.Contains(a.MaDiaDiem) && a.LaAnhChinh == true)
+                .GroupBy(a => a.MaDiaDiem)
+                .ToDictionary(g => g.Key, g => g.Select(x => x.DuongDanAnh).FirstOrDefault());
+
+           
+            var itemsByDay = details
+                .GroupBy(x => x.MaNgay)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            ViewBag.Days = days;
+            ViewBag.ItemsByDay = itemsByDay;
+            ViewBag.DiaDiemMap = diaDiemMap;
+            ViewBag.AnhChinhMap = anhChinhMap;
+
+            return View(lt); 
+        }
 
         public ActionResult Map()
         {
@@ -427,35 +471,6 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             return View();
         }
 
-        public ActionResult YeuThich()
-        {
-            var user = Session["nguoiDung"] as NguoiDung;
-            if (user == null) return RedirectToAction("Login", "Home");
-
-            // Lấy danh sách yêu thích + ảnh chính (nếu có)
-            var list = (from yt in db.YeuThiches
-                        join dd in db.DiaDiems on yt.MaDiaDiem equals dd.MaDiaDiem
-                        join a in db.AnhDiaDiems.Where(x => x.LaAnhChinh == true)
- on dd.MaDiaDiem equals a.MaDiaDiem into ga
-                        from a in ga.DefaultIfEmpty()
-                        where yt.MaNguoiDung == user.MaNguoiDung
-                        orderby yt.NgayLuu descending
-                        select new FavoritePlaceVM
-                        {
-                            MaDiaDiem = dd.MaDiaDiem,
-                            TenDiaDiem = dd.TenDiaDiem,
-                            VungMien = dd.VungMien,
-                            AnhChinh = (a != null ? a.DuongDanAnh : null),
-                            NgayLuu = yt.NgayLuu
-                        }).ToList();
-
-            ViewBag.Collections = db.BoSuuTaps
-        .Where(x => x.MaNguoiDung == user.MaNguoiDung)
-        .OrderByDescending(x => x.NgayTao)
-        .ToList();
-
-            return View(list);
-        }
-
+        
     }
 }

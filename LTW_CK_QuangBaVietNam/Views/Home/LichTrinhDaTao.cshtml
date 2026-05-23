@@ -1,16 +1,21 @@
 ﻿@using System
 @using System.Linq
 @using System.Collections.Generic
-@model List<LTW_CK_QuangBaVietNam.Models.ItineraryListVM>
+@using LTW_CK_QuangBaVietNam.Models
+@model List<LTW_CK_QuangBaVietNam.Models.LichTrinh>
 
 @{
     ViewBag.Title = "Lịch trình đã tạo";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-    var list = Model ?? new List<LTW_CK_QuangBaVietNam.Models.ItineraryListVM>();
+    var list = Model ?? new List<LichTrinh>();
+
+    var soDiaDiemMap = ViewBag.SoDiaDiemMap as Dictionary<int, int> ?? new Dictionary<int, int>();
+    var tongChiPhiMap = ViewBag.TongChiPhiMap as Dictionary<int, decimal> ?? new Dictionary<int, decimal>();
+
     var totalItineraries = list.Count;
-    var totalPlaces = list.Sum(x => x.SoDiaDiem);
-    decimal totalCost = list.Sum(x => x.TongChiPhiDuKien ?? 0m);
+    var totalPlaces = list.Sum(x => soDiaDiemMap.ContainsKey(x.MaLichTrinh) ? soDiaDiemMap[x.MaLichTrinh] : 0);
+    decimal totalCost = list.Sum(x => tongChiPhiMap.ContainsKey(x.MaLichTrinh) ? tongChiPhiMap[x.MaLichTrinh] : 0m);
 }
 
 <div class="container py-4">
@@ -139,6 +144,11 @@
             {
                 var name = (lt.TenLichTrinh ?? "").ToLowerInvariant();
 
+                var soDD = soDiaDiemMap.ContainsKey(lt.MaLichTrinh) ? soDiaDiemMap[lt.MaLichTrinh] : 0;
+                var chiPhi = tongChiPhiMap.ContainsKey(lt.MaLichTrinh) ? tongChiPhiMap[lt.MaLichTrinh] : 0m;
+
+                var ngayTaoText = (lt.NgayTao.HasValue ? lt.NgayTao.Value.ToString("dd/MM/yyyy HH:mm") : "—");
+
                 <div class="col-12 col-md-6 col-xl-4 it-item" data-name="@name">
                     <div class="card border-0 shadow-sm rounded-4 h-100">
                         <div class="card-body p-3">
@@ -147,12 +157,12 @@
                                     <div class="fw-bold fs-5">@lt.TenLichTrinh</div>
                                     <div class="text-muted small mt-1">
                                         <i class="bi bi-clock me-1"></i>
-                                        Tạo lúc: @lt.NgayTao.ToString("dd/MM/yyyy HH:mm")
+                                        Tạo lúc: @ngayTaoText
                                     </div>
                                 </div>
 
                                 <span class="badge rounded-pill bg-light text-primary border">
-                                    <i class="bi bi-geo-alt me-1"></i>@lt.SoDiaDiem địa điểm
+                                    <i class="bi bi-geo-alt me-1"></i>@soDD địa điểm
                                 </span>
                             </div>
 
@@ -161,7 +171,7 @@
                             <div class="d-flex align-items-center justify-content-between">
                                 <div class="text-muted small">Chi phí dự kiến</div>
                                 <div class="fw-bold text-success">
-                                    @String.Format("{0:N0}", (lt.TongChiPhiDuKien ?? 0)) đ
+                                    @String.Format("{0:N0}", chiPhi) đ
                                 </div>
                             </div>
 

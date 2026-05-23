@@ -1,0 +1,314 @@
+﻿@using LTW_CK_QuangBaVietNam.Models
+@using System
+@using System.Linq
+@using System.Collections.Generic
+@using System.Web.Helpers
+
+@{
+    ViewBag.Title = "Thống kê & báo cáo";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    var mostViewed = ViewBag.MostViewed as DiaDiem;
+
+    var topFavPlace = ViewBag.TopFavPlace as DiaDiem;
+    var topFavCount = (ViewBag.TopFavCount != null) ? (int)ViewBag.TopFavCount : 0;
+
+    var topUser = ViewBag.TopUser as NguoiDung;
+    var topUserCount = (ViewBag.TopUserCount != null) ? (int)ViewBag.TopUserCount : 0;
+
+    var commentCount30 = (ViewBag.CommentCount30 != null) ? (int)ViewBag.CommentCount30 : 0;
+
+    var topViewed = ViewBag.TopViewed as List<DiaDiem> ?? new List<DiaDiem>();
+
+    // RIGHT CHART data
+    var topFavIds = ViewBag.TopFavIds as List<int> ?? new List<int>();
+    var topFavCountMap = ViewBag.TopFavCountMap as Dictionary<int, int> ?? new Dictionary<int, int>();
+    var topFavPlaceMap = ViewBag.TopFavPlaceMap as Dictionary<int, DiaDiem> ?? new Dictionary<int, DiaDiem>();
+
+    // Build labels/data for chart (Top Fav)
+    var favLabels = new List<string>();
+    var favData = new List<int>();
+
+    foreach (var id in topFavIds)
+    {
+        DiaDiem ddFav = null;
+        topFavPlaceMap.TryGetValue(id, out ddFav);
+
+        favLabels.Add(ddFav != null ? ddFav.TenDiaDiem : ("Địa điểm #" + id));
+        favData.Add(topFavCountMap.ContainsKey(id) ? topFavCountMap[id] : 0);
+    }
+}
+
+<style>
+    .dash-hero {
+        background: linear-gradient(135deg, rgba(14,165,233,.22), rgba(99,102,241,.12));
+        border: 1px solid rgba(2,6,23,.06);
+        border-radius: 18px;
+    }
+
+    .stat-card {
+        border-radius: 18px;
+        border: 0;
+        overflow: hidden;
+        position: relative;
+    }
+
+        .stat-card .stat-bg {
+            position: absolute;
+            inset: 0;
+            opacity: .9;
+            filter: saturate(1.05);
+        }
+
+        .stat-card .stat-body {
+            position: relative;
+            z-index: 2;
+            padding: 18px;
+            color: #0f172a;
+        }
+
+    .stat-icon {
+        width: 46px;
+        height: 46px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        background: rgba(255,255,255,.75);
+        border: 1px solid rgba(2,6,23,.06);
+        box-shadow: 0 10px 22px rgba(2,6,23,.08);
+        flex: 0 0 auto;
+    }
+
+    .stat-value {
+        font-size: 1.65rem;
+        font-weight: 900;
+        line-height: 1.1;
+        letter-spacing: -.3px;
+    }
+
+    .stat-sub {
+        color: rgba(15, 23, 42, .7);
+        font-size: .875rem;
+    }
+
+    .table-card {
+        border-radius: 18px;
+        overflow: hidden;
+        border: 0;
+    }
+
+    .rank-badge {
+        width: 34px;
+        height: 34px;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        background: rgba(14,165,233,.12);
+        color: #0284c7;
+        border: 1px solid rgba(14,165,233,.25);
+    }
+</style>
+
+<!-- HERO -->
+<div class="mb-3 dash-hero p-4 shadow-sm">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+        <div class="fw-bold fs-4">
+            <i class="fa-solid fa-chart-pie text-primary me-2"></i>Thống kê & báo cáo
+        </div>
+        <div class="text-muted small">
+            <i class="fa-regular fa-clock me-1"></i>@DateTime.Now.ToString("dd/MM/yyyy HH:mm")
+        </div>
+    </div>
+</div>
+
+<!-- STAT CARDS -->
+<div class="row g-3 mb-3">
+
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="card stat-card shadow-sm">
+            <div class="stat-bg" style="background: linear-gradient(135deg, #93c5fd, #e0f2fe);"></div>
+            <div class="stat-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-sub">Địa điểm xem nhiều</div>
+                        <div class="stat-value mt-1">@((mostViewed != null) ? mostViewed.TenDiaDiem : "—")</div>
+                        <div class="stat-sub mt-2">
+                            @String.Format("{0:N0}", (mostViewed != null ? (mostViewed.LuotXem ?? 0) : 0)) lượt xem
+                        </div>
+                    </div>
+                    <div class="stat-icon"><i class="fa-solid fa-eye text-primary"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="card stat-card shadow-sm">
+            <div class="stat-bg" style="background: linear-gradient(135deg, #fecaca, #ffe4e6);"></div>
+            <div class="stat-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-sub">Địa điểm yêu thích</div>
+                        <div class="stat-value mt-1">@((topFavPlace != null) ? topFavPlace.TenDiaDiem : "—")</div>
+                        <div class="stat-sub mt-2">@String.Format("{0:N0}", topFavCount) lượt lưu</div>
+                    </div>
+                    <div class="stat-icon"><i class="fa-solid fa-heart text-danger"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="card stat-card shadow-sm">
+            <div class="stat-bg" style="background: linear-gradient(135deg, #bbf7d0, #dcfce7);"></div>
+            <div class="stat-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-sub">User hoạt động nhiều</div>
+                        <div class="stat-value mt-1">@((topUser != null) ? topUser.HoTen : "—")</div>
+                        <div class="stat-sub mt-2">@String.Format("{0:N0}", topUserCount) bình luận</div>
+                    </div>
+                    <div class="stat-icon"><i class="fa-solid fa-user-check text-success"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="card stat-card shadow-sm">
+            <div class="stat-bg" style="background: linear-gradient(135deg, #fde68a, #fff7ed);"></div>
+            <div class="stat-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-sub">Bình luận 30 ngày</div>
+                        <div class="stat-value mt-1">@String.Format("{0:N0}", commentCount30)</div>
+                        <div class="stat-sub mt-2">Trong 30 ngày gần nhất</div>
+                    </div>
+                    <div class="stat-icon"><i class="fa-solid fa-comments text-warning"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<div class="row g-3">
+
+    <div class="col-12 col-xl-7">
+        <div class="card table-card shadow-sm h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <div class="fw-semibold">
+                    <i class="fa-solid fa-chart-line text-primary me-2"></i>Top địa điểm theo lượt xem
+                </div>
+                <div class="text-muted small">Top: <b>@topViewed.Count</b></div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width:70px;">#</th>
+                            <th>Địa điểm</th>
+                            <th style="width:120px;">Vùng</th>
+                            <th class="text-end" style="width:150px;">Lượt xem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!topViewed.Any())
+                        {
+                            <tr><td colspan="4" class="text-center text-muted py-4">Chưa có dữ liệu.</td></tr>
+                        }
+                        else
+                        {
+                            var idx = 0;
+                            foreach (var dd in topViewed)
+                            {
+                                idx++;
+                                var views = dd.LuotXem ?? 0;
+                                <tr>
+                                    <td><span class="rank-badge">@idx</span></td>
+                                    <td class="fw-semibold">@dd.TenDiaDiem</td>
+                                    <td>@(string.IsNullOrWhiteSpace(dd.VungMien) ? "—" : dd.VungMien)</td>
+                                    <td class="text-end">@String.Format("{0:N0}", views)</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-xl-5">
+        <div class="card table-card shadow-sm h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <div class="fw-semibold">
+                    <i class="fa-solid fa-heart text-danger me-2"></i>Top địa điểm theo lượt lưu
+                </div>
+                <div class="text-muted small">Top: <b>@topFavIds.Count</b></div>
+            </div>
+
+            <div class="card-body">
+                @if (topFavIds.Count == 0)
+                {
+                    <div class="text-center text-muted py-4">Chưa có dữ liệu.</div>
+                }
+                else
+                {
+                    <canvas id="chartTopFav" height="260"></canvas>
+                }
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<script>
+    (function () {
+        var canvas = document.getElementById('chartTopFav');
+        if (!canvas) return;
+
+        var labels = @Html.Raw(Json.Encode(favLabels));
+        var data = @Html.Raw(Json.Encode(favData));
+
+        var shortLabels = labels.map(function (s) {
+            if (!s) return '';
+            return (s.length > 18) ? (s.substring(0, 18) + '...') : s;
+        });
+
+        new Chart(canvas, {
+            type: 'bar',
+            data: {
+                labels: shortLabels,
+                datasets: [{
+                    label: 'Lượt lưu',
+                    data: data,
+                    borderWidth: 1,
+                    backgroundColor: 'rgba(220, 53, 69, 0.35)',
+                    borderColor: 'rgba(220, 53, 69, 0.95)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: true }
+                },
+                scales: {
+                    x: {
+                        ticks: { maxRotation: 45, minRotation: 0 }
+                    },
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    })();
+</script>

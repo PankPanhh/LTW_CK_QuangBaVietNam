@@ -1,18 +1,30 @@
-﻿
-@using System.Linq
+﻿@using System.Linq
 @model IEnumerable<LTW_CK_QuangBaVietNam.Models.NguoiDung>
 
 @{
     ViewBag.Title = "Quản lý người dùng";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
-    var filter = ((ViewBag.Filter ?? "all").ToString()).ToLower();
+    var filter = ((ViewBag.Filter ?? "all").ToString()).ToLower().Trim();
 }
 
 <div class="card shadow-sm border-0">
     <div class="card-header bg-white p-3">
+
+        @* Thông báo *@
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success mb-3">@TempData["Success"]</div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger mb-3">@TempData["Error"]</div>
+        }
+
         <div class="d-flex justify-content-between align-items-center">
             <div>
-                <div class="fw-semibold"><i class="fa-solid fa-users text-primary me-2"></i>Quản lý người dùng</div>
+                <div class="fw-semibold">
+                    <i class="fa-solid fa-users text-primary me-2"></i>Quản lý người dùng
+                </div>
                 <div class="text-muted small">Khoá/mở khoá tài khoản, phân quyền Admin/User</div>
             </div>
 
@@ -43,6 +55,7 @@
                     <th class="text-end" style="width:260px;">Thao tác</th>
                 </tr>
             </thead>
+
             <tbody>
                 @if (Model == null || !Model.Any())
                 {
@@ -57,6 +70,7 @@
                     foreach (var u in Model)
                     {
                         var isAdmin = u.VaiTro == 1;
+
                         <tr>
                             <td>
                                 <div class="fw-semibold">@u.HoTen</div>
@@ -94,6 +108,7 @@
                                         @Html.AntiForgeryToken()
                                         @Html.Hidden("userId", u.MaNguoiDung)
                                         @Html.Hidden("vaiTro", isAdmin ? 2 : 1)
+                                       
 
                                         <button class="btn btn-sm btn-outline-secondary" type="submit" title="Đổi quyền">
                                             <i class="fa-solid fa-user-gear"></i>
@@ -108,6 +123,7 @@
                                         {
                                             @Html.AntiForgeryToken()
                                             @Html.Hidden("userId", u.MaNguoiDung)
+                                          
 
                                             <button class="btn btn-sm btn-outline-dark" type="submit" title="Khoá">
                                                 <i class="fa-solid fa-ban"></i>
@@ -121,13 +137,13 @@
                                         {
                                             @Html.AntiForgeryToken()
                                             @Html.Hidden("userId", u.MaNguoiDung)
+                                           
 
                                             <button class="btn btn-sm btn-outline-success" type="submit" title="Mở khoá">
                                                 <i class="fa-solid fa-unlock"></i>
                                             </button>
                                         }
                                     }
-
                                 </div>
                             </td>
                         </tr>
