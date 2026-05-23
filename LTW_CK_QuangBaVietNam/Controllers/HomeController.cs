@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
@@ -38,6 +38,59 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             throw new ConfigurationErrorsException("Missing connection string. Please add 'QBConnectionString' (or 'DefaultConnection') in Web.config.");
         }
 
+        private static string Truncate(string text, int maxLength)
+        {
+            if (string.IsNullOrWhiteSpace(text)) return string.Empty;
+            text = text.Trim();
+            return text.Length > maxLength ? text.Substring(0, maxLength).TrimEnd() + "..." : text;
+        }
+
+        private static string GetRelativeTimeText(DateTime? dateTime)
+        {
+            if (!dateTime.HasValue)
+            {
+                return string.Empty;
+            }
+
+            var diff = DateTime.Now - dateTime.Value;
+            if (diff.TotalMinutes < 1) return "Vừa xong";
+            if (diff.TotalHours < 1) return $"{Math.Max(1, (int)diff.TotalMinutes)} phút trước";
+            if (diff.TotalDays < 1) return $"{Math.Max(1, (int)diff.TotalHours)} giờ trước";
+            if (diff.TotalDays < 7) return $"{Math.Max(1, (int)diff.TotalDays)} ngày trước";
+            return dateTime.Value.ToString("dd/MM/yyyy");
+        }
+
+        private static string GetBlogCoverImage(BaiViet blog)
+        {
+            var image = blog.AnhBaiViets.OrderBy(a => a.ThuTu).Select(a => a.DuongDanAnh).FirstOrDefault();
+            if (!string.IsNullOrWhiteSpace(image))
+            {
+                return image;
+            }
+
+            return "/Content/images/places/default-place.jpg";
+        }
+
+        private static string GetAuthorName(BaiViet blog)
+        {
+            return blog.NguoiDung != null && !string.IsNullOrWhiteSpace(blog.NguoiDung.HoTen)
+                ? blog.NguoiDung.HoTen
+                : "Cộng đồng";
+        }
+
+        private static HomeBlogVM MapBlog(BaiViet blog)
+        {
+            return new HomeBlogVM
+            {
+                MaBaiViet = blog.MaBaiViet,
+                TieuDe = blog.TieuDe,
+                NoiDungRutGon = Truncate(blog.NoiDung, 150),
+                AnhBia = GetBlogCoverImage(blog),
+                TenTacGia = GetAuthorName(blog),
+                ThoiGianDang = GetRelativeTimeText(blog.NgayDang)
+            };
+        }
+
         //
         // GET: /Home/
 
@@ -50,7 +103,18 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             };
             this.SetBreadcrumbs(breadcrumbs);
 
-            return View();
+            var blogs = db.BaiViets
+                .Where(b => b.TrangThai == "approved")
+                .OrderByDescending(b => b.NgayDang)
+                .Take(4)
+                .ToList()
+                .Select(MapBlog)
+                .ToList();
+
+            return View(new NoiDungTrangChuVM
+            {
+                Blogs = blogs
+            });
         }
 
         public ActionResult AllPlaces()
@@ -168,115 +232,115 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             return View(user);
         }
 
-    //    public ActionResult LichSuDanhGia()
-    //    {
-    //        var sessionUser = Session["nguoiDung"] as NguoiDung;
-    //        if (sessionUser == null)
-    //        {
-    //            TempData["LoginError"] = "Vui lòng đăng nhập để xem lịch sử đánh giá.";
-    //            return RedirectToAction("Login", "Home");
-    //        }
+        //    public ActionResult LichSuDanhGia()
+        //    {
+        //        var sessionUser = Session["nguoiDung"] as NguoiDung;
+        //        if (sessionUser == null)
+        //        {
+        //            TempData["LoginError"] = "Vui lòng đăng nhập để xem lịch sử đánh giá.";
+        //            return RedirectToAction("Login", "Home");
+        //        }
 
-    //        var breadcrumbs = new List<BreadcrumbItem>
-    //{
-    //    new BreadcrumbItem("Hồ sơ cá nhân", "/Home/Profile"),
-    //    new BreadcrumbItem("Lịch sử đánh giá", "/Home/LichSuDanhGia", isActive: true)
-    //};
-    //        this.SetBreadcrumbs(breadcrumbs);
+        //        var breadcrumbs = new List<BreadcrumbItem>
+        //{
+        //    new BreadcrumbItem("Hồ sơ cá nhân", "/Home/Profile"),
+        //    new BreadcrumbItem("Lịch sử đánh giá", "/Home/LichSuDanhGia", isActive: true)
+        //};
+        //        this.SetBreadcrumbs(breadcrumbs);
 
-    //        var list = (from dg in db.DanhGias
-    //                    join dd in db.DiaDiems on dg.MaDiaDiem equals dd.MaDiaDiem
-    //                    where dg.MaNguoiDung == sessionUser.MaNguoiDung
-    //                    orderby dg.NgayGui descending
-    //                    select new ReviewHistoryVM
-    //                    {
-    //                        MaDanhGia = dg.MaDanhGia,
-    //                        MaDiaDiem = dd.MaDiaDiem,
-    //                        TenDiaDiem = dd.TenDiaDiem,
-    //                        SoSao = dg.SoSao,
-    //                        NoiDung = dg.NoiDung,
-    //                        TrangThaiKiemDuyet = dg.TrangThaiKiemDuyet,
-    //                        NgayGui = dg.NgayGui
-    //                    }).ToList();
+        //        var list = (from dg in db.DanhGias
+        //                    join dd in db.DiaDiems on dg.MaDiaDiem equals dd.MaDiaDiem
+        //                    where dg.MaNguoiDung == sessionUser.MaNguoiDung
+        //                    orderby dg.NgayGui descending
+        //                    select new ReviewHistoryVM
+        //                    {
+        //                        MaDanhGia = dg.MaDanhGia,
+        //                        MaDiaDiem = dd.MaDiaDiem,
+        //                        TenDiaDiem = dd.TenDiaDiem,
+        //                        SoSao = dg.SoSao,
+        //                        NoiDung = dg.NoiDung,
+        //                        TrangThaiKiemDuyet = dg.TrangThaiKiemDuyet,
+        //                        NgayGui = dg.NgayGui
+        //                    }).ToList();
 
-    //        return View(list); 
-    //    }
+        //        return View(list); 
+        //    }
 
         // /Home/LichTrinhDaTao
-    //    public ActionResult LichTrinhDaTao()
-    //    {
-    //        var sessionUser = Session["nguoiDung"] as NguoiDung;
-    //        if (sessionUser == null)
-    //        {
-    //            TempData["LoginError"] = "Vui lòng đăng nhập để xem lịch trình.";
-    //            return RedirectToAction("Login", "Home");
-    //        }
+        //    public ActionResult LichTrinhDaTao()
+        //    {
+        //        var sessionUser = Session["nguoiDung"] as NguoiDung;
+        //        if (sessionUser == null)
+        //        {
+        //            TempData["LoginError"] = "Vui lòng đăng nhập để xem lịch trình.";
+        //            return RedirectToAction("Login", "Home");
+        //        }
 
-    //        var breadcrumbs = new List<BreadcrumbItem>
-    //{
-    //    new BreadcrumbItem("Hồ sơ cá nhân", "/Home/Profile"),
-    //    new BreadcrumbItem("Lịch trình đã tạo", "/Home/LichTrinhDaTao", isActive: true)
-    //};
-    //        this.SetBreadcrumbs(breadcrumbs);
+        //        var breadcrumbs = new List<BreadcrumbItem>
+        //{
+        //    new BreadcrumbItem("Hồ sơ cá nhân", "/Home/Profile"),
+        //    new BreadcrumbItem("Lịch trình đã tạo", "/Home/LichTrinhDaTao", isActive: true)
+        //};
+        //        this.SetBreadcrumbs(breadcrumbs);
 
-    //        // Lấy danh sách lịch trình + đếm số địa điểm
-    //        var list = (from lt in db.LichTrinhs
-    //                    where lt.MaNguoiDung == sessionUser.MaNguoiDung
-    //                    join ct in db.ChiTietLichTrinhs on lt.MaLichTrinh equals ct.MaLichTrinh into g
-    //                    orderby lt.NgayTao descending
-    //                    select new ItineraryListVM
-    //                    {
-    //                        MaLichTrinh = lt.MaLichTrinh,
-    //                        TenLichTrinh = lt.TenLichTrinh,
-    //                        TongChiPhiDuKien = lt.TongChiPhiDuKien,
-    //                        NgayTao = lt.NgayTao,
-    //                        SoDiaDiem = g.Count()
-    //                    }).ToList();
+        //        // Lấy danh sách lịch trình + đếm số địa điểm
+        //        var list = (from lt in db.LichTrinhs
+        //                    where lt.MaNguoiDung == sessionUser.MaNguoiDung
+        //                    join ct in db.ChiTietLichTrinhs on lt.MaLichTrinh equals ct.MaLichTrinh into g
+        //                    orderby lt.NgayTao descending
+        //                    select new ItineraryListVM
+        //                    {
+        //                        MaLichTrinh = lt.MaLichTrinh,
+        //                        TenLichTrinh = lt.TenLichTrinh,
+        //                        TongChiPhiDuKien = lt.TongChiPhiDuKien,
+        //                        NgayTao = lt.NgayTao,
+        //                        SoDiaDiem = g.Count()
+        //                    }).ToList();
 
-    //        return View(list); 
-    //    }
+        //        return View(list); 
+        //    }
 
-    //    public ActionResult ChiTietLichTrinh(int? id)
-    //    {
-    //        if (!id.HasValue)
-    //            return RedirectToAction("LichTrinhDaTao");
+        //    public ActionResult ChiTietLichTrinh(int? id)
+        //    {
+        //        if (!id.HasValue)
+        //            return RedirectToAction("LichTrinhDaTao");
 
-    //        var sessionUser = Session["nguoiDung"] as NguoiDung;
-    //        if (sessionUser == null)
-    //        {
-    //            TempData["LoginError"] = "Vui lòng đăng nhập để xem chi tiết lịch trình.";
-    //            return RedirectToAction("Login", "Home");
-    //        }
+        //        var sessionUser = Session["nguoiDung"] as NguoiDung;
+        //        if (sessionUser == null)
+        //        {
+        //            TempData["LoginError"] = "Vui lòng đăng nhập để xem chi tiết lịch trình.";
+        //            return RedirectToAction("Login", "Home");
+        //        }
 
-    //        int ma = id.Value;
+        //        int ma = id.Value;
 
-    //        var lt = db.LichTrinhs.FirstOrDefault(x => x.MaLichTrinh == ma && x.MaNguoiDung == sessionUser.MaNguoiDung);
-    //        if (lt == null) return HttpNotFound();
+        //        var lt = db.LichTrinhs.FirstOrDefault(x => x.MaLichTrinh == ma && x.MaNguoiDung == sessionUser.MaNguoiDung);
+        //        if (lt == null) return HttpNotFound();
 
-    //        var items = (from ct in db.ChiTietLichTrinhs
-    //                     join dd in db.DiaDiems on ct.MaDiaDiem equals dd.MaDiaDiem
-    //                     where ct.MaLichTrinh == ma
-    //                     orderby ct.NgayThamQuan, ct.ThuTuUuTien
-    //                     select new ItineraryItemVM
-    //                     {
-    //                         NgayThamQuan = ct.NgayThamQuan,
-    //                         ThuTuUuTien = ct.ThuTuUuTien,
-    //                         MaDiaDiem = dd.MaDiaDiem,
-    //                         TenDiaDiem = dd.TenDiaDiem,
-    //                         VungMien = dd.VungMien
-    //                     }).ToList();
+        //        var items = (from ct in db.ChiTietLichTrinhs
+        //                     join dd in db.DiaDiems on ct.MaDiaDiem equals dd.MaDiaDiem
+        //                     where ct.MaLichTrinh == ma
+        //                     orderby ct.NgayThamQuan, ct.ThuTuUuTien
+        //                     select new ItineraryItemVM
+        //                     {
+        //                         NgayThamQuan = ct.NgayThamQuan,
+        //                         ThuTuUuTien = ct.ThuTuUuTien,
+        //                         MaDiaDiem = dd.MaDiaDiem,
+        //                         TenDiaDiem = dd.TenDiaDiem,
+        //                         VungMien = dd.VungMien
+        //                     }).ToList();
 
-    //        var vm = new ItineraryDetailVM
-    //        {
-    //            MaLichTrinh = lt.MaLichTrinh,
-    //            TenLichTrinh = lt.TenLichTrinh,
-    //            TongChiPhiDuKien = lt.TongChiPhiDuKien,
-    //            NgayTao = lt.NgayTao,
-    //            Items = items
-    //        };
+        //        var vm = new ItineraryDetailVM
+        //        {
+        //            MaLichTrinh = lt.MaLichTrinh,
+        //            TenLichTrinh = lt.TenLichTrinh,
+        //            TongChiPhiDuKien = lt.TongChiPhiDuKien,
+        //            NgayTao = lt.NgayTao,
+        //            Items = items
+        //        };
 
-    //        return View(vm);
-    //    }
+        //        return View(vm);
+        //    }
 
         public ActionResult Map()
         {
@@ -314,15 +378,17 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             return View();
         }
 
-        public ActionResult DetailBlog()
+        public ActionResult DetailBlog(int? id)
         {
             // Set breadcrumbs for Blog page
             var breadcrumbs = new List<BreadcrumbItem>
             {
-                new BreadcrumbItem("Blog", "/Home/Blog/DetailBlog", isActive: true)
+                new BreadcrumbItem("Blog", "/Home/Blog"),
+                new BreadcrumbItem("Chi tiết bài viết", id.HasValue ? $"/Home/DetailBlog?id={id.Value}" : "/Home/DetailBlog", isActive: true)
             };
             this.SetBreadcrumbs(breadcrumbs);
 
+            ViewBag.BlogId = id;
             return View();
         }
 
@@ -331,12 +397,17 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             return View();
         }
 
-        public ActionResult DetailSchedule()
+        public ActionResult DetailSchedule(int? id)
         {
+            if (!id.HasValue) return RedirectToAction("Schedule");
+
+            ViewBag.ScheduleId = id.Value;
+
             // Set breadcrumbs for Schedule page
             var breadcrumbs = new List<BreadcrumbItem>
             {
-                new BreadcrumbItem("Lịch trình du lịch", "/Home/DetailSchedule", isActive: true)
+                new BreadcrumbItem("Khám phá", "/Home/Schedule"),
+                new BreadcrumbItem("Chi tiết lịch trình", $"/Home/DetailSchedule?id={id.Value}", isActive: true)
             };
             this.SetBreadcrumbs(breadcrumbs);
 
@@ -383,7 +454,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
         .OrderByDescending(x => x.NgayTao)
         .ToList();
 
-            return View(list); 
+            return View(list);
         }
 
     }
