@@ -24,7 +24,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
 
         private static string GetConnectionString()
         {
-            var appConnection = ConfigurationManager.ConnectionStrings["QBConnectionString"];
+            var appConnection = ConfigurationManager.ConnectionStrings["CK_QBVNConnectionString"];
             if (appConnection != null && !string.IsNullOrWhiteSpace(appConnection.ConnectionString))
             {
                 return appConnection.ConnectionString;
@@ -36,7 +36,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                 return defaultConnection.ConnectionString;
             }
 
-            throw new ConfigurationErrorsException("Missing connection string. Please add 'QBConnectionString' (or 'DefaultConnection') in Web.config.");
+            throw new ConfigurationErrorsException("Missing connection string. Please add 'CK_QBVNConnectionString' (or 'DefaultConnection') in Web.config.");
         }
 
         private static string Truncate(string text, int maxLength)
@@ -346,7 +346,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             var lt = db.LichTrinhs.FirstOrDefault(x => x.MaLichTrinh == ma && x.MaNguoiDung == sessionUser.MaNguoiDung);
             if (lt == null) return HttpNotFound();
 
-            
+ 
             var days = db.NgayLichTrinhs
                 .Where(x => x.MaLichTrinh == ma)
                 .OrderBy(x => x.ThuTuNgay)
@@ -354,26 +354,33 @@ namespace LTW_CK_QuangBaVietNam.Controllers
 
             var dayIds = days.Select(x => x.MaNgay).ToList();
 
-           
             var details = db.ChiTietLichTrinhs
                 .Where(x => dayIds.Contains(x.MaNgay))
                 .OrderBy(x => x.MaNgay)
                 .ThenBy(x => x.ThuTu)
                 .ToList();
 
-            
             var ddIds = details.Select(x => x.MaDiaDiem).Distinct().ToList();
 
             var diaDiemMap = db.DiaDiems
                 .Where(d => ddIds.Contains(d.MaDiaDiem))
                 .ToDictionary(d => d.MaDiaDiem, d => d);
 
+            decimal tongChiPhi = 0m;
+            if (details.Any())
+            {
+                tongChiPhi = (
+                    from ct in details
+                    join dd in db.DiaDiems on ct.MaDiaDiem equals dd.MaDiaDiem
+                    select (decimal?)dd.GiaVe
+                ).Sum() ?? 0m;
+            }
+
             var anhChinhMap = db.AnhDiaDiems
                 .Where(a => ddIds.Contains(a.MaDiaDiem) && a.LaAnhChinh == true)
                 .GroupBy(a => a.MaDiaDiem)
                 .ToDictionary(g => g.Key, g => g.Select(x => x.DuongDanAnh).FirstOrDefault());
 
-           
             var itemsByDay = details
                 .GroupBy(x => x.MaNgay)
                 .ToDictionary(g => g.Key, g => g.ToList());
@@ -382,6 +389,8 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             ViewBag.ItemsByDay = itemsByDay;
             ViewBag.DiaDiemMap = diaDiemMap;
             ViewBag.AnhChinhMap = anhChinhMap;
+
+            ViewBag.TongChiPhi = tongChiPhi;
 
             return View(lt); 
         }
