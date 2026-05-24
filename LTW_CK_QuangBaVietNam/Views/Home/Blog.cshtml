@@ -588,25 +588,7 @@
         pointer-events: none;
     }
 
-    /* Custom Toast */
-    .toast-container {
-        position: fixed; top: 20px; right: 20px; z-index: 9999;
-        display: flex; flex-direction: column; gap: 10px;
-    }
-    .custom-toast {
-        background: white; padding: 16px 24px; border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-left: 5px solid;
-        display: flex; align-items: center; gap: 12px; font-weight: 600;
-        animation: slideInRight 0.3s ease forwards;
-    }
-    .toast-success { border-color: var(--success); color: var(--success); }
-    .toast-error { border-color: var(--danger); color: var(--danger); }
-    .toast-info { border-color: var(--sky-blue); color: var(--sky-blue); }
 
-    @@keyframes slideInRight {
-        from { transform: translateX(400px); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-    }
 
     .action-buttons {
         display: flex;
@@ -773,7 +755,7 @@
     }
 </style>
 
-<div class="toast-container" id="toastContainer"></div>
+
 
 <div class="blog-page">
     <div class="container">
@@ -938,6 +920,7 @@
 </div>
 
 <script>
+    let isLoggedIn = @((Session["nguoiDung"] != null).ToString().ToLower());
     const PLACEHOLDER_IMG = 'https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&q=80&w=800';
     const MAX_IMAGES = 10;
     const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -1372,6 +1355,10 @@
 
     // Enhanced interactivity functions
     async function toggleBlogLike(button, blogId) {
+        if (!isLoggedIn) {
+            showToast('Thông báo', 'Vui lòng đăng nhập để tương tác', 'warning');
+            return;
+        }
         try {
             const res = await fetch('/Blog/ToggleBlogLike', {
                 method: 'POST',
@@ -1380,7 +1367,7 @@
             });
 
             if (res.status === 401) {
-                showToast('Vui lòng đăng nhập để thích bài viết', 'error');
+                showToast('Thông báo', 'Vui lòng đăng nhập để tương tác', 'warning');
                 return;
             }
 
@@ -1397,16 +1384,20 @@
                         statDiv.innerHTML = `<i class="bi bi-heart"></i> ${data.likes}`;
                     }
                 }
-                showToast(data.message, 'success');
+                showToast('Thành công', data.message || 'Đã thích bài viết', 'success');
             } else {
-                showToast(data.message, 'error');
+                showToast('Lỗi', data.message, 'error');
             }
         } catch (e) {
-            showToast('Lỗi khi thích bài viết', 'error');
+            showToast('Lỗi', 'Không thể thích bài viết', 'error');
         }
     }
 
     async function toggleSaveBlog(button, blogId) {
+        if (!isLoggedIn) {
+            showToast('Thông báo', 'Vui lòng đăng nhập để tương tác', 'warning');
+            return;
+        }
         try {
             const res = await fetch('/Blog/ToggleSaveBlog', {
                 method: 'POST',
@@ -1415,37 +1406,20 @@
             });
 
             if (res.status === 401) {
-                showToast('Vui lòng đăng nhập để lưu bài viết', 'error');
+                showToast('Thông báo', 'Vui lòng đăng nhập để tương tác', 'warning');
                 return;
             }
 
             const data = await res.json();
             if (data.success) {
                 button.classList.toggle('active');
-                showToast(data.message, 'success');
+                showToast('Thành công', data.message || 'Đã lưu bài viết', 'success');
             } else {
-                showToast(data.message, 'error');
+                showToast('Lỗi', data.message, 'error');
             }
         } catch (e) {
-            showToast('Lỗi khi lưu bài viết', 'error');
+            showToast('Lỗi', 'Không thể lưu bài viết', 'error');
         }
-    }
-
-    function showToast(message, type = 'success') {
-        const container = document.getElementById('toastContainer');
-        const toast = document.createElement('div');
-        toast.className = `custom-toast toast-${type}`;
-        
-        const icon = type === 'success' ? '<i class="bi bi-check-circle"></i>' 
-            : type === 'error' ? '<i class="bi bi-x-circle"></i>'
-            : '<i class="bi bi-info-circle"></i>';
-
-        toast.innerHTML = `${icon}<span>${message}</span>`;
-        container.appendChild(toast);
-
-        setTimeout(() => {
-            toast.remove();
-        }, 3000);
     }
 
     // ==========================================

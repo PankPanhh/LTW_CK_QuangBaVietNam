@@ -480,6 +480,25 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             return View();
         }
 
-        
+        public ActionResult ThienNhien()
+        {
+            return View();
+        }
+
+        public ActionResult DoThi()
+        {
+            return View();
+        }
+
+        public ActionResult VanHoa()
+        {
+            return View();
+        }
+
+        public ActionResult AmThuc()
+        {
+            return View();
+        }
+
     }
 }

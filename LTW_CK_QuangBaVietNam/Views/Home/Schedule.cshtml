@@ -553,24 +553,26 @@
                 if (item) item.status = newStatus;
                 renderMyGrid(allMyData);
             } else {
-                alert(d.message);
+                showToast('Lỗi', d.message, 'error');
             }
         });
     }
 
     function deleteMySched(id, btn) {
-        if (!confirm('Xóa lịch trình này? Hành động không thể hoàn tác.')) return;
-        fetch('/Itinerary/DeleteSchedule', {
-            method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: `idLichTrinh=${id}`
-        }).then(r => r.json()).then(d => {
-            if (d.success) {
-                allMyData = allMyData.filter(x => x.id !== id);
-                renderMyGrid(allMyData);
-            } else {
-                alert(d.message);
-            }
-        });
+        showConfirmModal('Xóa lịch trình', 'Bạn có chắc chắn muốn xóa lịch trình này? Hành động không thể hoàn tác.', () => {
+            fetch('/Itinerary/DeleteSchedule', {
+                method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: `idLichTrinh=${id}`
+            }).then(r => r.json()).then(d => {
+                if (d.success) {
+                    allMyData = allMyData.filter(x => x.id !== id);
+                    renderMyGrid(allMyData);
+                    showToast('Thành công', 'Đã xóa lịch trình thành công', 'success');
+                } else {
+                    showToast('Lỗi', d.message, 'error');
+                }
+            });
+        }, true);
     }
 
     // ── Search ────────────────────────────────────────────────
@@ -606,13 +608,13 @@
                         countSpan.textContent = data.likes;
                     }
                 } else {
-                    alert(data.message);
+                    showToast('Thông báo', data.message, 'warning');
                 }
             });
     }
 
     function shareSchedule(id) {
         const url = window.location.origin + '/Home/DetailSchedule?id=' + id;
-        navigator.clipboard.writeText(url).then(() => alert('Đã copy link chia sẻ!'));
+        navigator.clipboard.writeText(url).then(() => showToast('Thành công', 'Đã copy link chia sẻ!', 'success'));
     }
 </script>

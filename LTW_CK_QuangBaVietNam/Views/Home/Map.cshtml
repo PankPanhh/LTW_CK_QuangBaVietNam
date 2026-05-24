@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewBag.Title = "Bản Đồ - Khám Phá Du Lịch";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -1326,6 +1326,13 @@
                 MapState.locations = data.data;
                 displayLocations(data.data);
                 showToast(`Tìm thấy ${data.data.length} địa điểm`);
+
+                // Check URL params to auto-focus a place
+                const urlParams = new URLSearchParams(window.location.search);
+                const placeId = urlParams.get('placeId') || urlParams.get('id');
+                if (placeId) {
+                    selectPlaceById(placeId);
+                }
             } else {
                 showToast(data.message || 'Lỗi tải dữ liệu', 'error');
             }
@@ -1441,6 +1448,8 @@
             const marker = L.marker(location.coordinates, { icon: markerIcon })
                 .bindPopup(popupContent)
                 .addTo(MapState.map);
+
+            marker.placeId = location.id;
 
             marker.on('click', () => {
                 MapState.currentLocation = location;
@@ -1816,6 +1825,24 @@
                     marker.openPopup();
                 }
             });
+        }
+    }
+
+    function selectPlaceById(placeId) {
+        const id = parseInt(placeId);
+        if (isNaN(id)) return;
+
+        const location = MapState.locations.find(l => l.id === id);
+        if (location) {
+            MapState.currentLocation = location;
+            showLocationInfo(location);
+            MapState.map.flyTo(location.coordinates, 13, { duration: 1.5 });
+
+            // Find the corresponding marker and open its popup
+            const marker = MapState.markers.find(m => m.placeId === id);
+            if (marker) {
+                marker.openPopup();
+            }
         }
     }
 

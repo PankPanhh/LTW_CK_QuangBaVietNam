@@ -414,38 +414,6 @@
         }
     }
 
-    /* Toast */
-    .toast-container {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 9999;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .toast {
-        background: white;
-        padding: 16px 24px;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        border-left: 4px solid;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        animation: slideInRight 0.3s ease;
-    }
-
-    .toast.success { border-left-color: var(--success); color: var(--success); }
-    .toast.error { border-left-color: var(--danger); color: var(--danger); }
-    .toast.info { border-left-color: var(--sky-blue); color: var(--sky-blue); }
-
-    @@keyframes slideInRight {
-        from { transform: translateX(400px); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-    }
-
     .pagination {
         display: flex;
         justify-content: center;
@@ -584,8 +552,7 @@
     </div>
 </div>
 
-<!-- Toast Container -->
-<div class="toast-container" id="toastContainer"></div>
+
 
 <script>
     const PLACEHOLDER_IMG = 'https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&q=80&w=800';
@@ -1074,27 +1041,27 @@
         container.innerHTML = html;
     }
 
-    async function approveBlog(id) {
-        if (!confirm('Xác nhận duyệt bài viết này?')) return;
+    function approveBlog(id) {
+        showConfirmModal('Xác nhận duyệt', 'Xác nhận duyệt bài viết này?', async () => {
+            try {
+                const res = await fetch('/Blog/ApproveBlog', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id })
+                });
+                const data = await readJsonResponse(res);
 
-        try {
-            const res = await fetch('/Blog/ApproveBlog', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id })
-            });
-            const data = await readJsonResponse(res);
-
-            if (data.success) {
-                showToast('Duyệt thành công!', 'success');
-                loadStats();
-                loadBlogs(currentFilter, currentPage);
-            } else {
-                showToast(data.message, 'error');
+                if (data.success) {
+                    showToast('Thành công', 'Duyệt thành công!', 'success');
+                    loadStats();
+                    loadBlogs(currentFilter, currentPage);
+                } else {
+                    showToast('Thất bại', data.message, 'error');
+                }
+            } catch (e) {
+                showToast('Thất bại', 'Lỗi khi duyệt bài viết', 'error');
             }
-        } catch (e) {
-            showToast('Lỗi khi duyệt bài viết', 'error');
-        }
+        });
     }
 
     function openRejectModal(id) {
@@ -1175,48 +1142,31 @@
         }
     }
 
-    async function restoreBlog(id) {
-        if (!confirm('Khôi phục bài viết này về trạng thái hiển thị?')) return;
+    function restoreBlog(id) {
+        showConfirmModal('Khôi phục bài viết', 'Khôi phục bài viết này về trạng thái hiển thị?', async () => {
+            try {
+                const res = await fetch('/Blog/RestoreBlog', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id })
+                });
+                const data = await readJsonResponse(res);
 
-        try {
-            const res = await fetch('/Blog/RestoreBlog', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id })
-            });
-            const data = await readJsonResponse(res);
-
-            if (data.success) {
-                showToast('Khôi phục thành công!', 'success');
-                loadStats();
-                loadBlogs(currentFilter, currentPage);
-            } else {
-                showToast(data.message, 'error');
+                if (data.success) {
+                    showToast('Thành công', 'Khôi phục thành công!', 'success');
+                    loadStats();
+                    loadBlogs(currentFilter, currentPage);
+                } else {
+                    showToast('Thất bại', data.message, 'error');
+                }
+            } catch (e) {
+                showToast('Thất bại', 'Lỗi khi khôi phục bài viết', 'error');
             }
-        } catch (e) {
-            showToast('Lỗi khi khôi phục bài viết', 'error');
-        }
+        });
     }
 
     function viewDetails(id) {
         window.location.href = `/Admin/BlogDetail?id=${id}`;
-    }
-
-    function showToast(message, type = 'success') {
-        const container = document.getElementById('toastContainer');
-        const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
-        
-        const icon = type === 'success' ? '<i class="bi bi-check-circle"></i>' 
-            : type === 'error' ? '<i class="bi bi-x-circle"></i>'
-            : '<i class="bi bi-info-circle"></i>';
-
-        toast.innerHTML = `${icon}<span>${message}</span>`;
-        container.appendChild(toast);
-
-        setTimeout(() => {
-            toast.remove();
-        }, 3500);
     }
 
     document.getElementById('rejectModal').addEventListener('click', (e) => {

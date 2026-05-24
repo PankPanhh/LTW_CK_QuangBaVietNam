@@ -37,6 +37,9 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             return liked;
         }
 
+        /// <summary>
+        /// Tính khoảng cách đường chim bay (km) theo công thức Haversine.
+        /// </summary>
         private double Haversine(double lat1, double lon1, double lat2, double lon2)
         {
             const double R = 6371;
@@ -48,19 +51,31 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             return R * 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
         }
 
+        /// <summary>
+        /// Ước tính khoảng cách đường bộ thực tế bằng cách nhân đường chim bay
+        /// với hệ số bù địa hình (winding factor = 1.4).
+        /// Hệ số này phù hợp địa hình đồi núi Việt Nam (Đà Lạt, Sapa, Tây Bắc...).
+        /// Với địa hình đồng bằng thực tế ~1.2–1.3, núi cao ~1.5–1.7.
+        /// </summary>
+        private double RoadDistance(double lat1, double lon1, double lat2, double lon2)
+        {
+            const double WindingFactor = 1.4;
+            return Haversine(lat1, lon1, lat2, lon2) * WindingFactor;
+        }
+
         private string GetTransportIcon(double km)
         {
-            if (km < 10) return "🚶";
-            if (km <= 20) return "🛵";
-            if (km <= 150) return "🚗";
+            if (km < 2) return "🚶";
+            if (km <= 30) return "🛵";
+            if (km <= 200) return "🚗";
             return "✈️";
         }
 
         private string GetTransportLabel(double km)
         {
-            if (km < 10) return "Đi bộ";
-            if (km <= 20) return "Xe máy";
-            if (km <= 150) return "Ô tô";
+            if (km < 2) return "Đi bộ";
+            if (km <= 30) return "Xe máy";
+            if (km <= 200) return "Ô tô";
             return "Máy bay";
         }
 
@@ -243,8 +258,8 @@ namespace LTW_CK_QuangBaVietNam.Controllers
 
             if (prev?.DiaDiem != null && cur != null && prev.DiaDiem.ViDo.HasValue && cur.ViDo.HasValue)
             {
-                dist = Haversine((double)prev.DiaDiem.ViDo.Value, (double)prev.DiaDiem.KinhDo.Value,
-                                 (double)cur.ViDo.Value, (double)cur.KinhDo.Value);
+                dist = RoadDistance((double)prev.DiaDiem.ViDo.Value, (double)prev.DiaDiem.KinhDo.Value,
+                                   (double)cur.ViDo.Value, (double)cur.KinhDo.Value);
                 icon = GetTransportIcon(dist);
                 transport = GetTransportLabel(dist);
                 airport = GetAirportInfo(dist);
@@ -309,7 +324,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                     var a = items[i].DiaDiem; var b = items[i + 1].DiaDiem;
                     if (a?.ViDo.HasValue == true && b?.ViDo.HasValue == true)
                     {
-                        dist = Haversine((double)a.ViDo.Value, (double)a.KinhDo.Value, (double)b.ViDo.Value, (double)b.KinhDo.Value);
+                        dist = RoadDistance((double)a.ViDo.Value, (double)a.KinhDo.Value, (double)b.ViDo.Value, (double)b.KinhDo.Value);
                         icon = GetTransportIcon(dist); transport = GetTransportLabel(dist); airport = GetAirportInfo(dist);
                     }
                 }
@@ -345,7 +360,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                             var a = items[i].DiaDiem; var b = items[i + 1].DiaDiem;
                             if (a?.ViDo.HasValue == true && b?.ViDo.HasValue == true)
                             {
-                                dist = Haversine((double)a.ViDo.Value, (double)a.KinhDo.Value, (double)b.ViDo.Value, (double)b.KinhDo.Value);
+                                dist = RoadDistance((double)a.ViDo.Value, (double)a.KinhDo.Value, (double)b.ViDo.Value, (double)b.KinhDo.Value);
                                 icon = GetTransportIcon(dist); tr = GetTransportLabel(dist); ap = GetAirportInfo(dist);
                             }
                         }
@@ -694,7 +709,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                 {
                     double dist = 0;
                     if (current.ViDo.HasValue && d.ViDo.HasValue)
-                        dist = Haversine((double)current.ViDo, (double)current.KinhDo, (double)d.ViDo, (double)d.KinhDo);
+                        dist = RoadDistance((double)current.ViDo, (double)current.KinhDo, (double)d.ViDo, (double)d.KinhDo);
 
                     return new
                     {
@@ -778,7 +793,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                 var cur = db.DiaDiems.FirstOrDefault(x => x.MaDiaDiem == idDiaDiem);
                 if (prev?.ViDo.HasValue == true && cur?.ViDo.HasValue == true)
                 {
-                    dist = Haversine((double)prev.ViDo, (double)prev.KinhDo, (double)cur.ViDo, (double)cur.KinhDo);
+                    dist = RoadDistance((double)prev.ViDo, (double)prev.KinhDo, (double)cur.ViDo, (double)cur.KinhDo);
                     icon = GetTransportIcon(dist);
                     transport = GetTransportLabel(dist);
                     airport = GetAirportInfo(dist);
@@ -925,7 +940,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
 
             double dist = 0;
             if (from.ViDo.HasValue && to.ViDo.HasValue)
-                dist = Haversine((double)from.ViDo, (double)from.KinhDo, (double)to.ViDo, (double)to.KinhDo);
+                dist = RoadDistance((double)from.ViDo, (double)from.KinhDo, (double)to.ViDo, (double)to.KinhDo);
 
             // Airport lookup by province
             var airportMap = new Dictionary<string, string>(System.StringComparer.OrdinalIgnoreCase)

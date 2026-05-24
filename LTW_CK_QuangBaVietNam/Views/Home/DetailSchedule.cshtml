@@ -1171,14 +1171,15 @@ function doSave() {
 //  CLONE
 // ═══════════════════════════════════════════════════════════════
 function doClone() {
-    if (!confirm('Tạo bản sao lịch trình này vào tài khoản của bạn?')) return;
-    fetch('/Itinerary/Clone', {
-        method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'},
-        body:`idLichTrinh=${SCHEDULE_ID}`
-    }).then(r=>r.json()).then(d => {
-        if (!d.success) { toast('err','Lỗi',d.message); return; }
-        toast('ok','Đã nhân bản!','Chuyển sang trang chỉnh sửa...');
-        setTimeout(()=>window.location.href=`/Home/CreateSchedule?edit=${d.id}`, 1500);
+    showConfirmModal('Xác nhận nhân bản', 'Tạo bản sao lịch trình này vào tài khoản của bạn?', () => {
+        fetch('/Itinerary/Clone', {
+            method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'},
+            body:`idLichTrinh=${SCHEDULE_ID}`
+        }).then(r=>r.json()).then(d => {
+            if (!d.success) { toast('err','Lỗi',d.message); return; }
+            toast('ok','Đã nhân bản!','Chuyển sang trang chỉnh sửa...');
+            setTimeout(()=>window.location.href=`/Home/CreateSchedule?edit=${d.id}`, 1500);
+        });
     });
 }
 
@@ -1209,14 +1210,15 @@ function updatePublicBtn(status) {
 //  DELETE (owner only)
 // ═══════════════════════════════════════════════════════════════
 function doDelete() {
-    if (!confirm('Xóa lịch trình này? Không thể hoàn tác.')) return;
-    fetch('/Itinerary/DeleteSchedule', {
-        method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'},
-        body:`idLichTrinh=${SCHEDULE_ID}`
-    }).then(r=>r.json()).then(d => {
-        if (d.success) { toast('ok','Đã xóa',''); setTimeout(()=>window.location.href='/Home/Schedule',1400); }
-        else toast('err','Lỗi',d.message);
-    });
+    showConfirmModal('Xóa lịch trình', 'Xóa lịch trình này? Hành động này không thể hoàn tác.', () => {
+        fetch('/Itinerary/DeleteSchedule', {
+            method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'},
+            body:`idLichTrinh=${SCHEDULE_ID}`
+        }).then(r=>r.json()).then(d => {
+            if (d.success) { toast('ok','Đã xóa',''); setTimeout(()=>window.location.href='/Home/Schedule',1400); }
+            else toast('err','Lỗi',d.message);
+        });
+    }, true);
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1253,18 +1255,19 @@ function confirmEdit() {
 //  DELETE PLACE (owner only)
 // ═══════════════════════════════════════════════════════════════
 function doDeletePlace(idChiTiet) {
-    if (!confirm('Xóa địa điểm này khỏi lịch trình?')) return;
-    fetch('/Itinerary/DeletePlace', {
-        method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'},
-        body:`idChiTiet=${idChiTiet}`
-    }).then(r=>r.json()).then(d => {
-        if (!d.success) { toast('err','Lỗi',d.message); return; }
-        const el = document.getElementById(`lcard-${idChiTiet}`);
-        if (el) el.style.animation = 'slideOutR .3s ease-out';
-        setTimeout(()=>{ if(el) el.remove(); }, 280);
-        toast('ok','Đã xóa địa điểm','');
-        setTimeout(()=>loadDetail(SCHEDULE_ID), 500);
-    });
+    showConfirmModal('Xóa địa điểm', 'Bạn có chắc chắn muốn xóa địa điểm này khỏi lịch trình?', () => {
+        fetch('/Itinerary/DeletePlace', {
+            method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'},
+            body:`idChiTiet=${idChiTiet}`
+        }).then(r=>r.json()).then(d => {
+            if (!d.success) { toast('err','Lỗi',d.message); return; }
+            const el = document.getElementById(`lcard-${idChiTiet}`);
+            if (el) el.style.animation = 'slideOutR .3s ease-out';
+            setTimeout(()=>{ if(el) el.remove(); }, 280);
+            toast('ok','Đã xóa địa điểm','');
+            setTimeout(()=>loadDetail(SCHEDULE_ID), 500);
+        });
+    }, true);
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1336,15 +1339,8 @@ function toggleMapMode() {
 
 function focusMap(idChiTiet) {
     const p = findPlace(idChiTiet);
-    if (!p) return;
-    if (!mapVisible) toggleMapMode();
-    if (!mapObj || !window.google || !p.viDo || !p.kinhDo) return;
-    setTimeout(()=>{
-        mapObj.setCenter({lat:parseFloat(p.viDo),lng:parseFloat(p.kinhDo)});
-        mapObj.setZoom(14);
-        mapMarkers.find(m=>m.getTitle()===p.tenDiaDiem)?.setAnimation(google.maps.Animation.BOUNCE);
-        setTimeout(()=>mapMarkers.find(m=>m.getTitle()===p.tenDiaDiem)?.setAnimation(null),2000);
-    },300);
+    if (!p || !p.maDiaDiem) return;
+    window.location.href = `/Home/Map?placeId=${p.maDiaDiem}`;
 }
 
 function initMapWhenReady(days) {
