@@ -1962,21 +1962,22 @@
     //  REMOVE DAY
     // ═══════════════════════════════════════════════════════════════
     function removeDay(n) {
-        if (!confirm(`Xóa Ngày ${n} khỏi lịch trình ? `)) return;
-        const el = document.getElementById(`day - ${n} `);
-        if (el) { el.style.animation = 'fadeOutSc .3s ease-out'; setTimeout(() => el.remove(), 280); }
-        // Remove from G.dayData and reorder
-        delete G.dayData[n];
-        // Re-render remaining days
-        const c = document.getElementById('daysContainer'); c.innerHTML = '';
-        let newIdx = 1; const newData = {};
-        for (let i = 1; i <= G.days; i++) {
-            if (!G.dayData[i]) continue;
-            newData[newIdx] = G.dayData[i]; newIdx++;
-        }
-        G.days = newIdx - 1; G.dayData = newData;
-        renderAllDays();
-        markUnsaved();
+        showConfirmModal('Xóa ngày', `Xóa Ngày ${n} khỏi lịch trình?`, () => {
+            const el = document.getElementById(`day - ${n} `);
+            if (el) { el.style.animation = 'fadeOutSc .3s ease-out'; setTimeout(() => el.remove(), 280); }
+            // Remove from G.dayData and reorder
+            delete G.dayData[n];
+            // Re-render remaining days
+            const c = document.getElementById('daysContainer'); c.innerHTML = '';
+            let newIdx = 1; const newData = {};
+            for (let i = 1; i <= G.days; i++) {
+                if (!G.dayData[i]) continue;
+                newData[newIdx] = G.dayData[i]; newIdx++;
+            }
+            G.days = newIdx - 1; G.dayData = newData;
+            renderAllDays();
+            markUnsaved();
+        }, true);
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -2170,20 +2171,21 @@
     //  DELETE PLACE
     // ═══════════════════════════════════════════════════════════════
     function doDeletePlace(idChiTiet, elId, dayNum) {
-        if (!confirm('Xóa địa điểm này?')) return;
-        fetch('/Itinerary/DeletePlace', {
-            method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `idChiTiet=${idChiTiet}`
-        }).then(r => r.json()).then(d => {
-            if (!d.success) { toast('err', 'Lỗi', d.message); return; }
-            const el = document.getElementById(elId);
-            if (el) { el.style.animation = 'fadeOutSc .25s ease-out'; setTimeout(() => el.remove(), 240); }
-            const dd = G.dayData[dayNum];
-            if (dd) dd.places = dd.places.filter(p => p.idChiTiet !== idChiTiet);
-            setTimeout(() => refreshDayBody(dayNum), 300);
-            refreshMapMarkers();
-            toast('ok', 'Đã xóa', '');
-        });
+        showConfirmModal('Xóa địa điểm', 'Bạn có chắc chắn muốn xóa địa điểm này?', () => {
+            fetch('/Itinerary/DeletePlace', {
+                method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `idChiTiet=${idChiTiet}`
+            }).then(r => r.json()).then(d => {
+                if (!d.success) { toast('err', 'Lỗi', d.message); return; }
+                const el = document.getElementById(elId);
+                if (el) { el.style.animation = 'fadeOutSc .25s ease-out'; setTimeout(() => el.remove(), 240); }
+                const dd = G.dayData[dayNum];
+                if (dd) dd.places = dd.places.filter(p => p.idChiTiet !== idChiTiet);
+                setTimeout(() => refreshDayBody(dayNum), 300);
+                refreshMapMarkers();
+                toast('ok', 'Đã xóa', '');
+            });
+        }, true);
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -2221,9 +2223,10 @@
         toast('ok', 'Đã thêm ghi chú', '');
     }
     function removeNote(elId, n, ni) {
-        if (!confirm('Xóa ghi chú?')) return;
-        G.dayData[n].notes.splice(ni, 1);
-        refreshDayBody(n);
+        showConfirmModal('Xóa ghi chú', 'Bạn có chắc chắn muốn xóa ghi chú này?', () => {
+            G.dayData[n].notes.splice(ni, 1);
+            refreshDayBody(n);
+        }, true);
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -2280,14 +2283,15 @@
     // ═══════════════════════════════════════════════════════════════
     function deleteSchedule() {
         if (!G.id) return;
-        if (!confirm('Xóa toàn bộ lịch trình này? Hành động không thể hoàn tác.')) return;
-        fetch('/Itinerary/DeleteSchedule', {
-            method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `idLichTrinh=${G.id}`
-        }).then(r => r.json()).then(d => {
-            if (d.success) { toast('ok', 'Đã xóa', 'Chuyển hướng...'); setTimeout(() => window.location.href = '/Home/Schedule', 1500); }
-            else toast('err', 'Lỗi', d.message);
-        });
+        showConfirmModal('Xóa lịch trình', 'Xóa toàn bộ lịch trình này? Hành động không thể hoàn tác.', () => {
+            fetch('/Itinerary/DeleteSchedule', {
+                method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `idLichTrinh=${G.id}`
+            }).then(r => r.json()).then(d => {
+                if (d.success) { toast('ok', 'Đã xóa', 'Chuyển hướng...'); setTimeout(() => window.location.href = '/Home/Schedule', 1500); }
+                else toast('err', 'Lỗi', d.message);
+            });
+        }, true);
     }
 
     // ═══════════════════════════════════════════════════════════════

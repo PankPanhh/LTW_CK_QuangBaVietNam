@@ -1,0 +1,590 @@
+@{
+    ViewBag.Title = "Đô Thị Việt Nam – Nhịp Sống Hiện Đại";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    @@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap');
+
+    /* ===== ĐÔ THỊ – MODERN URBAN TRAVEL ===== */
+    :root {
+        --dt-dark:   #050c18;
+        --dt-navy:   #0a1628;
+        --dt-blue:   #0f2850;
+        --dt-cyan:   #06b6d4;
+        --dt-sky:    #0EA5E9;
+        --dt-neon:   #22d3ee;
+        --dt-accent: #f59e0b;
+        --dt-glass:  rgba(6,182,212,0.08);
+        --radius-card: 22px;
+        --shadow-card: 0 8px 48px rgba(0,0,0,0.4);
+        --transition: all 0.38s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .dt-page {
+        background: var(--dt-dark); color: #f0f9ff; overflow-x: hidden;
+        font-family: 'Be Vietnam Pro', sans-serif;
+    }
+
+    /* ===== HERO ===== */
+    .dt-hero {
+        position: relative; height: 100vh; min-height: 680px;
+        display: flex; align-items: center; justify-content: center;
+        overflow: hidden;
+    }
+    .dt-hero-bg {
+        position: absolute; inset: 0;
+        background: url('https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=1920&q=85') center/cover no-repeat;
+        animation: parallaxHero 22s ease-in-out infinite alternate;
+    }
+
+    /* Ho Chi Minh City skyline photo */
+    .dt-hero-bg {
+        background-image: url('https://images.unsplash.com/photo-1555899434-94d1368aa7af?w=1920&q=85');
+    }
+    @@keyframes parallaxHero { from{transform:scale(1.04) translateY(0)} to{transform:scale(1.1) translateY(-20px)} }
+    .dt-hero-overlay {
+        position: absolute; inset: 0;
+        background: linear-gradient(160deg,
+            rgba(5,12,24,0.88) 0%,
+            rgba(10,22,40,0.65) 50%,
+            rgba(6,182,212,0.12) 100%);
+    }
+    /* Neon glow effects */
+    .dt-hero-overlay::after {
+        content: ''; position: absolute;
+        bottom: 0; left: 0; right: 0; height: 35%;
+        background: linear-gradient(to top, rgba(5,12,24,1), transparent);
+    }
+    .dt-hero-content {
+        position: relative; z-index: 2;
+        text-align: center; padding: 0 1.5rem; max-width: 880px;
+    }
+    .dt-hero-badge {
+        display: inline-flex; align-items: center; gap: 0.5rem;
+        background: rgba(6,182,212,0.15);
+        border: 1px solid rgba(6,182,212,0.45);
+        backdrop-filter: blur(12px);
+        border-radius: 999px; padding: 0.45rem 1.25rem;
+        font-size: 0.8rem; font-weight: 600; letter-spacing: 0.12em;
+        text-transform: uppercase; color: #67e8f9;
+        margin-bottom: 1.5rem;
+        animation: fadeUp 0.8s 0.2s both;
+    }
+    .dt-hero-title {
+        font-family: 'Be Vietnam Pro', sans-serif;
+        font-size: clamp(2.6rem, 6vw, 5rem);
+        font-weight: 900; line-height: 1.15;
+        color: #fff; margin-bottom: 1.25rem;
+        letter-spacing: -0.02em;
+        word-break: keep-all;
+        animation: fadeUp 0.8s 0.4s both;
+    }
+    .dt-hero-title em {
+        font-style: normal;
+        background: linear-gradient(90deg, #22d3ee, #0EA5E9, #818cf8);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .dt-hero-sub {
+        font-family: 'Be Vietnam Pro', sans-serif;
+        font-size: clamp(1rem, 2vw, 1.15rem);
+        color: rgba(240,249,255,0.75);
+        max-width: 560px; margin: 0 auto 2.5rem; line-height: 1.8;
+        font-weight: 400;
+        animation: fadeUp 0.8s 0.6s both;
+    }
+    .dt-hero-cta {
+        display: inline-flex; align-items: center; gap: 0.6rem;
+        background: linear-gradient(135deg, #0EA5E9, #06b6d4);
+        color: #fff; font-weight: 800; font-size: 1rem;
+        padding: 0.9rem 2.2rem; border-radius: 999px;
+        text-decoration: none;
+        box-shadow: 0 6px 32px rgba(6,182,212,0.45);
+        transition: var(--transition);
+        animation: fadeUp 0.8s 0.8s both;
+    }
+    .dt-hero-cta:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 42px rgba(6,182,212,0.65);
+        color: #fff;
+    }
+    .dt-hero-scroll {
+        position: absolute; bottom: 2.2rem; left: 50%;
+        transform: translateX(-50%); z-index: 3;
+        display: flex; flex-direction: column; align-items: center;
+        gap: 0.5rem; color: rgba(255,255,255,0.5); font-size: 0.75rem;
+        animation: bounce 2.4s infinite;
+    }
+    .dt-hero-scroll span { display:block; width:1px; height:48px;
+        background: linear-gradient(to bottom, rgba(6,182,212,0.8), transparent); }
+    @@keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(8px)} }
+
+    /* ===== SECTION COMMON ===== */
+    .dt-section { padding: 7rem 0; }
+    .dt-section-label {
+        font-size: 0.75rem; font-weight: 700; letter-spacing: 0.18em;
+        text-transform: uppercase; color: #22d3ee; margin-bottom: 0.6rem;
+    }
+    .dt-section-title {
+        font-size: clamp(1.8rem, 4vw, 2.9rem);
+        font-weight: 800; line-height: 1.15; color: #fff; margin-bottom: 1rem;
+    }
+    .dt-section-desc {
+        color: rgba(186,230,253,0.8);
+        font-size: 1.05rem; line-height: 1.75; max-width: 600px;
+    }
+
+    /* ===== CITY HIGHLIGHTS – ASYMMETRIC DASHBOARD ===== */
+    .dt-cities { background: linear-gradient(180deg, #050c18, #07111f); }
+    .dt-city-grid {
+        display: grid;
+        grid-template-columns: 1.6fr 1fr;
+        grid-template-rows: auto auto;
+        gap: 1.5rem;
+    }
+    @@media(max-width:768px){ .dt-city-grid { grid-template-columns: 1fr; } }
+    .dt-city-card {
+        position: relative; border-radius: var(--radius-card);
+        overflow: hidden; cursor: pointer;
+        box-shadow: var(--shadow-card);
+        transition: var(--transition);
+    }
+    .dt-city-card:hover { transform: translateY(-6px) scale(1.01); box-shadow: 0 24px 64px rgba(0,0,0,0.5); }
+    .dt-city-card.big { grid-row: span 2; min-height: 560px; }
+    .dt-city-card.small { min-height: 260px; }
+    .dt-city-card img {
+        width:100%; height:100%; object-fit:cover;
+        position: absolute; inset: 0;
+        transition: transform 0.7s ease;
+    }
+    .dt-city-card:hover img { transform: scale(1.08); }
+    .dt-city-overlay {
+        position: absolute; inset: 0;
+        background: linear-gradient(to top, rgba(5,12,24,0.92) 0%, rgba(5,12,24,0.2) 55%, transparent 100%);
+        transition: var(--transition);
+    }
+    .dt-city-card:hover .dt-city-overlay { background: linear-gradient(to top, rgba(5,12,24,0.95) 0%, rgba(6,182,212,0.1) 60%, transparent 100%); }
+    .dt-city-content {
+        position: absolute; bottom: 0; left: 0; right: 0; padding: 2rem;
+    }
+    .dt-city-tag {
+        display: inline-block; margin-bottom: 0.6rem;
+        background: rgba(6,182,212,0.2); backdrop-filter: blur(8px);
+        border: 1px solid rgba(6,182,212,0.4);
+        border-radius: 999px; padding: 0.25rem 0.8rem;
+        font-size: 0.72rem; font-weight: 700; color: #67e8f9;
+        text-transform: uppercase; letter-spacing: 0.1em;
+    }
+    .dt-city-content h3 { font-size: 1.6rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem; }
+    .dt-city-content.small h3 { font-size: 1.2rem; }
+    .dt-city-content p { font-size: 0.88rem; color: rgba(186,230,253,0.78); line-height: 1.6; margin-bottom: 1rem; }
+    .dt-city-btn {
+        display: inline-flex; align-items: center; gap: 0.4rem;
+        background: rgba(6,182,212,0.2); backdrop-filter: blur(8px);
+        border: 1px solid rgba(6,182,212,0.4);
+        color: #22d3ee; font-size: 0.82rem; font-weight: 700;
+        padding: 0.5rem 1.1rem; border-radius: 999px;
+        text-decoration: none; transition: var(--transition);
+        opacity: 0; transform: translateY(8px);
+    }
+    .dt-city-card:hover .dt-city-btn { opacity: 1; transform: translateY(0); }
+    .dt-city-btn:hover { background: #06b6d4; color: #fff; }
+
+    /* ===== LIFESTYLE GRID ===== */
+    .dt-lifestyle { background: linear-gradient(180deg, #07111f, #050c18); }
+    .dt-lifestyle-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+    }
+    @@media(max-width:992px){ .dt-lifestyle-grid { grid-template-columns: repeat(2, 1fr); } }
+    @@media(max-width:576px){ .dt-lifestyle-grid { grid-template-columns: 1fr 1fr; } }
+    .dt-life-card {
+        background: rgba(6,182,212,0.07);
+        border: 1px solid rgba(6,182,212,0.18);
+        backdrop-filter: blur(16px);
+        border-radius: var(--radius-card);
+        padding: 1.8rem 1.4rem;
+        text-align: center;
+        cursor: pointer;
+        transition: var(--transition);
+        position: relative; overflow: hidden;
+    }
+    .dt-life-card::before {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(135deg, rgba(6,182,212,0.08), transparent);
+        opacity: 0; transition: var(--transition);
+    }
+    .dt-life-card:hover { border-color: rgba(6,182,212,0.5); transform: translateY(-6px); box-shadow: 0 12px 40px rgba(6,182,212,0.15); }
+    .dt-life-card:hover::before { opacity: 1; }
+    .dt-life-icon {
+        width: 56px; height: 56px; margin: 0 auto 1.1rem;
+        display: flex; align-items: center; justify-content: center;
+        border-radius: 16px;
+        background: rgba(6,182,212,0.15);
+        border: 1px solid rgba(6,182,212,0.3);
+        font-size: 1.45rem; color: #22d3ee;
+        transition: var(--transition);
+    }
+    .dt-life-card:hover .dt-life-icon { background: #06b6d4; color: #fff; border-color: #06b6d4; }
+    .dt-life-card h4 { font-size: 0.92rem; font-weight: 700; color: #fff; margin-bottom: 0.35rem; }
+    .dt-life-card p { font-size: 0.78rem; color: rgba(186,230,253,0.65); line-height: 1.5; margin: 0; }
+
+    /* ===== MAGAZINE ROW ===== */
+    .dt-magazine { background: linear-gradient(180deg, #050c18, #07111f); }
+    .dt-mag-row {
+        display: grid;
+        grid-template-columns: 58% 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    .dt-mag-row.reverse { grid-template-columns: 1fr 58%; }
+    @@media(max-width:768px){
+        .dt-mag-row, .dt-mag-row.reverse { grid-template-columns: 1fr; }
+        .dt-mag-row.reverse .dt-mag-body { order: 1; }
+        .dt-mag-row.reverse .dt-mag-img { order: 2; }
+    }
+    .dt-mag-img {
+        position: relative; border-radius: var(--radius-card);
+        overflow: hidden; min-height: 320px;
+        box-shadow: var(--shadow-card);
+    }
+    .dt-mag-img img { width:100%; height:100%; object-fit:cover; transition:transform 0.7s; }
+    .dt-mag-row:hover .dt-mag-img img { transform:scale(1.06); }
+    .dt-mag-body {
+        background: rgba(6,182,212,0.06);
+        border: 1px solid rgba(6,182,212,0.15);
+        backdrop-filter: blur(16px);
+        border-radius: var(--radius-card);
+        padding: 2.5rem 2.2rem;
+        display: flex; flex-direction: column; justify-content: center;
+        transition: var(--transition);
+    }
+    .dt-mag-row:hover .dt-mag-body { border-color: rgba(6,182,212,0.35); }
+    .dt-mag-body h3 { font-size: 1.45rem; font-weight: 800; color: #fff; margin-bottom: 1rem; line-height: 1.25; }
+    .dt-mag-body p { color: rgba(186,230,253,0.78); font-size: 0.95rem; line-height: 1.8; margin-bottom: 1.5rem; }
+    .dt-mag-tags { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-bottom: 1.5rem; }
+    .dt-mag-tag {
+        background: rgba(6,182,212,0.14); border: 1px solid rgba(6,182,212,0.3);
+        border-radius: 999px; padding: 0.25rem 0.8rem;
+        font-size: 0.76rem; font-weight: 600; color: #67e8f9;
+    }
+    .dt-btn {
+        display: inline-flex; align-items: center; gap: 0.5rem;
+        background: transparent;
+        border: 1.5px solid rgba(6,182,212,0.55);
+        color: #22d3ee; font-weight: 700; font-size: 0.9rem;
+        padding: 0.7rem 1.6rem; border-radius: 999px;
+        text-decoration: none; transition: var(--transition);
+        width: fit-content; cursor: pointer;
+    }
+    .dt-btn:hover { background: #06b6d4; border-color: #06b6d4; color: #fff; transform: translateX(4px); }
+
+    /* ===== NEON STATS ===== */
+    .dt-stats {
+        background: linear-gradient(135deg, #07111f, #0a1628);
+        border-top: 1px solid rgba(6,182,212,0.18);
+        border-bottom: 1px solid rgba(6,182,212,0.18);
+        padding: 3.5rem 0;
+    }
+    .dt-stat { text-align: center; padding: 1rem; }
+    .dt-stat-num {
+        font-size: 3rem; font-weight: 900; line-height: 1;
+        background: linear-gradient(90deg, #22d3ee, #818cf8);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .dt-stat-label { font-size: 0.85rem; color: rgba(186,230,253,0.65); margin-top: 0.4rem; }
+
+    /* ===== CTA BANNER ===== */
+    .dt-banner {
+        position: relative; padding: 8rem 0; overflow: hidden;
+    }
+    .dt-banner-bg {
+        position: absolute; inset: 0;
+        background: url('https://images.unsplash.com/photo-1555899434-94d1368aa7af?w=1920&q=80') center/cover;
+        filter: brightness(0.45);
+    }
+    .dt-banner::before {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(135deg, rgba(5,12,24,0.75), rgba(6,182,212,0.15));
+        z-index: 1;
+    }
+    .dt-banner-content { position: relative; z-index: 2; }
+
+    @@keyframes fadeUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+    .fade-up { opacity:0; transform:translateY(35px); transition:opacity 0.7s ease, transform 0.7s ease; }
+    .fade-up.visible { opacity:1; transform:translateY(0); }
+</style>
+
+<div class="dt-page">
+
+    <!-- ===== HERO ===== -->
+    <section class="dt-hero">
+        <div class="dt-hero-bg"></div>
+        <div class="dt-hero-overlay"></div>
+        <div class="dt-hero-content">
+            <div class="dt-hero-badge">
+                <i class="bi bi-building"></i> Đô Thị Việt Nam
+            </div>
+            <h1 class="dt-hero-title">
+                <em>Thành phố không ngủ</em> — nhịp sống Việt hiện đại
+            </h1>
+            <p class="dt-hero-sub">
+                Hà Nội cổ kính trầm mặc, Sài Gòn sôi động không ngơi, Đà Nẵng trẻ trung bên sóng biển — mỗi đô thị Việt Nam là một thế giới riêng đáng để khám phá.
+            </p>
+            <a href="#do-thi-cities" class="dt-hero-cta">
+                <i class="bi bi-buildings"></i> Khám phá đô thị
+            </a>
+        </div>
+        <div class="dt-hero-scroll">
+            <span></span>
+            Cuộn xuống
+        </div>
+    </section>
+
+    <!-- ===== STATS ===== -->
+    <div class="dt-stats fade-up">
+        <div class="container">
+            <div class="row g-0">
+                <div class="col-6 col-md-3 dt-stat">
+                    <div class="dt-stat-num">5</div>
+                    <div class="dt-stat-label">Thành phố trực thuộc TW</div>
+                </div>
+                <div class="col-6 col-md-3 dt-stat">
+                    <div class="dt-stat-num">100M+</div>
+                    <div class="dt-stat-label">Dân số Việt Nam</div>
+                </div>
+                <div class="col-6 col-md-3 dt-stat">
+                    <div class="dt-stat-num">35%</div>
+                    <div class="dt-stat-label">Tỷ lệ đô thị hóa</div>
+                </div>
+                <div class="col-6 col-md-3 dt-stat">
+                    <div class="dt-stat-num">50+</div>
+                    <div class="dt-stat-label">Tòa nhà cao tầng mới</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== CITY CARDS – ASYMMETRIC ===== -->
+    <section class="dt-section dt-cities" id="do-thi-cities">
+        <div class="container">
+            <div class="text-center mb-5 fade-up">
+                <div class="dt-section-label">Thành phố nổi bật</div>
+                <h2 class="dt-section-title">Đô thị Việt Nam — Năng động & đặc sắc</h2>
+                <p class="dt-section-desc mx-auto">Từ nghìn năm lịch sử đến nhịp đập công nghệ hiện đại, mỗi đô thị Việt là một hành trình khám phá không hồi kết.</p>
+            </div>
+            <div class="dt-city-grid fade-up">
+                <!-- Big card: Hà Nội -->
+                <div class="dt-city-card big">
+                    <img src="https://images.unsplash.com/photo-1509030450996-dd1a26dda07a?w=900&q=85" alt="Hà Nội">
+                    <div class="dt-city-overlay"></div>
+                    <div class="dt-city-content">
+                        <span class="dt-city-tag"><i class="bi bi-star-fill me-1"></i>Thủ đô</span>
+                        <h3>Hà Nội</h3>
+                        <p>Nghìn năm văn hiến gói trong phố cổ 36 phường, Hồ Gươm và kiến trúc Pháp cổ kính. Hà Nội vừa trầm mặc vừa sôi động theo nhịp của người trẻ.</p>
+                        <a href="#" class="dt-city-btn"><i class="bi bi-arrow-right"></i>Khám phá Hà Nội</a>
+                    </div>
+                </div>
+                <!-- Small: Sài Gòn -->
+                <div class="dt-city-card small">
+                    <img src="https://images.unsplash.com/photo-1555899434-94d1368aa7af?w=700&q=80" alt="TP HCM">
+                    <div class="dt-city-overlay"></div>
+                    <div class="dt-city-content small">
+                        <span class="dt-city-tag">TP.HCM</span>
+                        <h3>Sài Gòn</h3>
+                        <p>Thành phố không ngủ, năng động nhất cả nước với skyline ấn tượng và nhịp sống tốc độ cao.</p>
+                        <a href="#" class="dt-city-btn"><i class="bi bi-arrow-right"></i>Khám phá</a>
+                    </div>
+                </div>
+                <!-- Small: Đà Nẵng -->
+                <div class="dt-city-card small">
+                    <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=700&q=80" alt="Đà Nẵng">
+                    <div class="dt-city-overlay"></div>
+                    <div class="dt-city-content small">
+                        <span class="dt-city-tag">Miền Trung</span>
+                        <h3>Đà Nẵng</h3>
+                        <p>Thành phố đáng sống bậc nhất — biển đẹp, cầu ấn tượng và văn hóa phong phú.</p>
+                        <a href="#" class="dt-city-btn"><i class="bi bi-arrow-right"></i>Khám phá</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Second row: more cities -->
+            <div class="row g-3 mt-3 fade-up">
+                <div class="col-md-4">
+                    <div class="dt-city-card" style="min-height:220px">
+                        <img src="https://images.unsplash.com/photo-1523731407965-2430cd12f5e4?w=700&q=80" alt="Cần Thơ">
+                        <div class="dt-city-overlay"></div>
+                        <div class="dt-city-content small">
+                            <span class="dt-city-tag">Miền Nam</span>
+                            <h3>Cần Thơ</h3>
+                            <a href="#" class="dt-city-btn"><i class="bi bi-arrow-right"></i>Xem</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="dt-city-card" style="min-height:220px">
+                        <img src="https://images.unsplash.com/photo-1540541338287-41700207dee6?w=700&q=80" alt="Huế">
+                        <div class="dt-city-overlay"></div>
+                        <div class="dt-city-content small">
+                            <span class="dt-city-tag">Cố đô</span>
+                            <h3>Huế</h3>
+                            <a href="#" class="dt-city-btn"><i class="bi bi-arrow-right"></i>Xem</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="dt-city-card" style="min-height:220px">
+                        <img src="https://images.unsplash.com/photo-1528127269322-539801943592?w=700&q=80" alt="Hải Phòng">
+                        <div class="dt-city-overlay"></div>
+                        <div class="dt-city-content small">
+                            <span class="dt-city-tag">Miền Bắc</span>
+                            <h3>Hải Phòng</h3>
+                            <a href="#" class="dt-city-btn"><i class="bi bi-arrow-right"></i>Xem</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== LIFESTYLE CATEGORIES ===== -->
+    <section class="dt-section dt-lifestyle">
+        <div class="container">
+            <div class="text-center mb-5 fade-up">
+                <div class="dt-section-label">Trải nghiệm đô thị</div>
+                <h2 class="dt-section-title">Nhịp sống thành phố</h2>
+            </div>
+            <div class="dt-lifestyle-grid fade-up">
+                <div class="dt-life-card">
+                    <div class="dt-life-icon"><i class="bi bi-moon-stars-fill"></i></div>
+                    <h4>Nightlife</h4>
+                    <p>Phố đi bộ, bar sky, rooftop sang chảnh</p>
+                </div>
+                <div class="dt-life-card">
+                    <div class="dt-life-icon"><i class="bi bi-cup-hot-fill"></i></div>
+                    <h4>Cà phê</h4>
+                    <p>Cà phê cóc, cà phê sân thượng, third-wave</p>
+                </div>
+                <div class="dt-life-card">
+                    <div class="dt-life-icon"><i class="bi bi-bag-heart-fill"></i></div>
+                    <h4>Mua sắm</h4>
+                    <p>Mall, chợ truyền thống, thương hiệu local</p>
+                </div>
+                <div class="dt-life-card">
+                    <div class="dt-life-icon"><i class="bi bi-palette-fill"></i></div>
+                    <h4>Nghệ thuật</h4>
+                    <p>Gallery, graffiti, triển lãm nghệ thuật</p>
+                </div>
+                <div class="dt-life-card">
+                    <div class="dt-life-icon"><i class="bi bi-bicycle"></i></div>
+                    <h4>Khám phá xe đạp</h4>
+                    <p>Tour xe đạp khám phá phố cổ và làng ven đô</p>
+                </div>
+                <div class="dt-life-card">
+                    <div class="dt-life-icon"><i class="bi bi-camera-fill"></i></div>
+                    <h4>Nhiếp ảnh đô thị</h4>
+                    <p>Street photography, skyline, kiến trúc đặc sắc</p>
+                </div>
+                <div class="dt-life-card">
+                    <div class="dt-life-icon"><i class="bi bi-music-note-beamed"></i></div>
+                    <h4>Âm nhạc & Festival</h4>
+                    <p>Live music, indie festival, concert quốc tế</p>
+                </div>
+                <div class="dt-life-card">
+                    <div class="dt-life-icon"><i class="bi bi-signpost-split-fill"></i></div>
+                    <h4>Phố đi bộ</h4>
+                    <p>Hồ Gươm, Nguyễn Huệ và các tuyến phố văn hóa</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== MAGAZINE FEATURES ===== -->
+    <section class="dt-section dt-magazine">
+        <div class="container">
+            <div class="text-center mb-5 fade-up">
+                <div class="dt-section-label">Câu chuyện đô thị</div>
+                <h2 class="dt-section-title">Hà Nội & Sài Gòn — Hai thế giới</h2>
+            </div>
+
+            <div class="dt-mag-row fade-up">
+                <div class="dt-mag-img">
+                    <img src="https://images.unsplash.com/photo-1509030450996-dd1a26dda07a?w=900&q=80" alt="Hà Nội phố cổ">
+                </div>
+                <div class="dt-mag-body">
+                    <h3>Hà Nội — Cổ kính & đang chuyển mình</h3>
+                    <p>Phố cổ Hà Nội 36 phường với hàng cây cổ thụ và kiến trúc Pháp vẫn còn giữ được linh hồn nguyên vẹn. Bên cạnh đó, những tòa nhà kính hiện đại mọc lên nhanh chóng tạo nên sự tương phản thú vị giữa cũ và mới.</p>
+                    <div class="dt-mag-tags">
+                        <span class="dt-mag-tag">Phố cổ</span>
+                        <span class="dt-mag-tag">Hồ Gươm</span>
+                        <span class="dt-mag-tag">Lăng Bác</span>
+                        <span class="dt-mag-tag">Văn Miếu</span>
+                    </div>
+                    <a href="#" class="dt-btn">Khám phá Hà Nội <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <div class="dt-mag-row reverse fade-up">
+                <div class="dt-mag-body">
+                    <h3>Sài Gòn — Không ngủ & không ngừng</h3>
+                    <p>TP.HCM là trung tâm kinh tế sôi động nhất cả nước. Từ quận 1 nhộn nhịp đến con hẻm nhỏ ở Bình Thạnh, mọi góc phố đều mang một câu chuyện. Skyline ban đêm lấp lánh phản chiếu trên sông Sài Gòn.</p>
+                    <div class="dt-mag-tags">
+                        <span class="dt-mag-tag">Bitexco</span>
+                        <span class="dt-mag-tag">Landmark 81</span>
+                        <span class="dt-mag-tag">Phố đi bộ Nguyễn Huệ</span>
+                        <span class="dt-mag-tag">Bến Nhà Rồng</span>
+                    </div>
+                    <a href="#" class="dt-btn">Khám phá Sài Gòn <i class="bi bi-arrow-right"></i></a>
+                </div>
+                <div class="dt-mag-img">
+                    <img src="https://images.unsplash.com/photo-1555899434-94d1368aa7af?w=900&q=80" alt="Sài Gòn về đêm">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== CTA BANNER ===== -->
+    <section class="dt-banner">
+        <div class="dt-banner-bg"></div>
+        <div class="container dt-banner-content">
+            <div class="row align-items-center">
+                <div class="col-lg-7 fade-up">
+                    <div class="dt-section-label">Hành trình đô thị</div>
+                    <h2 class="dt-section-title" style="max-width:560px">Đô thị Việt Nam — Luôn có điều mới để khám phá</h2>
+                    <p class="dt-section-desc" style="margin-bottom:2rem">Hơn 50 hành trình khám phá đô thị được cập nhật mỗi tháng — từ phố cổ đến khu công nghệ sáng tạo mới nhất.</p>
+                    <div class="d-flex gap-3 flex-wrap">
+                        <a href="/Home/AllPlaces" class="dt-hero-cta" style="animation:none">
+                            <i class="bi bi-map"></i> Xem tất cả đô thị
+                        </a>
+                        <a href="/Home/Createschedule" class="dt-btn" style="padding:0.9rem 2.2rem;font-size:1rem">
+                            <i class="bi bi-calendar-plus"></i> Lập lịch trình
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<script>
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((e, i) => {
+            if (e.isIntersecting) {
+                setTimeout(() => e.target.classList.add('visible'), i * 80);
+                observer.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    document.querySelectorAll('a[href="#do-thi-cities"]').forEach(a => {
+        a.addEventListener('click', e => {
+            e.preventDefault();
+            document.querySelector('#do-thi-cities')?.scrollIntoView({ behavior: 'smooth' });
+        });
+    });
+</script>

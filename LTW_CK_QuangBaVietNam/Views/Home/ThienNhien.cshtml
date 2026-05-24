@@ -1,0 +1,547 @@
+@{
+    ViewBag.Title = "Thiên Nhiên Việt Nam – Vẻ Đẹp Nguyên Sơ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* ===== SHARED PAGE TOKENS ===== */
+    :root {
+        --tn-green-deep: #0d2b1a;
+        --tn-green-mid: #1a4731;
+        --tn-teal: #0d9488;
+        --tn-sky: #0EA5E9;
+        --tn-accent: #f59e0b;
+        --tn-white: #f8fafc;
+        --tn-glass: rgba(13, 43, 26, 0.55);
+        --radius-card: 22px;
+        --shadow-card: 0 8px 40px rgba(0,0,0,0.28);
+        --transition: all 0.42s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    /* PAGE RESET */
+    .tn-page { background: #0a1f12; color: var(--tn-white); overflow-x: hidden; }
+
+    /* ===== HERO ===== */
+    .tn-hero {
+        position: relative;
+        height: 100vh;
+        min-height: 680px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+    .tn-hero-bg {
+        position: absolute; inset: 0;
+        background: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=85') center/cover no-repeat;
+        transform: scale(1.06);
+        animation: heroZoom 18s ease-in-out infinite alternate;
+    }
+    @@keyframes heroZoom {
+        from { transform: scale(1.06); }
+        to   { transform: scale(1.12); }
+    }
+    .tn-hero-overlay {
+        position: absolute; inset: 0;
+        background: linear-gradient(160deg,
+            rgba(10,31,18,0.72) 0%,
+            rgba(13,43,26,0.55) 45%,
+            rgba(13,148,136,0.18) 100%);
+    }
+    .tn-hero-content {
+        position: relative; z-index: 2;
+        text-align: center;
+        padding: 0 1.5rem;
+        max-width: 860px;
+    }
+    .tn-hero-badge {
+        display: inline-flex; align-items: center; gap: 0.5rem;
+        background: rgba(13,148,136,0.25);
+        border: 1px solid rgba(13,148,136,0.5);
+        backdrop-filter: blur(12px);
+        border-radius: 999px;
+        padding: 0.45rem 1.25rem;
+        font-size: 0.8rem; font-weight: 600; letter-spacing: 0.12em;
+        text-transform: uppercase; color: #5eead4;
+        margin-bottom: 1.5rem;
+        animation: fadeUp 0.8s 0.2s both;
+    }
+    .tn-hero-title {
+        font-size: clamp(2.4rem, 6vw, 4.6rem);
+        font-weight: 900; line-height: 1.2;
+        letter-spacing: -0.02em;
+        color: #fff;
+        margin-bottom: 1.25rem;
+        animation: fadeUp 0.8s 0.4s both;
+    }
+    .tn-hero-brand {
+        font-size: 1.22em;
+        font-weight: 950;
+        background: linear-gradient(90deg, #fbbf24, #f59e0b);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        display: inline-block;
+        margin-bottom: 0.4rem;
+        filter: drop-shadow(0 2px 8px rgba(245, 158, 11, 0.3));
+    }
+    .tn-hero-title em {
+        font-style: italic;
+        background: linear-gradient(90deg, #5eead4, #38bdf8);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .tn-hero-sub {
+        font-size: clamp(1rem, 2vw, 1.2rem);
+        color: rgba(248,250,252,0.78);
+        max-width: 560px; margin: 0 auto 2.5rem;
+        line-height: 1.7;
+        animation: fadeUp 0.8s 0.6s both;
+    }
+    .tn-hero-cta {
+        display: inline-flex; align-items: center; gap: 0.6rem;
+        background: linear-gradient(135deg, var(--tn-teal), var(--tn-sky));
+        color: #fff; font-weight: 700; font-size: 1rem;
+        padding: 0.9rem 2.2rem; border-radius: 999px;
+        text-decoration: none;
+        box-shadow: 0 6px 32px rgba(13,148,136,0.45);
+        transition: var(--transition);
+        animation: fadeUp 0.8s 0.8s both;
+    }
+    .tn-hero-cta:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 40px rgba(13,148,136,0.6);
+        color: #fff;
+    }
+    .tn-hero-scroll {
+        position: absolute; bottom: 2.2rem; left: 50%;
+        transform: translateX(-50%); z-index: 3;
+        display: flex; flex-direction: column; align-items: center;
+        gap: 0.5rem; color: rgba(255,255,255,0.55); font-size: 0.75rem;
+        animation: bounce 2.2s infinite;
+    }
+    .tn-hero-scroll span { display: block; width: 1px; height: 48px;
+        background: linear-gradient(to bottom, rgba(13,148,136,0.8), transparent); }
+    @@keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(8px)} }
+
+    /* ===== SECTION COMMON ===== */
+    .tn-section { padding: 7rem 0; }
+    .tn-section-label {
+        font-size: 0.75rem; font-weight: 700; letter-spacing: 0.18em;
+        text-transform: uppercase; color: #5eead4;
+        margin-bottom: 0.6rem;
+    }
+    .tn-section-title {
+        font-size: clamp(1.8rem, 4vw, 2.9rem);
+        font-weight: 800; line-height: 1.15;
+        color: #fff; margin-bottom: 1rem;
+    }
+    .tn-section-desc {
+        color: rgba(203,213,225,0.8);
+        font-size: 1.05rem; line-height: 1.75; max-width: 600px;
+    }
+
+    /* ===== STATS ROW ===== */
+    .tn-stats {
+        background: linear-gradient(135deg, #0d2b1a, #1a4731);
+        border-top: 1px solid rgba(13,148,136,0.2);
+        border-bottom: 1px solid rgba(13,148,136,0.2);
+        padding: 3rem 0;
+    }
+    .tn-stat-item { text-align: center; padding: 1rem; }
+    .tn-stat-num {
+        font-size: 2.8rem; font-weight: 900;
+        background: linear-gradient(90deg, #5eead4, #38bdf8);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        line-height: 1;
+    }
+    .tn-stat-label { color: rgba(203,213,225,0.72); font-size: 0.85rem; margin-top: 0.4rem; }
+
+    /* ===== MAGAZINE LAYOUT – REGION CARDS ===== */
+    .tn-regions { background: linear-gradient(180deg, #0a1f12 0%, #061510 100%); }
+    .tn-region-card {
+        display: grid; gap: 0;
+        border-radius: var(--radius-card);
+        overflow: hidden;
+        box-shadow: var(--shadow-card);
+        background: #0d2b1a;
+        transition: var(--transition);
+        margin-bottom: 2.5rem;
+    }
+    .tn-region-card:hover { transform: translateY(-6px); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+    .tn-region-card.layout-left  { grid-template-columns: 55% 45%; }
+    .tn-region-card.layout-right { grid-template-columns: 45% 55%; }
+    @@media(max-width:768px){
+        .tn-region-card.layout-left,
+        .tn-region-card.layout-right { grid-template-columns: 1fr; }
+        .tn-region-card.layout-right .tn-region-img { order: -1; }
+    }
+    .tn-region-img {
+        position: relative; overflow: hidden;
+        min-height: 360px;
+    }
+    .tn-region-img img {
+        width: 100%; height: 100%;
+        object-fit: cover;
+        transition: transform 0.7s ease;
+    }
+    .tn-region-card:hover .tn-region-img img { transform: scale(1.08); }
+    .tn-region-img-tag {
+        position: absolute; top: 1.2rem; left: 1.2rem;
+        background: rgba(13,148,136,0.85);
+        backdrop-filter: blur(8px);
+        border-radius: 999px; padding: 0.3rem 0.9rem;
+        font-size: 0.75rem; font-weight: 700; color: #fff;
+        text-transform: uppercase; letter-spacing: 0.1em;
+    }
+    .tn-region-body {
+        padding: 3rem 2.8rem;
+        display: flex; flex-direction: column; justify-content: center;
+    }
+    .tn-region-body h3 {
+        font-size: 1.7rem; font-weight: 800;
+        color: #fff; margin-bottom: 1rem; line-height: 1.2;
+    }
+    .tn-region-body p {
+        color: rgba(203,213,225,0.8);
+        line-height: 1.8; font-size: 0.97rem;
+        margin-bottom: 1.8rem;
+    }
+    .tn-region-spots { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.8rem; }
+    .tn-spot-chip {
+        background: rgba(13,148,136,0.18);
+        border: 1px solid rgba(13,148,136,0.35);
+        border-radius: 999px; padding: 0.3rem 0.85rem;
+        font-size: 0.78rem; font-weight: 600; color: #5eead4;
+    }
+    .tn-btn-explore {
+        display: inline-flex; align-items: center; gap: 0.5rem;
+        background: transparent;
+        border: 1.5px solid rgba(13,148,136,0.6);
+        color: #5eead4; font-weight: 700; font-size: 0.9rem;
+        padding: 0.7rem 1.6rem; border-radius: 999px;
+        text-decoration: none; cursor: pointer;
+        transition: var(--transition); width: fit-content;
+    }
+    .tn-btn-explore:hover {
+        background: var(--tn-teal);
+        border-color: var(--tn-teal);
+        color: #fff; transform: translateX(4px);
+    }
+
+    /* ===== HIGHLIGHTS GRID ===== */
+    .tn-highlights { background: linear-gradient(180deg, #061510, #0a1f12); }
+    .tn-hl-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+    }
+    @@media(max-width:992px){ .tn-hl-grid { grid-template-columns: repeat(2,1fr); } }
+    @@media(max-width:576px){ .tn-hl-grid { grid-template-columns: 1fr; } }
+    .tn-hl-card {
+        position: relative; border-radius: var(--radius-card);
+        overflow: hidden; aspect-ratio: 3/4;
+        cursor: pointer;
+        box-shadow: var(--shadow-card);
+    }
+    .tn-hl-card img {
+        width: 100%; height: 100%; object-fit: cover;
+        transition: transform 0.6s ease;
+    }
+    .tn-hl-card:hover img { transform: scale(1.1); }
+    .tn-hl-card-overlay {
+        position: absolute; inset: 0;
+        background: linear-gradient(to top, rgba(10,31,18,0.9) 0%, transparent 55%);
+    }
+    .tn-hl-card-info {
+        position: absolute; bottom: 0; left: 0; right: 0;
+        padding: 1.5rem;
+    }
+    .tn-hl-card-info h4 { font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 0.3rem; }
+    .tn-hl-card-info span { font-size: 0.8rem; color: #5eead4; }
+    .tn-hl-card-btn {
+        position: absolute; top: 50%; left: 50%;
+        transform: translate(-50%,-50%) scale(0.8);
+        background: rgba(13,148,136,0.9);
+        backdrop-filter: blur(8px);
+        border-radius: 999px; padding: 0.65rem 1.3rem;
+        font-size: 0.82rem; font-weight: 700; color: #fff;
+        opacity: 0; transition: var(--transition);
+        white-space: nowrap;
+    }
+    .tn-hl-card:hover .tn-hl-card-btn { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+
+    /* ===== EXPERIENCE BANNER ===== */
+    .tn-experience {
+        position: relative; padding: 8rem 0; overflow: hidden;
+        background: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1920&q=80') center/cover;
+    }
+    .tn-experience::before {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(135deg, rgba(10,31,18,0.88), rgba(13,148,136,0.3));
+    }
+    .tn-experience-content { position: relative; z-index: 1; }
+
+    /* ===== FADE-UP ANIMATION ===== */
+    @@keyframes fadeUp {
+        from { opacity:0; transform:translateY(30px); }
+        to   { opacity:1; transform:translateY(0); }
+    }
+    .fade-up { opacity: 0; transform: translateY(35px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+</style>
+
+<div class="tn-page">
+
+    <!-- ===== HERO ===== -->
+    <section class="tn-hero">
+        <div class="tn-hero-bg"></div>
+        <div class="tn-hero-overlay"></div>
+        <div class="tn-hero-content">
+            <div class="tn-hero-badge">
+                <i class="bi bi-tree"></i> Thiên Nhiên Việt Nam
+            </div>
+            <h1 class="tn-hero-title">
+                <span class="tn-hero-brand">Việt Nam</span><br><em>Vẻ đẹp nguyên sơ</em><br>của thiên nhiên châu Á
+            </h1>
+            <p class="tn-hero-sub">
+                Từ đỉnh núi mây phủ Tây Bắc, hang động huyền bí miền Trung đến biển đảo xanh ngọc phương Nam — Việt Nam là một bức tranh thiên nhiên sống động, chờ bạn khám phá.
+            </p>
+            <a href="#kham-pha" class="tn-hero-cta">
+                <i class="bi bi-compass"></i> Bắt đầu khám phá
+            </a>
+        </div>
+        <div class="tn-hero-scroll">
+            <span></span>
+            Cuộn xuống
+        </div>
+    </section>
+
+    <!-- ===== STATS ===== -->
+    <div class="tn-stats fade-up">
+        <div class="container">
+            <div class="row g-0">
+                <div class="col-6 col-md-3 tn-stat-item">
+                    <div class="tn-stat-num">63</div>
+                    <div class="tn-stat-label">Tỉnh thành</div>
+                </div>
+                <div class="col-6 col-md-3 tn-stat-item">
+                    <div class="tn-stat-num">30+</div>
+                    <div class="tn-stat-label">Vườn quốc gia</div>
+                </div>
+                <div class="col-6 col-md-3 tn-stat-item">
+                    <div class="tn-stat-num">3,260</div>
+                    <div class="tn-stat-label">km bờ biển</div>
+                </div>
+                <div class="col-6 col-md-3 tn-stat-item">
+                    <div class="tn-stat-num">8</div>
+                    <div class="tn-stat-label">Di sản UNESCO</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== REGIONS – MAGAZINE LAYOUT ===== -->
+    <section class="tn-section tn-regions" id="kham-pha">
+        <div class="container">
+            <div class="text-center mb-5 fade-up">
+                <div class="tn-section-label">Khám phá theo vùng</div>
+                <h2 class="tn-section-title">Ba miền – Ba vẻ đẹp</h2>
+                <p class="tn-section-desc mx-auto">Mỗi vùng miền mang một cảnh sắc thiên nhiên đặc trưng, từ núi rừng hùng vĩ đến hang động kỳ bí và đảo san hô trong vắt.</p>
+            </div>
+
+            <!-- Tây Bắc -->
+            <div class="tn-region-card layout-left fade-up">
+                <div class="tn-region-img">
+                    <img src="https://images.unsplash.com/photo-1540541338287-41700207dee6?w=900&q=85" alt="Ruộng bậc thang Tây Bắc">
+                    <span class="tn-region-img-tag">Miền Bắc</span>
+                </div>
+                <div class="tn-region-body">
+                    <h3>Núi rừng Tây Bắc</h3>
+                    <p>Những thửa ruộng bậc thang vàng óng trải dài trên sườn núi, bản làng mờ trong sương sớm — Tây Bắc là tuyệt tác thiên nhiên đan xen cùng văn hóa dân tộc độc đáo. Đỉnh Fansipan — nóc nhà Đông Dương — thách thức những trái tim dũng cảm.</p>
+                    <div class="tn-region-spots">
+                        <span class="tn-spot-chip">Sapa</span>
+                        <span class="tn-spot-chip">Mù Cang Chải</span>
+                        <span class="tn-spot-chip">Hà Giang</span>
+                        <span class="tn-spot-chip">Fansipan</span>
+                    </div>
+                    <a href="#" class="tn-btn-explore">
+                        Khám phá thêm <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Hang động miền Trung -->
+            <div class="tn-region-card layout-right fade-up">
+                <div class="tn-region-body">
+                    <h3>Hang động miền Trung</h3>
+                    <p>Quảng Bình ẩn chứa những hang động lớn nhất thế giới — Sơn Đoòng trải dài hơn 9km với hệ sinh thái rừng bên trong lòng đất. Ánh sáng tự nhiên xuyên qua vòm hang tạo nên khung cảnh tựa hành tinh khác, không thể tìm thấy ở bất kỳ đâu trên trái đất.</p>
+                    <div class="tn-region-spots">
+                        <span class="tn-spot-chip">Sơn Đoòng</span>
+                        <span class="tn-spot-chip">Phong Nha</span>
+                        <span class="tn-spot-chip">Thiên Đường</span>
+                        <span class="tn-spot-chip">Tú Làn</span>
+                    </div>
+                    <a href="#" class="tn-btn-explore">
+                        Khám phá thêm <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="tn-region-img">
+                    <img src="https://images.unsplash.com/photo-1523731407965-2430cd12f5e4?w=900&q=85" alt="Hang động Sơn Đoòng">
+                    <span class="tn-region-img-tag">Miền Trung</span>
+                </div>
+            </div>
+
+            <!-- Biển đảo phía Nam -->
+            <div class="tn-region-card layout-left fade-up">
+                <div class="tn-region-img">
+                    <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=900&q=85" alt="Biển đảo Phú Quốc">
+                    <span class="tn-region-img-tag">Miền Nam</span>
+                </div>
+                <div class="tn-region-body">
+                    <h3>Biển đảo phía Nam</h3>
+                    <p>Vùng biển phía Nam Việt Nam — từ Phú Quốc xanh ngọc đến Côn Đảo hoang sơ — là thiên đường cho những tâm hồn yêu biển. Rạn san hô rực rỡ, bờ cát trắng mịn, và những buổi hoàng hôn đỏ rực trên mặt biển lặng tạo nên ký ức khó quên.</p>
+                    <div class="tn-region-spots">
+                        <span class="tn-spot-chip">Phú Quốc</span>
+                        <span class="tn-spot-chip">Côn Đảo</span>
+                        <span class="tn-spot-chip">Cù Lao Chàm</span>
+                        <span class="tn-spot-chip">Mũi Né</span>
+                    </div>
+                    <a href="#" class="tn-btn-explore">
+                        Khám phá thêm <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== HIGHLIGHTS GRID ===== -->
+    <section class="tn-section tn-highlights">
+        <div class="container">
+            <div class="text-center mb-5 fade-up">
+                <div class="tn-section-label">Điểm đến nổi bật</div>
+                <h2 class="tn-section-title">Những khoảnh khắc thiên nhiên<br>không thể quên</h2>
+            </div>
+            <div class="tn-hl-grid">
+                <div class="tn-hl-card fade-up">
+                    <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80" alt="Vịnh Hạ Long">
+                    <div class="tn-hl-card-overlay"></div>
+                    <div class="tn-hl-card-info">
+                        <h4>Vịnh Hạ Long</h4>
+                        <span><i class="bi bi-geo-alt-fill me-1"></i>Quảng Ninh</span>
+                    </div>
+                    <div class="tn-hl-card-btn"><i class="bi bi-compass me-1"></i>Khám phá</div>
+                </div>
+                <div class="tn-hl-card fade-up">
+                    <img src="https://images.unsplash.com/photo-1528127269322-539801943592?w=600&q=80" alt="Ruộng bậc thang">
+                    <div class="tn-hl-card-overlay"></div>
+                    <div class="tn-hl-card-info">
+                        <h4>Ruộng bậc thang Mù Cang Chải</h4>
+                        <span><i class="bi bi-geo-alt-fill me-1"></i>Yên Bái</span>
+                    </div>
+                    <div class="tn-hl-card-btn"><i class="bi bi-compass me-1"></i>Khám phá</div>
+                </div>
+                <div class="tn-hl-card fade-up">
+                    <img src="https://images.unsplash.com/photo-1562602833-0f4ab2fc46e5?w=600&q=80" alt="Đồi cát Mũi Né">
+                    <div class="tn-hl-card-overlay"></div>
+                    <div class="tn-hl-card-info">
+                        <h4>Đồi cát Mũi Né</h4>
+                        <span><i class="bi bi-geo-alt-fill me-1"></i>Bình Thuận</span>
+                    </div>
+                    <div class="tn-hl-card-btn"><i class="bi bi-compass me-1"></i>Khám phá</div>
+                </div>
+                <div class="tn-hl-card fade-up">
+                    <img src="https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=600&q=80" alt="Hội An">
+                    <div class="tn-hl-card-overlay"></div>
+                    <div class="tn-hl-card-info">
+                        <h4>Rừng dừa Bảy Mẫu</h4>
+                        <span><i class="bi bi-geo-alt-fill me-1"></i>Quảng Nam</span>
+                    </div>
+                    <div class="tn-hl-card-btn"><i class="bi bi-compass me-1"></i>Khám phá</div>
+                </div>
+                <div class="tn-hl-card fade-up">
+                    <img src="https://images.unsplash.com/photo-1516426122078-c23e76319801?w=600&q=80" alt="Sơn Đoòng">
+                    <div class="tn-hl-card-overlay"></div>
+                    <div class="tn-hl-card-info">
+                        <h4>Hang Sơn Đoòng</h4>
+                        <span><i class="bi bi-geo-alt-fill me-1"></i>Quảng Bình</span>
+                    </div>
+                    <div class="tn-hl-card-btn"><i class="bi bi-compass me-1"></i>Khám phá</div>
+                </div>
+                <div class="tn-hl-card fade-up">
+                    <img src="https://images.unsplash.com/photo-1504214208698-ea1916a2195a?w=600&q=80" alt="Phú Quốc">
+                    <div class="tn-hl-card-overlay"></div>
+                    <div class="tn-hl-card-info">
+                        <h4>Đảo Phú Quốc</h4>
+                        <span><i class="bi bi-geo-alt-fill me-1"></i>Kiên Giang</span>
+                    </div>
+                    <div class="tn-hl-card-btn"><i class="bi bi-compass me-1"></i>Khám phá</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== EXPERIENCE BANNER ===== -->
+    <section class="tn-experience">
+        <div class="container tn-experience-content">
+            <div class="row align-items-center">
+                <div class="col-lg-7 fade-up">
+                    <div class="tn-section-label">Trải nghiệm đỉnh cao</div>
+                    <h2 class="tn-section-title" style="max-width:560px">Thiên nhiên Việt Nam – Chờ bạn đặt chân</h2>
+                    <p class="tn-section-desc" style="margin-bottom:2rem">Hơn 200 hành trình thiên nhiên được cập nhật mỗi mùa, từ leo núi chinh phục đỉnh cao đến lặn biển khám phá rạn san hô nguyên sơ.</p>
+                    <div class="d-flex gap-3 flex-wrap">
+                        <a href="/Home/AllPlaces" class="tn-hero-cta" style="animation:none">
+                            <i class="bi bi-map"></i> Xem tất cả địa điểm
+                        </a>
+                        <a href="/Home/Createschedule" class="tn-btn-explore" style="padding:0.9rem 2.2rem;font-size:1rem">
+                            <i class="bi bi-calendar-plus"></i> Lập lịch trình
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-5 d-none d-lg-block fade-up">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-left:2rem">
+                        <div style="background:rgba(13,148,136,0.15);border:1px solid rgba(13,148,136,0.3);border-radius:16px;padding:1.5rem;text-align:center">
+                            <i class="bi bi-tree-fill" style="font-size:2rem;color:#5eead4"></i>
+                            <div style="font-size:1.4rem;font-weight:800;color:#fff;margin-top:0.5rem">30+</div>
+                            <div style="font-size:0.8rem;color:rgba(203,213,225,0.7)">Vườn Quốc Gia</div>
+                        </div>
+                        <div style="background:rgba(14,165,233,0.15);border:1px solid rgba(14,165,233,0.3);border-radius:16px;padding:1.5rem;text-align:center">
+                            <i class="bi bi-water" style="font-size:2rem;color:#38bdf8"></i>
+                            <div style="font-size:1.4rem;font-weight:800;color:#fff;margin-top:0.5rem">3,260</div>
+                            <div style="font-size:0.8rem;color:rgba(203,213,225,0.7)">km Bờ Biển</div>
+                        </div>
+                        <div style="background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.25);border-radius:16px;padding:1.5rem;text-align:center">
+                            <i class="bi bi-sunrise-fill" style="font-size:2rem;color:#fbbf24"></i>
+                            <div style="font-size:1.4rem;font-weight:800;color:#fff;margin-top:0.5rem">200+</div>
+                            <div style="font-size:0.8rem;color:rgba(203,213,225,0.7)">Hành Trình</div>
+                        </div>
+                        <div style="background:rgba(13,148,136,0.15);border:1px solid rgba(13,148,136,0.3);border-radius:16px;padding:1.5rem;text-align:center">
+                            <i class="bi bi-stars" style="font-size:2rem;color:#5eead4"></i>
+                            <div style="font-size:1.4rem;font-weight:800;color:#fff;margin-top:0.5rem">8</div>
+                            <div style="font-size:0.8rem;color:rgba(203,213,225,0.7)">Di Sản UNESCO</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<script>
+    // Fade-up on scroll
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((e, i) => {
+            if (e.isIntersecting) {
+                setTimeout(() => e.target.classList.add('visible'), i * 90);
+                observer.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    // Smooth scroll
+    document.querySelectorAll('a[href="#kham-pha"]').forEach(a => {
+        a.addEventListener('click', e => {
+            e.preventDefault();
+            document.querySelector('#kham-pha')?.scrollIntoView({ behavior: 'smooth' });
+        });
+    });
+</script>

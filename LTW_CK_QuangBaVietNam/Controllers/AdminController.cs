@@ -685,28 +685,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             }
         }
 
-        [HttpPost]
-        public JsonResult RestoreComment(int id)
-        {
-            try
-            {
-                var user = Session["nguoiDung"] as NguoiDung;
-                var c = db.BinhLuans.FirstOrDefault(x => x.MaBinhLuan == id);
-                if (c == null) return Json(new { success = false, message = "Không tìm thấy bình luận" });
 
-                c.TrangThai = "visible";
-                c.LyDoAn = null;
-                c.NgayXuLy = DateTime.Now;
-                c.NguoiXuLy = user.MaNguoiDung;
-
-                db.SubmitChanges();
-                return Json(new { success = true, message = "Đã khôi phục bình luận" });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = ex.Message });
-            }
-        }
 
         [HttpPost]
         public JsonResult DeleteCommentAdmin(int id)

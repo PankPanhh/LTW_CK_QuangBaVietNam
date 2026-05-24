@@ -347,37 +347,6 @@
         margin: var(--spacing-4) 0;
     }
 
-    /* Toast */
-    .toast-container {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 9999;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .toast {
-        background: white;
-        padding: 16px 24px;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        border-left: 4px solid;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        animation: slideIn 0.3s ease;
-    }
-
-    .toast.success { border-left-color: var(--success); color: var(--success); }
-    .toast.error { border-left-color: var(--danger); color: var(--danger); }
-
-    @@keyframes slideIn {
-        from { transform: translateX(400px); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-    }
-
     /* Modal */
     .modal-overlay {
         display: none;
@@ -616,8 +585,7 @@
     </div>
 </div>
 
-<!-- Toast Container -->
-<div class="toast-container" id="toastContainer"></div>
+
 
 <script>
     let blogId = new URLSearchParams(window.location.search).get('id');
@@ -641,11 +609,11 @@
                 currentBlog = data.data;
                 renderBlogDetail();
             } else {
-                showToast(data.message || 'Không thể tải bài viết', 'error');
+                showToast('Thất bại', data.message || 'Không thể tải bài viết', 'error');
                 goBack();
             }
         } catch (e) {
-            showToast('Lỗi khi tải bài viết', 'error');
+            showToast('Thất bại', 'Lỗi khi tải bài viết', 'error');
             console.error(e);
         }
     }
@@ -737,26 +705,26 @@
         document.getElementById('mainImage').src = src;
     }
 
-    async function approveBlog() {
-        if (!confirm('Xác nhận duyệt bài viết này?')) return;
+    function approveBlog() {
+        showConfirmModal('Xác nhận duyệt', 'Xác nhận duyệt bài viết này?', async () => {
+            try {
+                const res = await fetch('/Blog/ApproveBlog', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: blogId })
+                });
+                const data = await res.json();
 
-        try {
-            const res = await fetch('/Blog/ApproveBlog', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: blogId })
-            });
-            const data = await res.json();
-
-            if (data.success) {
-                showToast('Duyệt thành công!', 'success');
-                setTimeout(() => goBack(), 1500);
-            } else {
-                showToast(data.message, 'error');
+                if (data.success) {
+                    showToast('Thành công', 'Duyệt bài thành công!', 'success');
+                    setTimeout(() => goBack(), 1500);
+                } else {
+                    showToast('Thất bại', data.message, 'error');
+                }
+            } catch (e) {
+                showToast('Thất bại', 'Lỗi khi duyệt', 'error');
             }
-        } catch (e) {
-            showToast('Lỗi khi duyệt', 'error');
-        }
+        });
     }
 
     function openRejectModal() {
@@ -770,7 +738,7 @@
     async function confirmReject() {
         const reason = document.getElementById('rejectReason').value.trim();
         if (!reason) {
-            showToast('Vui lòng nhập lý do từ chối', 'error');
+            showToast('Cảnh báo', 'Vui lòng nhập lý do từ chối', 'warning');
             return;
         }
 
@@ -783,14 +751,14 @@
             const data = await res.json();
 
             if (data.success) {
-                showToast('Từ chối thành công!', 'success');
+                showToast('Thành công', 'Từ chối bài thành công!', 'success');
                 closeRejectModal();
                 setTimeout(() => goBack(), 1500);
             } else {
-                showToast(data.message, 'error');
+                showToast('Thất bại', data.message, 'error');
             }
         } catch (e) {
-            showToast('Lỗi khi từ chối', 'error');
+            showToast('Thất bại', 'Lỗi khi từ chối', 'error');
         }
     }
 
@@ -806,7 +774,7 @@
     async function confirmHide() {
         const reason = document.getElementById('hideReason').value.trim();
         if (!reason) {
-            showToast('Vui lòng nhập lý do ẩn bài', 'error');
+            showToast('Cảnh báo', 'Vui lòng nhập lý do ẩn bài', 'warning');
             return;
         }
 
@@ -819,37 +787,38 @@
             const data = await res.json();
 
             if (data.success) {
-                showToast('Ẩn bài thành công!', 'success');
+                showToast('Thành công', 'Ẩn bài thành công!', 'success');
                 closeHideModal();
                 setTimeout(() => location.reload(), 1500);
             } else {
-                showToast(data.message, 'error');
+                showToast('Thất bại', data.message, 'error');
             }
         } catch (e) {
-            showToast('Lỗi khi ẩn bài', 'error');
+            showToast('Thất bại', 'Lỗi khi ẩn bài', 'error');
         }
     }
 
+
     async function restoreBlog() {
-        if (!confirm('Khôi phục bài viết này về trạng thái hiển thị?')) return;
+        showConfirmModal('Khôi phục bài viết', 'Khôi phục bài viết này về trạng thái hiển thị?', async () => {
+            try {
+                const res = await fetch('/Blog/RestoreBlog', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: blogId })
+                });
+                const data = await res.json();
 
-        try {
-            const res = await fetch('/Blog/RestoreBlog', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: blogId })
-            });
-            const data = await res.json();
-
-            if (data.success) {
-                showToast('Khôi phục bài thành công!', 'success');
-                setTimeout(() => location.reload(), 1500);
-            } else {
-                showToast(data.message, 'error');
+                if (data.success) {
+                    showToast('Thành công', 'Khôi phục bài thành công!', 'success');
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showToast('Thất bại', data.message, 'error');
+                }
+            } catch (e) {
+                showToast('Thất bại', 'Lỗi khi khôi phục bài', 'error');
             }
-        } catch (e) {
-            showToast('Lỗi khi khôi phục bài', 'error');
-        }
+        });
     }
 
     function viewPublic() {
@@ -858,18 +827,6 @@
 
     function goBack() {
         window.history.back();
-    }
-
-    function showToast(message, type) {
-        const container = document.getElementById('toastContainer');
-        const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
-        toast.innerHTML = `<i class="bi bi-${type === 'success' ? 'check-circle' : 'x-circle'}"></i><span>${message}</span>`;
-        container.appendChild(toast);
-
-        setTimeout(() => {
-            toast.remove();
-        }, 3500);
     }
 
     // Close modal on background click

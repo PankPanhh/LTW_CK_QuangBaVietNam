@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewBag.Title = "Bài viết đã lưu - Bộ sưu tập du lịch của tôi";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -582,41 +582,29 @@
     }
 
     async function unsaveBlog(id) {
-        if (!confirm('Bỏ lưu bài viết này?')) return;
+        showConfirmModal('Bỏ lưu bài viết', 'Bạn có chắc chắn muốn bỏ lưu bài viết này?', async () => {
+            try {
+                const res = await fetch('/Blog/ToggleSaveBlog', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ blogId: id })
+                });
 
-        try {
-            const res = await fetch('/Blog/ToggleSaveBlog', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ blogId: id })
-            });
+                if (res.status === 401) {
+                    showToast('Lỗi', 'Vui lòng đăng nhập', 'error');
+                    return;
+                }
 
-            if (res.status === 401) {
-                showToast('Vui lòng đăng nhập', 'error');
-                return;
+                const data = await res.json();
+                if (data.success) {
+                    showToast('Thành công', 'Đã bỏ lưu bài viết', 'success');
+                    loadSavedBlogs(currentPage);
+                } else {
+                    showToast('Lỗi', data.message || 'Bỏ lưu thất bại', 'error');
+                }
+            } catch (e) {
+                showToast('Lỗi', 'Không thể kết nối mạng', 'error');
             }
-
-            const data = await res.json();
-            if (data.success) {
-                showToast('Đã bỏ lưu bài viết', 'success');
-                loadSavedBlogs(currentPage);
-            } else {
-                showToast(data.message || 'Lỗi', 'error');
-            }
-        } catch (e) {
-            showToast('Lỗi mạng', 'error');
-        }
-    }
-
-    function showToast(message, type = 'success') {
-        const container = document.getElementById('toastContainer');
-        const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
-        toast.innerHTML = `<i class="bi bi-${type === 'success' ? 'check-circle' : 'x-circle'}"></i><span>${message}</span>`;
-        container.appendChild(toast);
-
-        setTimeout(() => {
-            toast.remove();
-        }, 3000);
+        }, true);
     }
 </script>

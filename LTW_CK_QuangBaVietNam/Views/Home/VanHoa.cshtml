@@ -1,0 +1,480 @@
+@{
+    ViewBag.Title = "Văn Hóa Việt Nam – Di Sản Nghìn Năm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    @@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap');
+
+    /* ===== VĂN HÓA – HERITAGE STORYTELLING ===== */
+    :root {
+        --vh-dark:   #0f0d08;
+        --vh-brown:  #2c1810;
+        --vh-gold:   #d97706;
+        --vh-amber:  #fbbf24;
+        --vh-red:    #991b1b;
+        --vh-cream:  #fef3c7;
+        --vh-teal:   #0EA5E9;
+        --vh-glass:  rgba(44,24,16,0.6);
+        --radius-card: 22px;
+        --shadow-card: 0 8px 48px rgba(0,0,0,0.35);
+        --transition: all 0.42s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .vh-page {
+        background: #0f0d08; color: #f8fafc; overflow-x: hidden;
+        font-family: 'Be Vietnam Pro', sans-serif;
+    }
+
+    /* ===== HERO ===== */
+    .vh-hero {
+        position: relative; height: 100vh; min-height: 680px;
+        display: flex; align-items: center; justify-content: center;
+        overflow: hidden;
+    }
+    .vh-hero-bg {
+        position: absolute; inset: 0;
+        background: url('https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=1920&q=85') center/cover no-repeat;
+        animation: heroScale 20s ease-in-out infinite alternate;
+    }
+    @@keyframes heroScale { from{transform:scale(1.05)} to{transform:scale(1.12)} }
+    .vh-hero-overlay {
+        position: absolute; inset: 0;
+        background: linear-gradient(150deg,
+            rgba(15,13,8,0.82) 0%,
+            rgba(44,24,16,0.6) 50%,
+            rgba(153,27,27,0.18) 100%);
+    }
+    .vh-hero-content {
+        position: relative; z-index: 2;
+        text-align: center; padding: 0 1.5rem; max-width: 880px;
+    }
+    .vh-hero-badge {
+        display: inline-flex; align-items: center; gap: 0.5rem;
+        background: rgba(217,119,6,0.2);
+        border: 1px solid rgba(217,119,6,0.5);
+        backdrop-filter: blur(12px);
+        border-radius: 999px; padding: 0.45rem 1.25rem;
+        font-size: 0.8rem; font-weight: 600; letter-spacing: 0.12em;
+        text-transform: uppercase; color: #fbbf24;
+        margin-bottom: 1.5rem;
+        animation: fadeUp 0.8s 0.2s both;
+    }
+    .vh-hero-title {
+        font-family: 'Playfair Display', 'Be Vietnam Pro', serif;
+        font-size: clamp(2.6rem, 5.5vw, 5rem);
+        font-weight: 900; line-height: 1.15;
+        color: #fff; margin-bottom: 1.25rem;
+        letter-spacing: -0.01em;
+        word-break: keep-all;
+        animation: fadeUp 0.8s 0.4s both;
+    }
+    .vh-hero-title em {
+        font-style: italic;
+        background: linear-gradient(90deg, #fbbf24, #d97706);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .vh-hero-sub {
+        font-family: 'Be Vietnam Pro', sans-serif;
+        font-size: clamp(1rem, 2vw, 1.15rem);
+        color: rgba(254,243,199,0.78);
+        max-width: 580px; margin: 0 auto 2.5rem; line-height: 1.8;
+        font-weight: 400;
+        animation: fadeUp 0.8s 0.6s both;
+    }
+    .vh-hero-cta {
+        display: inline-flex; align-items: center; gap: 0.6rem;
+        background: linear-gradient(135deg, #d97706, #fbbf24);
+        color: #0f0d08; font-weight: 800; font-size: 1rem;
+        padding: 0.9rem 2.2rem; border-radius: 999px;
+        text-decoration: none;
+        box-shadow: 0 6px 32px rgba(217,119,6,0.45);
+        transition: var(--transition);
+        animation: fadeUp 0.8s 0.8s both;
+    }
+    .vh-hero-cta:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 40px rgba(217,119,6,0.6);
+        color: #0f0d08;
+    }
+    .vh-hero-scroll {
+        position: absolute; bottom: 2.2rem; left: 50%;
+        transform: translateX(-50%); z-index: 3;
+        display: flex; flex-direction: column; align-items: center;
+        gap: 0.5rem; color: rgba(255,255,255,0.5); font-size: 0.75rem;
+        animation: bounce 2.4s infinite;
+    }
+    .vh-hero-scroll span { display: block; width: 1px; height: 48px;
+        background: linear-gradient(to bottom, rgba(217,119,6,0.8), transparent); }
+    @@keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(8px)} }
+
+    /* ===== SECTION COMMON ===== */
+    .vh-section { padding: 7rem 0; }
+    .vh-section-label {
+        font-size: 0.75rem; font-weight: 700; letter-spacing: 0.18em;
+        text-transform: uppercase; color: #fbbf24; margin-bottom: 0.6rem;
+    }
+    .vh-section-title {
+        font-family: Georgia, serif;
+        font-size: clamp(1.8rem, 4vw, 2.9rem);
+        font-weight: 700; line-height: 1.2; color: #fff; margin-bottom: 1rem;
+    }
+    .vh-section-desc {
+        color: rgba(203,213,225,0.8);
+        font-size: 1.05rem; line-height: 1.75; max-width: 600px;
+    }
+
+    /* ===== QUOTE BANNER ===== */
+    .vh-quote {
+        background: linear-gradient(135deg, #2c1810, #1a0f0a);
+        border-top: 1px solid rgba(217,119,6,0.2);
+        border-bottom: 1px solid rgba(217,119,6,0.2);
+        padding: 4rem 0; text-align: center;
+    }
+    .vh-quote blockquote {
+        font-family: Georgia, serif;
+        font-size: clamp(1.2rem, 3vw, 1.8rem);
+        font-style: italic; color: #fef3c7;
+        max-width: 720px; margin: 0 auto;
+        line-height: 1.6;
+    }
+    .vh-quote cite {
+        display: block; margin-top: 1rem;
+        font-size: 0.9rem; font-style: normal;
+        color: rgba(251,191,36,0.7); font-weight: 600;
+    }
+
+    /* ===== TIMELINE / SPLIT LAYOUT ===== */
+    .vh-split { background: linear-gradient(180deg, #0f0d08, #1a0e06); }
+    .vh-split-item {
+        display: grid; margin-bottom: 5rem;
+        border-radius: var(--radius-card);
+        overflow: hidden; box-shadow: var(--shadow-card);
+        background: rgba(44,24,16,0.45);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(217,119,6,0.15);
+        transition: var(--transition);
+    }
+    .vh-split-item:hover { transform: translateY(-5px); box-shadow: 0 20px 64px rgba(0,0,0,0.45); }
+    .vh-split-item.left  { grid-template-columns: 48% 52%; }
+    .vh-split-item.right { grid-template-columns: 52% 48%; }
+    @@media(max-width:768px){
+        .vh-split-item.left,
+        .vh-split-item.right { grid-template-columns: 1fr; }
+        .vh-split-item.right .vh-split-img { order: -1; }
+    }
+    .vh-split-img { position: relative; overflow: hidden; min-height: 340px; }
+    .vh-split-img img { width:100%; height:100%; object-fit:cover; transition:transform 0.7s; }
+    .vh-split-item:hover .vh-split-img img { transform:scale(1.07); }
+    .vh-split-img-overlay {
+        position: absolute; inset: 0;
+        background: linear-gradient(135deg, rgba(44,24,16,0.3), transparent);
+    }
+    .vh-split-tag {
+        position: absolute; top: 1.2rem; left: 1.2rem;
+        background: rgba(217,119,6,0.85); backdrop-filter: blur(8px);
+        border-radius: 999px; padding: 0.3rem 0.9rem;
+        font-size: 0.75rem; font-weight: 700; color: #fff;
+        text-transform: uppercase; letter-spacing: 0.1em;
+    }
+    .vh-split-body {
+        padding: 3rem 2.8rem;
+        display: flex; flex-direction: column; justify-content: center;
+    }
+    .vh-split-num {
+        font-family: Georgia, serif;
+        font-size: 5rem; font-weight: 900; line-height: 1;
+        color: rgba(217,119,6,0.15); margin-bottom: -1rem;
+        user-select: none;
+    }
+    .vh-split-body h3 {
+        font-family: Georgia, serif;
+        font-size: 1.65rem; font-weight: 700;
+        color: #fff; margin-bottom: 1rem; line-height: 1.25;
+    }
+    .vh-split-body p {
+        color: rgba(203,213,225,0.8);
+        line-height: 1.8; font-size: 0.97rem; margin-bottom: 1.8rem;
+    }
+    .vh-split-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.8rem; }
+    .vh-tag-chip {
+        background: rgba(217,119,6,0.15);
+        border: 1px solid rgba(217,119,6,0.3);
+        border-radius: 999px; padding: 0.3rem 0.85rem;
+        font-size: 0.78rem; font-weight: 600; color: #fbbf24;
+    }
+    .vh-btn {
+        display: inline-flex; align-items: center; gap: 0.5rem;
+        background: transparent;
+        border: 1.5px solid rgba(217,119,6,0.55);
+        color: #fbbf24; font-weight: 700; font-size: 0.9rem;
+        padding: 0.7rem 1.6rem; border-radius: 999px;
+        text-decoration: none; transition: var(--transition);
+        width: fit-content; cursor: pointer;
+    }
+    .vh-btn:hover {
+        background: #d97706; border-color: #d97706;
+        color: #fff; transform: translateX(4px);
+    }
+
+    /* ===== CULTURAL CATEGORIES ===== */
+    .vh-cats { background: linear-gradient(180deg, #1a0e06, #0f0d08); }
+    .vh-cats-grid {
+        display: grid;
+        grid-template-columns: repeat(4,1fr);
+        gap: 1.25rem;
+    }
+    @@media(max-width:992px){ .vh-cats-grid { grid-template-columns: repeat(2,1fr); } }
+    @@media(max-width:576px){ .vh-cats-grid { grid-template-columns: 1fr 1fr; } }
+    .vh-cat-card {
+        background: rgba(44,24,16,0.45);
+        border: 1px solid rgba(217,119,6,0.18);
+        backdrop-filter: blur(12px);
+        border-radius: var(--radius-card);
+        padding: 2rem 1.5rem;
+        text-align: center;
+        transition: var(--transition);
+        cursor: pointer;
+    }
+    .vh-cat-card:hover {
+        background: rgba(217,119,6,0.12);
+        border-color: rgba(217,119,6,0.45);
+        transform: translateY(-6px);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+    }
+    .vh-cat-icon {
+        width: 60px; height: 60px;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 1rem;
+        border-radius: 16px;
+        background: rgba(217,119,6,0.15);
+        border: 1px solid rgba(217,119,6,0.3);
+        font-size: 1.5rem; color: #fbbf24;
+        transition: var(--transition);
+    }
+    .vh-cat-card:hover .vh-cat-icon { background: #d97706; color: #fff; }
+    .vh-cat-card h4 { font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 0.4rem; }
+    .vh-cat-card p { font-size: 0.8rem; color: rgba(203,213,225,0.65); line-height: 1.5; margin: 0; }
+
+    /* ===== EXPERIENCE BANNER ===== */
+    .vh-banner {
+        position: relative; padding: 8rem 0; overflow: hidden;
+        background: url('https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=1920&q=80') center/cover;
+    }
+    .vh-banner::before {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(135deg, rgba(15,13,8,0.88), rgba(153,27,27,0.25));
+    }
+    .vh-banner-content { position: relative; z-index: 1; }
+
+    @@keyframes fadeUp {
+        from { opacity:0; transform:translateY(30px); }
+        to   { opacity:1; transform:translateY(0); }
+    }
+    .fade-up { opacity:0; transform:translateY(35px); transition:opacity 0.7s ease, transform 0.7s ease; }
+    .fade-up.visible { opacity:1; transform:translateY(0); }
+</style>
+
+<div class="vh-page">
+
+    <!-- ===== HERO ===== -->
+    <section class="vh-hero">
+        <div class="vh-hero-bg"></div>
+        <div class="vh-hero-overlay"></div>
+        <div class="vh-hero-content">
+            <div class="vh-hero-badge">
+                <i class="bi bi-gem"></i> Di Sản Văn Hóa
+            </div>
+            <h1 class="vh-hero-title">
+                <em>Hồn thiêng</em> nghìn năm văn hiến Việt
+            </h1>
+            <p class="vh-hero-sub">
+                Từ phố cổ Hội An đến kinh thành Huế, từ lễ hội đền Hùng đến tà áo dài thướt tha — Việt Nam là kho tàng văn hóa sống động qua từng thế kỷ.
+            </p>
+            <a href="#van-hoa-content" class="vh-hero-cta">
+                <i class="bi bi-book-fill"></i> Khám phá di sản
+            </a>
+        </div>
+        <div class="vh-hero-scroll">
+            <span></span>
+            Cuộn xuống
+        </div>
+    </section>
+
+    <!-- ===== QUOTE ===== -->
+    <div class="vh-quote fade-up">
+        <div class="container">
+            <blockquote>
+                "Đất nước tôi thon thả giọt đàn bầu — Nghe dịu nỗi đau của mẹ — Ba lần tiễn con đi, hai lần khóc thầm lặng — Các anh không về mình mẹ lặng im."
+                <cite>— Thơ Việt Nam hiện đại</cite>
+            </blockquote>
+        </div>
+    </div>
+
+    <!-- ===== SPLIT LAYOUT – VÙNG MIỀN ===== -->
+    <section class="vh-section vh-split" id="van-hoa-content">
+        <div class="container">
+            <div class="text-center mb-5 fade-up">
+                <div class="vh-section-label">Câu chuyện văn hóa</div>
+                <h2 class="vh-section-title">Từng vùng miền, một bản sắc riêng</h2>
+                <p class="vh-section-desc mx-auto">Khám phá sự đa dạng văn hóa qua ba miền Bắc – Trung – Nam: mỗi nơi một lịch sử, một phong tục, một hồn thơ.</p>
+            </div>
+
+            <!-- Miền Bắc -->
+            <div class="vh-split-item left fade-up">
+                <div class="vh-split-img">
+                    <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=900&q=85" alt="Văn hóa Miền Bắc">
+                    <div class="vh-split-img-overlay"></div>
+                    <span class="vh-split-tag">Miền Bắc</span>
+                </div>
+                <div class="vh-split-body">
+                    <div class="vh-split-num">01</div>
+                    <h3>Cội nguồn văn minh lúa nước</h3>
+                    <p>Miền Bắc là nơi khởi nguồn của nền văn hóa Đại Việt, với Thăng Long – Hà Nội nghìn năm văn hiến. Phố cổ Hà Nội 36 phố phường, lễ hội đền Hùng, múa rối nước — tất cả gói gọn chiều sâu lịch sử ngàn năm.</p>
+                    <div class="vh-split-tags">
+                        <span class="vh-tag-chip">Phố cổ Hà Nội</span>
+                        <span class="vh-tag-chip">Rối nước</span>
+                        <span class="vh-tag-chip">Đền Hùng</span>
+                        <span class="vh-tag-chip">Quan họ</span>
+                    </div>
+                    <a href="#" class="vh-btn">Khám phá thêm <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <!-- Miền Trung -->
+            <div class="vh-split-item right fade-up">
+                <div class="vh-split-body">
+                    <div class="vh-split-num">02</div>
+                    <h3>Kinh đô nghệ thuật hoàng gia</h3>
+                    <p>Huế — cố đô của triều Nguyễn — lưu giữ kiến trúc hoàng cung, lăng tẩm và âm nhạc cung đình độc đáo. Hội An vàng trong ánh đèn lồng, phố cổ thơm mùi gỗ sưa — là di sản sống của con người và thương mại qua thế kỷ.</p>
+                    <div class="vh-split-tags">
+                        <span class="vh-tag-chip">Cố đô Huế</span>
+                        <span class="vh-tag-chip">Phố cổ Hội An</span>
+                        <span class="vh-tag-chip">Nhã nhạc Huế</span>
+                        <span class="vh-tag-chip">Mỹ Sơn</span>
+                    </div>
+                    <a href="#" class="vh-btn">Khám phá thêm <i class="bi bi-arrow-right"></i></a>
+                </div>
+                <div class="vh-split-img">
+                    <img src="https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=900&q=85" alt="Hội An đèn lồng">
+                    <div class="vh-split-img-overlay"></div>
+                    <span class="vh-split-tag">Miền Trung</span>
+                </div>
+            </div>
+
+            <!-- Miền Nam -->
+            <div class="vh-split-item left fade-up">
+                <div class="vh-split-img">
+                    <img src="https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=900&q=85" alt="Văn hóa Miền Nam">
+                    <div class="vh-split-img-overlay"></div>
+                    <span class="vh-split-tag">Miền Nam</span>
+                </div>
+                <div class="vh-split-body">
+                    <div class="vh-split-num">03</div>
+                    <h3>Sài Gòn – Năng động & phóng khoáng</h3>
+                    <p>Sài Gòn – TP.HCM là nơi giao thoa văn hóa sôi động nhất Việt Nam. Từ lễ hội đua ghe Ngo của đồng bào Khmer ở miền Tây, đến kiến trúc Pháp thuộc và chợ Bến Thành tấp nập — miền Nam là bản nhạc nhiều thanh âm, đầy sức sống.</p>
+                    <div class="vh-split-tags">
+                        <span class="vh-tag-chip">Đồng Tháp Mười</span>
+                        <span class="vh-tag-chip">Đua ghe Ngo</span>
+                        <span class="vh-tag-chip">Cải lương</span>
+                        <span class="vh-tag-chip">Chợ Bến Thành</span>
+                    </div>
+                    <a href="#" class="vh-btn">Khám phá thêm <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== CATEGORIES GRID ===== -->
+    <section class="vh-section vh-cats">
+        <div class="container">
+            <div class="text-center mb-5 fade-up">
+                <div class="vh-section-label">Danh mục văn hóa</div>
+                <h2 class="vh-section-title">Khám phá theo chủ đề</h2>
+            </div>
+            <div class="vh-cats-grid fade-up">
+                <div class="vh-cat-card">
+                    <div class="vh-cat-icon"><i class="bi bi-building-fill"></i></div>
+                    <h4>Kiến trúc cổ</h4>
+                    <p>Đình làng, chùa chiền, hoàng thành nghìn tuổi</p>
+                </div>
+                <div class="vh-cat-card">
+                    <div class="vh-cat-icon"><i class="bi bi-music-note-list"></i></div>
+                    <h4>Âm nhạc dân tộc</h4>
+                    <p>Quan họ, nhã nhạc, đờn ca tài tử</p>
+                </div>
+                <div class="vh-cat-card">
+                    <div class="vh-cat-icon"><i class="bi bi-palette2"></i></div>
+                    <h4>Nghề thủ công</h4>
+                    <p>Lụa Vạn Phúc, gốm Bát Tràng, tranh Đông Hồ</p>
+                </div>
+                <div class="vh-cat-card">
+                    <div class="vh-cat-icon"><i class="bi bi-stars"></i></div>
+                    <h4>Lễ hội truyền thống</h4>
+                    <p>Tết Nguyên Đán, giỗ Tổ Hùng Vương, Lễ Katê</p>
+                </div>
+                <div class="vh-cat-card">
+                    <div class="vh-cat-icon"><i class="bi bi-person-hearts"></i></div>
+                    <h4>Trang phục áo dài</h4>
+                    <p>Biểu tượng văn hóa, thanh lịch và duyên dáng</p>
+                </div>
+                <div class="vh-cat-card">
+                    <div class="vh-cat-icon"><i class="bi bi-film"></i></div>
+                    <h4>Sân khấu dân gian</h4>
+                    <p>Múa rối nước, tuồng, chèo, cải lương</p>
+                </div>
+                <div class="vh-cat-card">
+                    <div class="vh-cat-icon"><i class="bi bi-journal-text"></i></div>
+                    <h4>Văn học & thơ ca</h4>
+                    <p>Truyện Kiều, thơ Hồ Xuân Hương, Nam Quốc Sơn Hà</p>
+                </div>
+                <div class="vh-cat-card">
+                    <div class="vh-cat-icon"><i class="bi bi-house-heart"></i></div>
+                    <h4>Làng nghề truyền thống</h4>
+                    <p>Làng gốm, làng đúc đồng, làng chiếu cói</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== BANNER CTA ===== -->
+    <section class="vh-banner">
+        <div class="container vh-banner-content">
+            <div class="row align-items-center">
+                <div class="col-lg-7 fade-up">
+                    <div class="vh-section-label">Hành trình văn hóa</div>
+                    <h2 class="vh-section-title" style="max-width:560px">Mang theo hồn Việt trong mỗi chuyến đi</h2>
+                    <p class="vh-section-desc" style="margin-bottom:2rem">Hơn 150 điểm di sản văn hóa được ghi nhận, từ di sản vật thể đến phi vật thể — chờ bạn đặt chân và cảm nhận.</p>
+                    <div class="d-flex gap-3 flex-wrap">
+                        <a href="/Home/AllPlaces" class="vh-hero-cta" style="animation:none">
+                            <i class="bi bi-map"></i> Xem di sản văn hóa
+                        </a>
+                        <a href="/Home/Createschedule" class="vh-btn" style="padding:0.9rem 2.2rem;font-size:1rem">
+                            <i class="bi bi-calendar-plus"></i> Lập lịch trình
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<script>
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((e, i) => {
+            if (e.isIntersecting) {
+                setTimeout(() => e.target.classList.add('visible'), i * 90);
+                observer.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    document.querySelectorAll('a[href="#van-hoa-content"]').forEach(a => {
+        a.addEventListener('click', e => {
+            e.preventDefault();
+            document.querySelector('#van-hoa-content')?.scrollIntoView({ behavior: 'smooth' });
+        });
+    });
+</script>

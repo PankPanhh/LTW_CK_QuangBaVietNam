@@ -1546,7 +1546,8 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                         authorName = c.NguoiDung.HoTen,
                         parentId = c.ParentId,
                         status = c.TrangThai,
-                        reason = c.LyDoAn
+                        reason = c.LyDoAn,
+                        ngayXuLy = c.NgayXuLy
                     })
                     .ToList();
 
@@ -1564,6 +1565,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                         status = c.status,
                         parentId = c.parentId,
                         reason = c.reason,
+                        dateProcessed = c.ngayXuLy.HasValue ? c.ngayXuLy.Value.ToString("dd/MM/yyyy HH:mm") : "",
                         likes = 0,
                         isOwner = (c.authorId == currentUserId)
                     }).ToList();
@@ -1581,6 +1583,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                     likes = c.likes,
                     status = c.status,
                     reason = c.reason,
+                    dateProcessed = c.dateProcessed,
                     isOwner = c.isOwner,
                     replies = processedComments.Where(r => r.parentId == c.id).ToList()
                 }).ToList();
