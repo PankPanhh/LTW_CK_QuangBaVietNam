@@ -595,6 +595,28 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             return View();
         }
 
+        public ActionResult Blog()
+        {
+            if (Session["nguoiDung"] == null) return RedirectToAction("Index", "Home");
+            var user = Session["nguoiDung"] as NguoiDung;
+            if (user.VaiTro != 1) return RedirectToAction("Index", "Home");
+
+            ViewBag.Title = "Quản lý bài viết blog";
+            return View();
+        }
+
+        public ActionResult BlogDetail(int id)
+        {
+            if (Session["nguoiDung"] == null) return RedirectToAction("Index", "Home");
+            var user = Session["nguoiDung"] as NguoiDung;
+            if (user.VaiTro != 1) return RedirectToAction("Index", "Home");
+
+            ViewBag.Title = "Chi tiết bài viết - Kiểm duyệt";
+            ViewBag.BlogId = id;
+            return View();
+        }
+
+       
         public ActionResult Comments()
         {
             // Đã lược bỏ đoạn check Admin thủ công tại đây
