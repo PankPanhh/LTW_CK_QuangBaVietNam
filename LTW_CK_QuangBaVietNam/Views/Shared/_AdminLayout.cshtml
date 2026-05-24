@@ -346,6 +346,13 @@
                         <i class="fa-solid fa-layer-group"></i> Danh mục địa điểm
                     </a>
 
+                    <a class="adm-link @(Active("blog"))" href="@Url.Action("Blog","Admin")">
+                        <i class="fa-solid fa-pen-nib"></i> Bài viết Blog
+                    </a>
+
+                    <a class="adm-link @(Active("comments"))" href="@Url.Action("Comments","Admin")">
+                        <i class="fa-solid fa-comments"></i> Quản lý bình luận
+                    </a>
 
                     <div class="adm-heading mt-2">Quản trị hệ thống</div>
 
@@ -358,8 +365,8 @@
                         <a class="adm-link" href="@Url.Action("Index","Home")">
                             <i class="fa-solid fa-arrow-left"></i> Về website
                         </a>
-                        <a class="adm-link" 
-                            href="@Url.Action("Logout", "Login")">
+                        <a class="adm-link"
+                           href="@Url.Action("Logout", "Login")">
                             <i class="fa-solid fa-right-from-bracket me-2"></i>Đăng xuất
                         </a>
                     </div>
@@ -395,19 +402,19 @@
                             </div>
 
 
-                            <div class="d-none d-md-block flex-grow-1" style="max-width:560px;">
-                                <div class="input-group bg-white rounded-pill shadow-sm border overflow-hidden">
+                            <!--<div class="d-none d-md-block flex-grow-1" style="max-width:560px;">
+                                <div class="input-group bg-white rounded-pill shadow-sm border overflow-hidden">-->
 
-                                    <input type="text"
+                                    @*<input type="text"
                                            class="form-control border-0 shadow-none px-4 py-2"
                                            placeholder="Tìm địa điểm, danh mục, người dùng..." />
 
                                     <button class="btn border-0 px-4 bg-white">
                                         <i class="fa-solid fa-magnifying-glass text-primary"></i>
-                                    </button>
+                                    </button>*@
 
-                                </div>
-                            </div>
+                                <!--</div>
+                            </div>-->
 
                             <!-- RIGHT -->
                             <div class="d-flex align-items-center gap-2">
