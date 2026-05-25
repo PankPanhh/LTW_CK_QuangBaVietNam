@@ -227,7 +227,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             {
                 HoTen = txtHoTen.Trim(),
                 Email = email,
-                MatKhauHash = PasswordHasher.HashPassword(txtPass), // 🔥 HASH
+                MatKhauHash = PasswordHasher.HashPassword(txtPass),
                 VaiTro = 2, // 1: Admin, 2: User
                 TrangThai = true,
                 NgayTao = DateTime.Now
