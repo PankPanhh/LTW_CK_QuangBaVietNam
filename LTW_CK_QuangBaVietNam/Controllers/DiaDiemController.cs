@@ -203,7 +203,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                         d.MaDiaDiem,
                         d.TenDiaDiem,
                         d.Slug,
-                        d.TinhThanh, // ✅ Trả thêm thông tin tỉnh để hiển thị UI
+                        d.TinhThanh, //Trả thêm thông tin tỉnh để hiển thị UI
                         d.VungMien,
                         AnhChinh = db.AnhDiaDiems
                             .Where(a => a.MaDiaDiem == d.MaDiaDiem && a.LaAnhChinh == true)
