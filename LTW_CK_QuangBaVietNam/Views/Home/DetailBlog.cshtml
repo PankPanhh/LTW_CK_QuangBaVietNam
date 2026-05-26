@@ -1141,7 +1141,7 @@
             }
 
             container.innerHTML = data.data.map(loc => `
-                <div class="sidebar-item" onclick="viewLocationById(${loc.id})">
+                <div class="sidebar-item" onclick="viewLocationById(${loc.id}, '${loc.slug || ''}')">
                     <div class="item-title">${loc.name || 'Địa điểm'}</div>
                     <div class="item-meta">${loc.region || ''}</div>
                 </div>
@@ -1263,7 +1263,9 @@
     }
 
     function viewLocation() {
-        if (blogData.locationId) {
+        if (blogData.locationSlug) {
+            window.location.href = `/Home/DetailPlace?slug=${blogData.locationSlug}`;
+        } else if (blogData.locationId) {
             window.location.href = `/Home/DetailPlace?id=${blogData.locationId}`;
         }
     }
@@ -1272,8 +1274,12 @@
         window.location.href = `/Home/DetailBlog?id=${id}`;
     }
 
-    function viewLocationById(id) {
-        window.location.href = `/Home/DetailPlace?id=${id}`;
+    function viewLocationById(id, slug) {
+        if (slug) {
+            window.location.href = `/Home/DetailPlace?slug=${slug}`;
+        } else {
+            window.location.href = `/Home/DetailPlace?id=${id}`;
+        }
     }
 
     const imageModal = document.getElementById('imageModal');

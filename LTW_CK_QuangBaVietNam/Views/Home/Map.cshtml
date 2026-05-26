@@ -1305,6 +1305,11 @@
         setupNearbyEventListener();
     }
 
+    // Handler for nearby button click
+    function handleNearbyClick() {
+        handleFilterClick('nearby');
+    }
+
     // Setup event listener for nearby button
     function setupNearbyEventListener() {
         const nearbyBtn = document.querySelector('[data-filter="nearby"]');
@@ -1466,7 +1471,10 @@
     // ============================================================
 
     function showLocationInfo(location) {
-        const mainImage = location.image || 'https://via.placeholder.com/600x300?text=No+Image';
+        let mainImage = '/Content/images/Places/vinhhalong.jpg'; // default fallback
+        if (location.image && location.image.trim() !== '') {
+            mainImage = location.image.includes('/') ? location.image : '/Content/images/Places/' + location.image;
+        }
         const priceText = location.price ? `${location.price.toLocaleString('vi-VN')} VNĐ` : 'Liên hệ';
 
         let distanceBadge = '';
@@ -1496,7 +1504,7 @@
         ` : '';
         const infoPanelContent = `
             <div class="location-info">
-                <img src="${mainImage}" alt="${location.name}" class="location-image" onerror="this.src='https://via.placeholder.com/600x300?text=No+Image'">
+                <img src="${mainImage}" alt="${location.name}" class="location-image" onerror="this.src='/Content/images/Places/vinhhalong.jpg'">
                 <div class="location-header">
                     <div class="location-title">
                         <h3>${location.name}</h3>

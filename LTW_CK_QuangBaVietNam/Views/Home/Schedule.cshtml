@@ -497,7 +497,7 @@
             .then(data => {
                 document.getElementById('loadingSpinner').style.display = 'none';
                 if (!data.success) {
-                    document.getElementById('myGrid').innerHTML = '<div class="empty-state"><i class="bi bi-lock"></i><p>Vui lòng đăng nhập để xem lịch trình của bạn</p><a href="/Account/Login">Đăng nhập</a></div>';
+                    document.getElementById('myGrid').innerHTML = '<div class="empty-state"><i class="bi bi-lock"></i><p>Vui lòng đăng nhập để xem lịch trình của bạn</p><a href="/Home/Login">Đăng nhập</a></div>';
                     return;
                 }
                 allMyData = data.data;

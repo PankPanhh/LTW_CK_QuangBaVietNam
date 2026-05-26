@@ -1462,6 +1462,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                         content = blog.NoiDung,
                         images = images,
                         locationId = blog.MaDiaDiem,
+                        locationSlug = blog.DiaDiem != null ? blog.DiaDiem.Slug : "",
                         locationName = blog.DiaDiem != null ? blog.DiaDiem.TenDiaDiem : "Chưa gắn thẻ",
                         author = blog.NguoiDung.HoTen,
                         authorId = blog.MaNguoiDung,
@@ -1499,6 +1500,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
                     .Select(d => new
                     {
                         id = d.MaDiaDiem,
+                        slug = d.Slug,
                         name = d.TenDiaDiem,
                         region = d.VungMien,
                         image = d.AnhDiaDiems.FirstOrDefault(a => a.LaAnhChinh.GetValueOrDefault()).DuongDanAnh,

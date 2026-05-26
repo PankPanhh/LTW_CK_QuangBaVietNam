@@ -93,6 +93,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             {
                 idChiTiet = c.MaChiTiet,
                 maDiaDiem = c.MaDiaDiem,
+                slug = dd?.Slug ?? "",
                 tenDiaDiem = dd?.TenDiaDiem ?? "",
                 diaChi = dd?.DiaChiChiTiet ?? "",
                 tinhThanh = dd?.TinhThanh ?? "",
