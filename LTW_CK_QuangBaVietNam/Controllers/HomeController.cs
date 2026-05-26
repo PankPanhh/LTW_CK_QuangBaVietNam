@@ -1,4 +1,4 @@
-﻿using LTW_CK_QuangBaVietNam.Helpers;
+using LTW_CK_QuangBaVietNam.Helpers;
 using LTW_CK_QuangBaVietNam.Models;
 using System;
 using System.Collections.Generic;
@@ -118,7 +118,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             });
         }
 
-        public ActionResult AllPlaces()
+        public ActionResult AllPlaces(string region = "")
         {
             // Set breadcrumbs for All Places page
             var breadcrumbs = new List<BreadcrumbItem>
@@ -128,6 +128,7 @@ namespace LTW_CK_QuangBaVietNam.Controllers
             };
             this.SetBreadcrumbs(breadcrumbs);
 
+            ViewBag.SelectedRegion = region;
             return View();
         }
 

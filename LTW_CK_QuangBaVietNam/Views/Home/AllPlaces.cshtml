@@ -356,7 +356,28 @@
 
     // Load tất cả địa điểm khi trang mở
     document.addEventListener('DOMContentLoaded', function() {
-        loadPlaces(1, '');
+        // Read region from ViewBag first, fallback to query string if needed
+        let initialRegion = '@Html.Raw(ViewBag.SelectedRegion)' || '';
+        if (!initialRegion) {
+            const urlParams = new URLSearchParams(window.location.search);
+            initialRegion = urlParams.get('region') || '';
+        }
+        
+        selectedRegion = initialRegion;
+
+        if (selectedRegion) {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                const btnText = btn.textContent.trim();
+                if ((selectedRegion === 'Bắc' && btnText === 'Miền Bắc') ||
+                    (selectedRegion === 'Trung' && btnText === 'Miền Trung') ||
+                    (selectedRegion === 'Nam' && btnText === 'Miền Nam')) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        loadPlaces(1, selectedRegion);
     });
 
     // Load địa điểm từ API
